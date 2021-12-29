@@ -1,0 +1,122 @@
+thoughts/todo - https://www.gamedeveloper.com/design/tower-defense-game-rules-part-1-
+
+RTS element... Build "upgrade buildings" to unlock new towers/upgrades;  in turn, those are unlocked by earning "gold"
+
+Add game modes that focus on certain elements; allowing each towers to be used + more "game time" - then add menus for each category  "Fire" / ...
+
+Add boss waves  :  Need to test further, should be working
+
+Add a "next wave now" option;  bonus gold?
+
+Add other status changing towers
+
+- fix cooldown for guns (already fixed for laser)  : test
+
+- fix slow down enemy : done
+
+- fix the DoT tic/countdown :  Is it needed?
+
+- chain laser - diminishing effects;  What did I mean?
+
+- poison + 'splash' upgrade  :  done
+
+- fear (runs backwards)  :  done
+
+- doom; gives a countdown to death (high damage to make it certain or "Die()"?)
+
+- curse (lowers Max hp (counters healers?)/defense (all?)) + virus (spreads)	
+
+- silence; stop enemy casting  -  Would be easier to create a casting class then an (if !silence)
+
+- (not this game) add elements/weakness'/bonus damage  (lightening for stun, ice for slow etc..)
+	(do these stay for 'time' or 'ever'?)
+
+- (not this game) zombie (makes "heals" do damage"); won't work if enemy is undead already?
+
+- chicken (?); changes appearance + removes defence/immunity
+
+- "gravity" / hp% chance?  (I.E 25% of maxHP)  -  high cost upgrade
+
+- increases debuff chances?  -  affects tower rate or enemy?
+
+- "mini/toad/micro" tower for the 'mid range' enemies (to reduce to normal enemies'?)
+
+- "All" (Exhaustion) tower : chance to cause all effects; not on boss
+
+- "boss" tower; insanely expensive but allows status effecs to work on bosses (much lower rates to effect) & removes weakness/immunity from normal mobs?
+
+- Priority settings?  :  Set "closest/furthest/flying/ground"
+
+- money generator?  coal/water/wind/sun/fusion;
+		Add random weather effects to slow/stop generation?
+		Add time settings to switch game-play at night (PM) to use different generators?
+
+Add 'advanced' flight path for random encounters?
+
+Add player spells ?  To do what?
+
+Add AoE visual effects
+
+Add EnemyStats class  :  In progress/complete?
+
+Add new models  :  in progress + animation is tested/working
+
+Seperate spell class for types?
+
+Add other enemies
+
+- flying only  :  done
+
+- Transformer; periodically turns to a flying unit  : done
+		Same/another which changes path?
+
+- hide from towers : done
+
+- levitate : done
+
+- add a specific timer that spawns "Mid" enemies; regardless of how the player plays (I.E if they have sped up the spawns)  :  Maybe set this at "major" stages (5/10 etc..)
+
+- specific boss wave  : done
+
+- healing (done)  + max hp boost?
+
+- grants stat/def bonus or immunity  -  in progress
+
+- "golden" mobs; reduce value over time (maybe set a rand & update color based on +/- gold)  done
+	Make these so you tap the screen - done
+	Make an "announcement" - 
+
+- speed(done)/defense(done)/stat boost
+
+- immunity 
+
+- default immunity to #
+
+	- decoy/provoke
+		Makes towers in range focus on mob
+(same as each other)
+	- duplicate chance?
+		Earlier mobs stop for # while duplicating and quickens through the stages
+			(these do not move/make towers focus attention?)
+
+- necromancer/summoner/"spawner"  :  done
+		summons various mobs (maybe new/different ones?) slightly ahead of itself; later versions summon more and keep moving(?)
+
+- vampire
+		steals HP from nearby mobs? (for bosses that summon - create an AoE requirement)
+
+Add enemy defenses/weakness' - in progress
+
+
+Long term goals : 
+
+https://www.fortressofdoors.com/optimizing-tower-defense-for-focus-and-thinking-defenders-quest/
+
+Hide health bar when unit is full health
+
+Click on enemy to show stats
+
+Make a random spawner that allows for an infinite wave, selecting from a pool of each enemy type per wave
+
+Procedurally generate environments
+
