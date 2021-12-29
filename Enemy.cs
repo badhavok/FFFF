@@ -7,7 +7,7 @@ public class Enemy : MonoBehaviour {
 	public EnemyStats enemyStats;
 	public EnemyMovement enemyMovement;
 	public EnemySpells enemySpells;
-	
+
 	public float startSpeed = 10f;
 
 	public float speed;
@@ -15,20 +15,20 @@ public class Enemy : MonoBehaviour {
 	public bool isSpider = false;
 	public bool isFlying = false;
 	public bool isBoss = false;
-	[HideInInspector] public float imFlying;	
+[HideInInspector] public float imFlying;	
 [HideInInspector] public bool fromDropship = false;
 	private bool speedEnemy;
 	private float countdownSpeed, bonusSpeed;
-	
+
 	private float countdownSlow, slowSpeed;
 	private bool slowEnemy;
-	
+
 	private float countdownStop;
 	private bool stopEnemy = false;
-	
+
 	private float countdownFear;
 [HideInInspector] public bool fearEnemy = false;
-	
+
 	private float countdownPoison,physicalStrengthPoison, magicalStrengthPoison;
 	private bool poisonEnemy;
 
@@ -51,7 +51,7 @@ public class Enemy : MonoBehaviour {
 		speed = startSpeed;
 		maxHealth = enemyStats.startHealth;
 	}
-	
+
 	public void Healing (float healSpell)
 	{
 		if (enemyStats.startHealth == maxHealth)
@@ -69,9 +69,9 @@ public class Enemy : MonoBehaviour {
 			Debug.Log("I'm being healed by " + healSpell);
 		}
 	}
-	
+
 	public void TakeDamage (float physAmount, float magAmount)
-	{	
+	{
 		if (immune)
 		{
 			//Debug.Log("I'm immune!");
@@ -79,9 +79,9 @@ public class Enemy : MonoBehaviour {
 		}
 		physDamage = physAmount - enemyStats.physDef;
 		magDamage = magAmount - enemyStats.magDef;
-		
+
 		float amount = physDamage + magDamage;
-		
+
 		//Debug.Log("I'm taking damage " + amount);
 		if(amount <= 0)
 		{
@@ -91,9 +91,9 @@ public class Enemy : MonoBehaviour {
 			enemyStats.startHealth -= amount;
 			healthBar.fillAmount = enemyStats.startHealth / maxHealth;
 		}
-		
+
 		//Debug.Log("Am I healing? " + enemyStats.startHealth);
-		
+
 		if (enemyStats.startHealth <= 0 && !isDead)
 		{
 			Die();
@@ -118,20 +118,20 @@ public class Enemy : MonoBehaviour {
 		stopEnemy = true;
 		countdownStop = stp;
 	}
-	
+
 	public void Fear (float fea)
 	{
 		fearEnemy = true;
 		countdownFear = fea;
 	}
-	
+
 	public void Poison (int psnS, float psnT)
 	{
 		poisonEnemy = true;
 		magicalStrengthPoison = psnS;
 		countdownPoison = psnT;
 	}
-	
+
 	public void Speed (float spdB, float spdD)
 	{
 		speedEnemy = true;
@@ -143,8 +143,8 @@ public class Enemy : MonoBehaviour {
 		enemyStats.isHovercraft = true;
 		imFlying = flyT;
 	}
-	
-	void Update () 
+
+	void Update ()
 	{
 		if (immune)
 		{
@@ -156,7 +156,7 @@ public class Enemy : MonoBehaviour {
 		}
 		if (goldenEnemy)
 		{
-			goldBonus += Time.deltaTime;	
+			goldBonus += Time.deltaTime;
 			if (Input.touchCount > 0)
 			 {
 				Touch t = Input.GetTouch(0);
@@ -189,7 +189,7 @@ public class Enemy : MonoBehaviour {
 				Debug.Log("Sorry... again please!");
 			}
 		}
-		
+
 		if (slowEnemy)
 		{
 			speed = startSpeed * (1f - slowSpeed);
@@ -202,7 +202,7 @@ public class Enemy : MonoBehaviour {
 				//Debug.Log("Yeah, " + speed + " baby.... Weeeeee");
 			}
 		}
-		
+
 		if (stopEnemy)
 		{
 			speed = startSpeed * (1f - 1f);
@@ -215,7 +215,7 @@ public class Enemy : MonoBehaviour {
 				//Debug.Log("I'm free");
 			}
 		}
-		
+
 		if (fearEnemy)
 		{
 			countdownFear -= Time.deltaTime;
@@ -225,7 +225,7 @@ public class Enemy : MonoBehaviour {
 				fearEnemy = false;
 			}
 		}
-		
+
 		if (poisonEnemy)
 		{
 			countdownPoison -= Time.deltaTime;
@@ -270,7 +270,7 @@ public class Enemy : MonoBehaviour {
 			if (enemyStats.dropCount <=0)
 			{
 				StartCoroutine(Spawn());
-				enemyStats.dropCount += enemyStats.dropTime;	
+				enemyStats.dropCount += enemyStats.dropTime;
 			}
 			else
 			{
@@ -278,7 +278,7 @@ public class Enemy : MonoBehaviour {
 			}
 		}
 	}
-	
+
 	private IEnumerator Spawn()
 	{
 		for (int i = 0; i < enemyStats.dropAmount; i++)
@@ -290,7 +290,7 @@ public class Enemy : MonoBehaviour {
 					yield return new WaitForSeconds(1.0f);
 				}
 	}
-	
+
 	public IEnumerator SummonNow()
 	{
 		int summoningIndex = Random.Range(0, enemySpells.summoningPool.Length);
@@ -300,7 +300,7 @@ public class Enemy : MonoBehaviour {
 		++WaveSpawner.EnemiesAlive;
 		yield return new WaitForSeconds(1.0f);
 	}
-	
+
 	void Die ()
 	{
 		isDead = true;

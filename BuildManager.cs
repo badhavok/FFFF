@@ -35,7 +35,7 @@ public class BuildManager : MonoBehaviour {
 
 		selectedNode = node;
 		turretToBuild = null;
-
+		nodeUI.Hide();
 		nodeUI.SetTarget(node);
 	}
 

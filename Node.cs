@@ -5,14 +5,16 @@ public class Node : MonoBehaviour {
 
 	public Color hoverColor;
 	public Color notEnoughMoneyColor;
-    public Vector3 positionOffset;
+  public Vector3 positionOffset;
 
 	[HideInInspector]
 	public GameObject turret;
 	[HideInInspector]
 	public TurretBlueprint turretBlueprint;
 	[HideInInspector]
-	public bool isUpgraded = false;
+	public bool isBase = true;
+	[HideInInspector]
+	public bool isFirstUpgrade, isSecondUpgrade, isDPS, isDPSOne, isDPSTwo, isSUP, isSUPOne, isSUPTwo  = false;
 
 	private Renderer rend;
 	private Color startColor;
@@ -72,38 +74,195 @@ public class Node : MonoBehaviour {
 
 	public void UpgradeTurret ()
 	{
-		if (PlayerStats.Money < turretBlueprint.upgradeCost)
+		if (PlayerStats.Money < turretBlueprint.upgradeCost || PlayerStats.Money < turretBlueprint.upgradeCostTwo || PlayerStats.Money < turretBlueprint.upgradeCostDps || PlayerStats.Money < turretBlueprint.upgradeCostSup)
 		{
 			Debug.Log("Not enough money to upgrade that!");
 			return;
 		}
-
+		if (!isFirstUpgrade)
+		{
 		PlayerStats.Money -= turretBlueprint.upgradeCost;
 
 		//Get rid of the old turret
 		Destroy(turret);
 
 		//Build a new one
-		GameObject _turret = (GameObject)Instantiate(turretBlueprint.upgradedPrefab, GetBuildPosition(), Quaternion.identity);
+		GameObject _turret = (GameObject)Instantiate(turretBlueprint.prefabUpgrade, GetBuildPosition(), Quaternion.identity);
 		turret = _turret;
 
 		GameObject effect = (GameObject)Instantiate(buildManager.buildEffect, GetBuildPosition(), Quaternion.identity);
 		Destroy(effect, 5f);
 
-		isUpgraded = true;
+		isFirstUpgrade = true;
+		}
+		else if (isFirstUpgrade)
+		{
+			PlayerStats.Money -= turretBlueprint.upgradeCostTwo;
 
-		// Debug.Log("Turret upgraded!");
+			//Get rid of the old turret
+			Destroy(turret);
+
+			//Build a new one
+			GameObject _turret = (GameObject)Instantiate(turretBlueprint.prefabUpgradeTwo, GetBuildPosition(), Quaternion.identity);
+			turret = _turret;
+
+			GameObject effect = (GameObject)Instantiate(buildManager.buildEffect, GetBuildPosition(), Quaternion.identity);
+			Destroy(effect, 5f);
+			isSecondUpgrade = true;
+		}
 	}
+	public void UpgradeToDPS ()
+	{
+		PlayerStats.Money -= turretBlueprint.upgradeCostDps;
 
+		//Get rid of the old turret
+		Destroy(turret);
+
+		//Build a new one
+		GameObject _turret = (GameObject)Instantiate(turretBlueprint.prefabDps, GetBuildPosition(), Quaternion.identity);
+		turret = _turret;
+
+		GameObject effect = (GameObject)Instantiate(buildManager.buildEffect, GetBuildPosition(), Quaternion.identity);
+		Destroy(effect, 5f);
+
+		isDPS = true;
+	}
+	public void UpgradeToSup ()
+	{
+		PlayerStats.Money -= turretBlueprint.upgradeCostSup;
+
+		//Get rid of the old turret
+		Destroy(turret);
+
+		//Build a new one
+		GameObject _turret = (GameObject)Instantiate(turretBlueprint.prefabSup, GetBuildPosition(), Quaternion.identity);
+		turret = _turret;
+
+		GameObject effect = (GameObject)Instantiate(buildManager.buildEffect, GetBuildPosition(), Quaternion.identity);
+		Destroy(effect, 5f);
+
+		isSUP = true;
+	}
+	public void UpgradeTurretDpsOne ()
+	{
+		PlayerStats.Money -= turretBlueprint.upgradeCostDpsOne;
+
+		//Get rid of the old turret
+		Destroy(turret);
+
+		//Build a new one
+		GameObject _turret = (GameObject)Instantiate(turretBlueprint.prefabDpsOne, GetBuildPosition(), Quaternion.identity);
+		turret = _turret;
+
+		GameObject effect = (GameObject)Instantiate(buildManager.buildEffect, GetBuildPosition(), Quaternion.identity);
+		Destroy(effect, 5f);
+
+		isDPSOne = true;
+		isDPSTwo = true;
+	}
+	public void UpgradeTurretDpsTwo ()
+	{
+		PlayerStats.Money -= turretBlueprint.upgradeCostDpsTwo;
+
+		//Get rid of the old turret
+		Destroy(turret);
+
+			//Build a new one
+		GameObject _turret = (GameObject)Instantiate(turretBlueprint.prefabDpsTwo, GetBuildPosition(), Quaternion.identity);
+		turret = _turret;
+
+		GameObject effect = (GameObject)Instantiate(buildManager.buildEffect, GetBuildPosition(), Quaternion.identity);
+		Destroy(effect, 5f);
+
+		isDPSTwo = true;
+		isDPSOne = true;
+	}
+	public void UpgradeTurretSupOne ()
+	{
+		PlayerStats.Money -= turretBlueprint.upgradeCostSupOne;
+
+		//Get rid of the old turret
+		Destroy(turret);
+
+		//Build a new one
+		GameObject _turret = (GameObject)Instantiate(turretBlueprint.prefabSupOne, GetBuildPosition(), Quaternion.identity);
+		turret = _turret;
+
+		GameObject effect = (GameObject)Instantiate(buildManager.buildEffect, GetBuildPosition(), Quaternion.identity);
+		Destroy(effect, 5f);
+
+		isSUPOne = true;
+		isSUPTwo = true;
+	}
+	public void UpgradeTurretSupTwo ()
+	{
+		PlayerStats.Money -= turretBlueprint.upgradeCostSupTwo;
+
+		//Get rid of the old turret
+		Destroy(turret);
+
+			//Build a new one
+		GameObject _turret = (GameObject)Instantiate(turretBlueprint.prefabSupTwo, GetBuildPosition(), Quaternion.identity);
+		turret = _turret;
+
+		GameObject effect = (GameObject)Instantiate(buildManager.buildEffect, GetBuildPosition(), Quaternion.identity);
+		Destroy(effect, 5f);
+
+		isSUPTwo = true;
+		isSUPOne = true;
+	}
 	public void SellTurret ()
 	{
+		if(isSUPTwo)
+		{
+			PlayerStats.Money += turretBlueprint.GetUpgradeValueSupTwo();
+		}
+		else if(isSUPOne)
+		{
+			PlayerStats.Money += turretBlueprint.GetUpgradeValueSupOne();
+		}
+		else if(isSUP)
+		{
+			PlayerStats.Money += turretBlueprint.GetUpgradeValueSup();
+		}
+		else if(isDPSTwo)
+		{
+			PlayerStats.Money += turretBlueprint.GetUpgradeValueDpsTwo();
+		}
+		else if(isDPSOne)
+		{
+			PlayerStats.Money += turretBlueprint.GetUpgradeValueDpsOne();
+		}
+		else if(isDPS)
+		{
+			PlayerStats.Money += turretBlueprint.GetUpgradeValueDps();
+		}
+		else if(isSecondUpgrade)
+		{
+			PlayerStats.Money += turretBlueprint.GetUpgradeValueTwo();
+		}
+		else if(isFirstUpgrade)
+		{
+			PlayerStats.Money += turretBlueprint.GetUpgradeValue();
+		}
+		else
+		{
 		PlayerStats.Money += turretBlueprint.GetSellAmount();
+		}
 
 		GameObject effect = (GameObject)Instantiate(buildManager.sellEffect, GetBuildPosition(), Quaternion.identity);
 		Destroy(effect, 5f);
 
 		Destroy(turret);
 		turretBlueprint = null;
+		isFirstUpgrade = false;
+		isSecondUpgrade = false;
+		isDPS  = false;
+		isDPSOne  = false;
+		isDPSTwo  = false;
+		isSUP  = false;
+		isSUPOne  = false;
+		isSUPTwo  = false;
 	}
 
 	void OnMouseEnter ()

@@ -1,12 +1,16 @@
 thoughts/todo - https://www.gamedeveloper.com/design/tower-defense-game-rules-part-1-
 
-RTS	 element... Build "upgrade buildings" to unlock new towers/upgrades;  in turn, those are unlocked by earning "gold"
+RTS element... Build "upgrade buildings" to unlock new towers/upgrades;  in turn, those are unlocked by earning "gold"
 
 Add game modes that focus on certain elements; allowing each towers to be used + more "game time" - then add menus for each category  "Fire" / ...
 
 Add boss waves  :  Need to test further, should be working
 
 Add a "next wave now" option;  bonus gold?
+
+Add new "People" tower; enemies won't stop but these will have ~3-5 mini actions to assist with various status effects
+
+- effectively the same as the normal towers
 
 Add other status changing towers
 
@@ -24,7 +28,7 @@ Add other status changing towers
 
 - doom; gives a countdown to death (high damage to make it certain or "Die()"?)
 
-- curse (lowers Max hp (counters healers?)/defense (all?)) + virus (spreads)	
+- curse (lowers Max hp (counters healers?)/defense (all?)) + virus (spreads)
 
 - silence; stop enemy casting  -  Would be easier to create a casting class then an (if !silence)
 
@@ -84,11 +88,11 @@ Add other enemies
 
 - "golden" mobs; reduce value over time (maybe set a rand & update color based on +/- gold)  done
 	Make these so you tap the screen - done
-	Make an "announcement" - 
+	Make an "announcement" -
 
 - speed(done)/defense(done)/stat boost
 
-- immunity 
+- immunity
 
 - default immunity to #
 
@@ -108,7 +112,7 @@ Add other enemies
 Add enemy defenses/weakness' - in progress
 
 
-Long term goals : 
+Long term goals :
 
 https://www.fortressofdoors.com/optimizing-tower-defense-for-focus-and-thinking-defenders-quest/
 
@@ -119,4 +123,3 @@ Click on enemy to show stats
 Make a random spawner that allows for an infinite wave, selecting from a pool of each enemy type per wave
 
 Procedurally generate environments
-
