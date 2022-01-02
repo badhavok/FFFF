@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PlayerStats : MonoBehaviour {
 
-	public static float Money;
+	public static float Money, Gas, Liquid, Plasma, Mineral;
 	public float startMoney = 400;
 
 	public static int Lives;

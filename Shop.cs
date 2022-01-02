@@ -14,6 +14,8 @@ public class Shop : MonoBehaviour {
 	public TurretBlueprint missileLauncher;
 	public TurretBlueprint laserBeamer;
 	public TurretBlueprint aoeTurret;
+	public BuildingBlueprint goldBuilding;
+	public BuildingBlueprint advanceTower;
 
 	void Start ()
 	{
@@ -37,19 +39,19 @@ public class Shop : MonoBehaviour {
 		menuUI.SetActive(true);
 		turretUI.SetActive(false);
 		buildingUI.SetActive(false);
+		buildManager.SelectTurretToBuild(null);
+		buildManager.SelectBuildingToBuild(null);;
 	}
 	public void SelectStandardTurret ()
 	{
 		Debug.Log("Standard Turret Selected");
 		buildManager.SelectTurretToBuild(standardTurret);
 	}
-
 	public void SelectMissileLauncher()
 	{
 		Debug.Log("Missile Launcher Selected");
 		buildManager.SelectTurretToBuild(missileLauncher);
 	}
-
 	public void SelectLaserBeamer()
 	{
 		Debug.Log("Laser Beamer Selected");
@@ -60,5 +62,14 @@ public class Shop : MonoBehaviour {
 		Debug.Log("AoE Turret Selected");
 		buildManager.SelectTurretToBuild(aoeTurret);
 	}
-
+	public void SelectGoldGenerator()
+	{
+		Debug.Log("Gold Generator Selected");
+		buildManager.SelectBuildingToBuild(goldBuilding);
+	}
+	public void SelectAdvanceTower()
+	{
+		Debug.Log("Advance Tower Selected");
+		buildManager.SelectBuildingToBuild(advanceTower);
+	}
 }

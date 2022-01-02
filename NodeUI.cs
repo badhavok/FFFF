@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class NodeUI : MonoBehaviour {
 
 	public GameObject ui;
+	public GameObject uiBuildings;
 	public GameObject advanceUI;
 	public GameObject advanceUIDPS;
 	public GameObject advanceUISUP;
@@ -11,7 +12,7 @@ public class NodeUI : MonoBehaviour {
 	public Text upgradeCost;
 	public Button upgradeButton;
 
-	public bool imDPS, imSUP = false;
+	public bool imDPS, imSUP, imUpgraded = false;
 
 	public Text sellAmount;
 
@@ -29,8 +30,30 @@ public class NodeUI : MonoBehaviour {
 			imDPS = true;
 		}
 		transform.position = target.GetBuildPosition();
-
-		if (target.isBase && !target.isFirstUpgrade)
+		Debug.Log("through loop");
+		if(target.isBuilding && !target.isBUpgrade)
+		{
+			upgradeCost.text = "$" + target.buildingBlueprint.upgradeBCost;
+			upgradeButton.interactable = true;
+			uiBuildings.SetActive(true);
+			Debug.Log("Building");
+		}
+		if(target.isBUpgrade && !target.isBUpgrade2)
+		{
+			upgradeCost.text = "$" + target.buildingBlueprint.upgradeBCost;
+			upgradeButton.interactable = true;
+			uiBuildings.SetActive(true);
+			Debug.Log("Building");
+		}
+		else if (target.isBUpgrade2)
+		{
+			upgradeCost.text = "DONE";
+			upgradeButton.interactable = false;
+			sellAmount.text = "$" + target.buildingBlueprint.GetUpgradeBValueTwo();
+			uiBuildings.SetActive(true);
+			Debug.Log("building end");
+		}
+		else if (target.isBase && !target.isFirstUpgrade)
 		{
 			upgradeCost.text = "$" + target.turretBlueprint.upgradeCost;
 			upgradeButton.interactable = true;
@@ -70,10 +93,15 @@ public class NodeUI : MonoBehaviour {
 		{
 			upgradeCost.text = "DONE";
 			upgradeButton.interactable = false;
-			sellAmount.text = "$" + target.turretBlueprint.GetSellAmount();
+			sellAmount.text = "$" + target.turretBlueprint.GetUpgradeValueSupTwo();
 			ui.SetActive(true);
 			Debug.Log("end");
 		}
+	}
+	public void UpgradeBuilding ()
+	{
+			target.UpgradeBuilding();
+			BuildManager.instance.DeselectNode();
 	}
 	public void Upgrade ()
 	{
@@ -115,11 +143,17 @@ public class NodeUI : MonoBehaviour {
 		target.SellTurret();
 		BuildManager.instance.DeselectNode();
 	}
+	public void SellBuilding ()
+	{
+		target.SellBuilding();
+		BuildManager.instance.DeselectNode();
+	}
 	public void Hide ()
 	{
 		advanceUIDPS.SetActive(false);
 		advanceUISUP.SetActive(false);
 		advanceUI.SetActive(false);
+		uiBuildings.SetActive(false);
 		ui.SetActive(false);
 	}
 }

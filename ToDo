@@ -1,10 +1,32 @@
 thoughts/todo - https://www.gamedeveloper.com/design/tower-defense-game-rules-part-1-
 
-RTS element... Build "upgrade buildings" to unlock new towers/upgrades;  in turn, those are unlocked by earning "gold"
+RTS/RPG element... Build "upgrade buildings" to unlock new towers/upgrades;  in turn, those are unlocked by earning specialist resources.  Winning levels gives upgrade options to increase base damage for "unlimited mode(s)"
 
-Add game modes that focus on certain elements; allowing each towers to be used + more "game time" - then add menus for each category  "Fire" / ...
+Focus of game is to get your buildings setup ready to defeat the boss, you will need a mix of all towers, especially the boss tower upgrade to cause status effects to the boss
+
+	- Gold generator, can be placed anywhere - Working
+
+	Choice between one of the following?  Decides between branches?  Maximum of two?
+		- Gas generator, limited placement (Choice/changes depending on weather effect)
+		- Liquid generator, limited placement
+		- Plasma generator, limited placement
+		- Mineral generator, limited placement
+
+	- Unlocks 3rd level towers, this upgrades to unlock the specialist towers : done
+	- Unlocks individual status effects and powers them up (essentially bonuses to normal towers)
+	- Unlocks spells
+	- Unlocks multi-tower?
+	- Unlocks boss tower, increases rate of effect
+
+Fix upgrade of "Buildings" (it fails to change to "done")
+
+Add story/scenario modes that focus on certain elements; allowing each towers to be used + more "play time" - then add menus for each category  "Fire" / ...
+
+Add unlimited mode
 
 Add boss waves  :  Need to test further, should be working
+
+Add "Mega" (final) bosses - instant lose
 
 Add a "next wave now" option;  bonus gold?
 
@@ -65,7 +87,7 @@ Add EnemyStats class  :  In progress/complete?
 
 Add new models  :  in progress + animation is tested/working
 
-Seperate spell class for types?
+Separate spell class for types?
 
 Add other enemies
 
@@ -91,6 +113,22 @@ Add other enemies
 	Make an "announcement" -
 
 - speed(done)/defense(done)/stat boost
+
+- add formula to increase stats based on level/wave
+	[base + (base / 2) + (wave * 5)]
+	hp = 100 + (100 / 2) + (1 * 5) = 155
+	hp = 100 + (100 / 2) + (10 * 5) = 200
+	hp = 1000 + (1000 / 2) + (1 * 5) = 1505
+	hp = 1000 + (1000 / 2) + (10 * 5) = 1555
+
+	[base + ((wave / 2) + base)];
+	def/element =  0 + ((1 / 2) + 0) = .5
+	def/element =  0 + ((10 / 2) + 0) = 5
+	def/element =  0 + ((100 / 2) + 0) = 50
+	def/element =  10 + ((1 / 2) + 10) = 20.5
+	def/element =  10 + ((5 / 2) + 10) = 22.5
+	def/element =  10 + ((10 / 2) + 10) = 25
+	def/element =  10 + ((100 / 2) + 10) = 75
 
 - immunity
 

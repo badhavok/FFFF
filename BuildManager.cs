@@ -17,14 +17,25 @@ public class BuildManager : MonoBehaviour {
 	public GameObject buildEffect;
 	public GameObject sellEffect;
 
-	private TurretBlueprint turretToBuild;
+	public TurretBlueprint turretToBuild;
+	public BuildingBlueprint buildingToBuild;
+	public bool turretSelected, buildingSelected = false;
 	private Node selectedNode;
+	public int upgradeLevel;
 
 	public NodeUI nodeUI;
-
-	public bool CanBuild { get { return turretToBuild != null; } }
+	public bool canBuildB, canBuildT = false;
+	//public bool CanBuildT { get { return turretToBuild != null; } }
+	//public bool CanBuildB { get { return buildingToBuild != null; } }
 	public bool HasMoney { get { return PlayerStats.Money >= turretToBuild.cost; } }
 
+	void Update()
+	{
+		if(AdvanceBuilding.IsExists)
+		{
+			upgradeLevel = AdvanceBuilding.BuildLevel;
+		}
+	}
 	public void SelectNode (Node node)
 	{
 		if (selectedNode == node)
@@ -35,25 +46,35 @@ public class BuildManager : MonoBehaviour {
 
 		selectedNode = node;
 		turretToBuild = null;
-		nodeUI.Hide();
+		buildingToBuild = null;
 		nodeUI.SetTarget(node);
 	}
-
 	public void DeselectNode()
 	{
 		selectedNode = null;
 		nodeUI.Hide();
 	}
-
 	public void SelectTurretToBuild (TurretBlueprint turret)
 	{
+		Debug.Log("Select turret in BuildManager");
+		canBuildT = true;
+		canBuildB = false;
 		turretToBuild = turret;
 		DeselectNode();
 	}
-
+	public void SelectBuildingToBuild (BuildingBlueprint building)
+	{
+		canBuildB = true;
+		canBuildT = false;
+		buildingToBuild = building;
+		DeselectNode();
+	}
 	public TurretBlueprint GetTurretToBuild ()
 	{
 		return turretToBuild;
 	}
-
+	public BuildingBlueprint GetBuildingToBuild ()
+	{
+		return buildingToBuild;
+	}
 }
