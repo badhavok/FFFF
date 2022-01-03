@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class BuildManager : MonoBehaviour {
 
+	public int upgradeLevel, spellCount;
+
+	public NodeUI nodeUI;
+
 	public static BuildManager instance;
 
 	void Awake ()
@@ -19,12 +23,10 @@ public class BuildManager : MonoBehaviour {
 
 	public TurretBlueprint turretToBuild;
 	public BuildingBlueprint buildingToBuild;
-	public bool turretSelected, buildingSelected = false;
+	[HideInInspector]
+	public bool turretSelected, canBuildB, canBuildT, buildingSelected = false;
 	private Node selectedNode;
-	public int upgradeLevel;
 
-	public NodeUI nodeUI;
-	public bool canBuildB, canBuildT = false;
 	//public bool CanBuildT { get { return turretToBuild != null; } }
 	//public bool CanBuildB { get { return buildingToBuild != null; } }
 	public bool HasMoney { get { return PlayerStats.Money >= turretToBuild.cost; } }
@@ -34,6 +36,10 @@ public class BuildManager : MonoBehaviour {
 		if(AdvanceBuilding.IsExists)
 		{
 			upgradeLevel = AdvanceBuilding.BuildLevel;
+		}
+		if(SpellBuilding.SpellExists)
+		{
+			spellCount = SpellBuilding.SpellLevel;
 		}
 	}
 	public void SelectNode (Node node)

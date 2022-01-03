@@ -17,10 +17,10 @@ public class Node : MonoBehaviour {
 	public bool isBase = true;
 	[HideInInspector]
 	//listing all the turret upgrades
-	public bool isFirstUpgrade, isSecondUpgrade, isDPS, isDPSOne, isDPSTwo, isSUP, isSUPOne, isSUPTwo, advanceOne, advanceTwo, advanceThree, canBuildB, canBuildT = false;
-
+	public bool isFirstUpgrade, isSecondUpgrade, isDPS, isDPSOne, isDPSTwo, isSUP, isSUPOne, isSUPTwo, advanceOne, advanceTwo, advanceThree, canBuildT = false;
+	[HideInInspector]
 	//listing all the building upgrades
-	public bool isBuilding, isBUpgrade, isBUpgrade2 = false;
+	public bool isBuilding, isBUpgrade, isBUpgrade2, canBuildB = false;
 
 	private Renderer rend;
 	private Color startColor;

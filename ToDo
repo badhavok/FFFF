@@ -7,14 +7,14 @@ Focus of game is to get your buildings setup ready to defeat the boss, you will 
 	- Gold generator, can be placed anywhere - Working
 
 	Choice between one of the following?  Decides between branches?  Maximum of two?
-		- Gas generator, limited placement (Choice/changes depending on weather effect)
-		- Liquid generator, limited placement
-		- Plasma generator, limited placement
-		- Mineral generator, limited placement
+		- Gas generator, limited placement? (Choice/changes depending on weather effect)
+		- Liquid generator, limited placement?
+		- Plasma generator, limited placement?
+		- Mineral generator, limited placement?
 
-	- Unlocks 3rd level towers, this upgrades to unlock the specialist towers : done
-	- Unlocks individual status effects and powers them up (essentially bonuses to normal towers)
-	- Unlocks spells
+	- Unlocks 3rd level towers, this upgrades to unlock the specialist towers : done & restricted to one build
+	- Unlocks/upgrades individual status effects
+City Base	- Unlocks player spells - maximum of 3?
 	- Unlocks multi-tower?
 	- Unlocks boss tower, increases rate of effect
 
@@ -30,10 +30,6 @@ Add "Mega" (final) bosses - instant lose
 
 Add a "next wave now" option;  bonus gold?
 
-Add new "People" tower; enemies won't stop but these will have ~3-5 mini actions to assist with various status effects
-
-- effectively the same as the normal towers
-
 Add other status changing towers
 
 - fix cooldown for guns (already fixed for laser)  : test
@@ -42,7 +38,7 @@ Add other status changing towers
 
 - fix the DoT tic/countdown :  Is it needed?
 
-- chain laser - diminishing effects;  What did I mean?
+- chain laser - diminishing effects;
 
 - poison + 'splash' upgrade  :  done
 
@@ -50,7 +46,7 @@ Add other status changing towers
 
 - doom; gives a countdown to death (high damage to make it certain or "Die()"?)
 
-- curse (lowers Max hp (counters healers?)/defense (all?)) + virus (spreads)
+- curse (lowers Max hp (counters healers?)/defence (all?)) + virus (spreads)
 
 - silence; stop enemy casting  -  Would be easier to create a casting class then an (if !silence)
 
@@ -152,6 +148,8 @@ Add enemy defenses/weakness' - in progress
 
 Long term goals :
 
+Achievments : Add hidden easter eggs/trophies; "I'm a hacker" (find secret menu via GameGuardian/other)
+
 https://www.fortressofdoors.com/optimizing-tower-defense-for-focus-and-thinking-defenders-quest/
 
 Hide health bar when unit is full health
@@ -161,3 +159,7 @@ Click on enemy to show stats
 Make a random spawner that allows for an infinite wave, selecting from a pool of each enemy type per wave
 
 Procedurally generate environments
+
+Planetary Outpost UA-1  -  Add new "People" tower; enemies won't stop but these will have ~3-5 mini actions to assist with various status effects
+
+- effectively the same as the normal towers
