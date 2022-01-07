@@ -42,13 +42,13 @@ public class Node : MonoBehaviour {
 
 	void OnMouseDown ()
 	{
-		Debug.Log("mousedown");
+		//Debug.Log("mousedown");
 		if (EventSystem.current.IsPointerOverGameObject())
 			return;
 
 		if (turret != null || building != null)
 		{
-			Debug.Log("Selecting node");
+			//Debug.Log("Selecting node");
 			buildManager.SelectNode(this);
 			return;
 		}
@@ -61,23 +61,23 @@ public class Node : MonoBehaviour {
 	}
 	void BuildThis ()
 	{
-		Debug.Log("Build this");
+		//Debug.Log("Build this");
 		if (buildManager.canBuildB)
 		{
 			BuildBuilding(buildManager.GetBuildingToBuild());
-			Debug.Log("I'm also in this");
+			Debug.Log("I'm building a building");
 			buildManager.buildingToBuild = null;
 		}
 		if (buildManager.canBuildT)
 		{
 			BuildTurret(buildManager.GetTurretToBuild());
-			Debug.Log("I'm in this");
+			Debug.Log("I'm building a turret");
 			buildManager.turretToBuild = null;
 		}
 	}
 	void BuildBuilding (BuildingBlueprint blueprintB)
 	{
-		Debug.Log("In building loop");
+		//Debug.Log("In building loop");
 		if (PlayerStats.Money < blueprintB.costB)
 	  {
 	    Debug.Log("Not enough money to build that!");
@@ -406,6 +406,12 @@ public class Node : MonoBehaviour {
 	  isSUP  = false;
 	  isSUPOne  = false;
 	  isSUPTwo  = false;
+
+		Destroy(building);
+	  buildingBlueprint = null;
+		isBuilding = false;
+		isBUpgrade = false;
+		isBUpgrade2 = false;
 	}
 	void OnMouseEnter ()
 	{

@@ -37,9 +37,17 @@ public class BuildManager : MonoBehaviour {
 		{
 			upgradeLevel = AdvanceBuilding.BuildLevel;
 		}
-		if(SpellBuilding.SpellExists)
+		else
+		{
+			upgradeLevel = 0;
+		}
+		if(SpellBuilding.SpellLevel > 0)
 		{
 			spellCount = SpellBuilding.SpellLevel;
+		}
+		else
+		{
+			spellCount = 0;
 		}
 	}
 	public void SelectNode (Node node)
