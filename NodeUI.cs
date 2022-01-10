@@ -8,29 +8,16 @@ public class NodeUI : MonoBehaviour {
 	public GameObject advanceUI;
 	public GameObject advanceUIDPS;
 	public GameObject advanceUISUP;
-	public GameObject spellUI;
-	public GameObject spellList;
 
 	public Text upgradeCost;
 	public Button upgradeButton;
 
-	public bool imDPS, imSUP, imUpgraded, showSpell = false;
+	public bool imDPS, imSUP, imUpgraded = false;
 
 	public Text sellAmount;
 
 	private Node target;
 
-	public void Update()
-	{
-		if(SpellBuilding.SpellLevel > 0)
-		{
-			spellUI.SetActive(true);
-		}
-		else
-		{
-			spellUI.SetActive(false);
-		}
-	}
 	public void SetTarget (Node _target)
 	{
 		target = _target;
@@ -160,20 +147,6 @@ public class NodeUI : MonoBehaviour {
 	{
 		target.SellBuilding();
 		BuildManager.instance.DeselectNode();
-	}
-	public void HideSpell()
-	{
-		Debug.Log("clicked");
-		if(showSpell)
-		{
-			spellList.SetActive(true);
-			showSpell = false;
-		}
-		else
-		{
-			spellList.SetActive(false);
-			showSpell = true;
-		}
 	}
 	public void Hide ()
 	{

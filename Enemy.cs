@@ -15,7 +15,8 @@ public class Enemy : MonoBehaviour {
 	public bool isSpider = false;
 	public bool isFlying = false;
 	public bool isBoss = false;
-[HideInInspector] public float imFlying;	
+[HideInInspector] public static bool IsBoss;
+[HideInInspector] public float imFlying;
 [HideInInspector] public bool fromDropship = false;
 	private bool speedEnemy;
 	private float countdownSpeed, bonusSpeed;
@@ -74,7 +75,7 @@ public class Enemy : MonoBehaviour {
 	{
 		if (immune)
 		{
-			//Debug.Log("I'm immune!");
+			Debug.Log("I'm immune!");
 			return;
 		}
 		physDamage = physAmount - enemyStats.physDef;
@@ -100,7 +101,6 @@ public class Enemy : MonoBehaviour {
 		}
 		amount = 0;
 	}
-
 	public void Immune (float imm)
 	{
 		countdownImmune = imm;
@@ -112,19 +112,16 @@ public class Enemy : MonoBehaviour {
 		slowSpeed = slo;
 		countdownSlow = slt;
 	}
-
 	public void Stop (float stp)
 	{
 		stopEnemy = true;
 		countdownStop = stp;
 	}
-
 	public void Fear (float fea)
 	{
 		fearEnemy = true;
 		countdownFear = fea;
 	}
-
 	public void Poison (int psnS, float psnT)
 	{
 		poisonEnemy = true;
@@ -143,7 +140,6 @@ public class Enemy : MonoBehaviour {
 		enemyStats.isHovercraft = true;
 		imFlying = flyT;
 	}
-
 	void Update ()
 	{
 		if (immune)
@@ -294,6 +290,7 @@ public class Enemy : MonoBehaviour {
 	public IEnumerator SummonNow()
 	{
 		int summoningIndex = Random.Range(0, enemySpells.summoningPool.Length);
+		Debug.Log("I'm in the summonloop with index: " + summoningIndex);
 		GameObject enemy = Instantiate(enemySpells.summoningPool[summoningIndex], transform.position, Quaternion.identity);
 		enemy.GetComponent<Enemy>().fromDropship = true;
 		enemy.GetComponent<EnemyMovement>().wavepointIndex = enemyMovement.wavepointIndex;
@@ -307,7 +304,7 @@ public class Enemy : MonoBehaviour {
 		float roundedResult = Mathf.Round(goldBonus / 2) * 2;
 		roundedResult += EnemyStats.Worth;
 		PlayerStats.Money += roundedResult;
-		Debug.Log("Gold bonus: " + goldBonus + " & Enemy worth: " + roundedResult);
+		//Debug.Log("Gold bonus: " + goldBonus + " & Enemy worth: " + roundedResult);
 
 		GameObject effect = (GameObject)Instantiate(deathEffect, transform.position, Quaternion.identity);
 		Destroy(effect, 5f);

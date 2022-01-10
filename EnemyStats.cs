@@ -32,8 +32,6 @@ public class EnemyStats : MonoBehaviour {
 
 	public bool undeadEnemy = false;
 	public bool chickenEnemy = false;
-	public bool miniBoss = false;
-	public bool theBoss = false;
 
 	void Start()
 	{

@@ -5,6 +5,7 @@ public class BuildManager : MonoBehaviour {
 	public int upgradeLevel, spellCount;
 
 	public NodeUI nodeUI;
+	public PlayerMenu playerMenu;
 
 	public static BuildManager instance;
 
@@ -23,6 +24,8 @@ public class BuildManager : MonoBehaviour {
 
 	public TurretBlueprint turretToBuild;
 	public BuildingBlueprint buildingToBuild;
+	public PlayerSpells selectedSpell;
+	
 	[HideInInspector]
 	public bool turretSelected, canBuildB, canBuildT, buildingSelected = false;
 	private Node selectedNode;
@@ -67,6 +70,11 @@ public class BuildManager : MonoBehaviour {
 	{
 		selectedNode = null;
 		nodeUI.Hide();
+	}
+	public void SelectSpell (PlayerSpells spell)
+	{
+		Debug.Log("Selecting spell");
+		selectedSpell = spell;
 	}
 	public void SelectTurretToBuild (TurretBlueprint turret)
 	{

@@ -5,13 +5,22 @@ public class Turret : MonoBehaviour {
 
 	private Transform target;
 	private Enemy targetEnemy;
-	
+
+	[Header("Unity Setup Fields")]
+
+	public string enemyTag = "Enemy";
+
+	public Transform partToRotate;
+	public float turnSpeed = 10f;
+
+	public Transform firePoint;
+
 	[Header("General")]
 
 	public float range = 15f;
 
 	[Header("Use Bullets")]
-	
+
 	public bool useBullets = false;
 	public GameObject bulletPrefab;
 	public float fireRate = 1f;
@@ -29,33 +38,25 @@ public class Turret : MonoBehaviour {
 	public LineRenderer lineRenderer;
 	public ParticleSystem impactEffect;
 	public Light impactLight;
-	
+
 	[Header("Use AoE")]
 	public bool useAoe = false;
-	
+
 	public int physicalDamageAoe = 1;
 	public int magicDamageAoe = 1;
 	public float countdownAoe = 1f;
 	public float stunTime = 2f;
 	public float stunChance = 20f;
-	
+
 	public ParticleSystem aoeImpactEffect;
 	public Light aoeImpactLight;
 
-	[Header("Unity Setup Fields")]
-
-	public string enemyTag = "Enemy";
-
-	public Transform partToRotate;
-	public float turnSpeed = 10f;
-
-	public Transform firePoint;
 
 	// Use this for initialization
 	void Start () {
 		InvokeRepeating("UpdateTarget", 0f, 0.5f);
 	}
-	
+
 	void UpdateTarget ()
 	{
 		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
@@ -92,11 +93,11 @@ public class Turret : MonoBehaviour {
 				{
 					minHeat = 0;
 				}
-				
+
 				minHeat -= Time.deltaTime;
 				countdownAoe -= Time.deltaTime;
 				fireCountdown -= Time.deltaTime;
-				
+
 				if (lineRenderer.enabled)
 				{
 					lineRenderer.enabled = false;
@@ -121,7 +122,7 @@ public class Turret : MonoBehaviour {
 				else
 					Laser();
 			}
-			
+
 		else if (useAoe)
 		{
 			if (countdownAoe <= 0f)
@@ -154,7 +155,7 @@ public class Turret : MonoBehaviour {
 	{
 		targetEnemy.TakeDamage(physicalDamageOverTime, magicDamageOverTime * Time.deltaTime);
 		targetEnemy.Slow(slowAmount, 0.1f);
-		
+
 		if (!lineRenderer.enabled)
 		{
 			lineRenderer.enabled = true;
@@ -170,7 +171,7 @@ public class Turret : MonoBehaviour {
 		impactEffect.transform.position = target.position + dir.normalized;
 
 		impactEffect.transform.rotation = Quaternion.LookRotation(dir);
-		
+
 		minHeat += Time.deltaTime;
 			if (minHeat > maxHeat)
 			{
@@ -183,10 +184,10 @@ public class Turret : MonoBehaviour {
 					}
 			}
 	}
-	
+
 	void AoE ()
 	{
-	
+
 		Collider[] colliders = Physics.OverlapSphere(transform.position, range);
 		foreach (Collider collider in colliders)
 		{
@@ -195,11 +196,11 @@ public class Turret : MonoBehaviour {
 				AoEDamage(collider.transform);
 			}
 		}
-			
+
 		//Vector3 dir = firePoint.position - target.position;
-		
+
 	}
-	
+
 	void AoEDamage (Transform enemy)
 	{
 		Enemy e = enemy.GetComponent<Enemy>();
@@ -215,21 +216,21 @@ public class Turret : MonoBehaviour {
 			else
 			{
 				e.TakeDamage(physicalDamageAoe, magicDamageAoe);
-			
+
 				if (stunChance > 0)
 				{
 					var rand = Random.Range(1, 100);
-					
+
 					if (rand < stunChance)
 					{
 						e.Stop(stunTime);
 					}
-						
+
 				}
 			}
 		}
 	}
-	
+
 	void Shoot ()
 	{
 		GameObject bulletGO = (GameObject)Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);

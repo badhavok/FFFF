@@ -15,6 +15,7 @@ public class WaveSpawner : MonoBehaviour {
 
 	public GameObject enemy;
 	public GameObject boss;
+	public GameObject lastBoss;
 
 	public Transform spawnPoint;
 
@@ -32,6 +33,10 @@ public class WaveSpawner : MonoBehaviour {
 	public bool bossComplete = false;
 	public int bosscounter = 0;
 	public int bcounter = 0;
+
+	public static bool FinalBossDie = false;
+	public bool readyTheBoss = false;
+	public int finalBossCount = 0;
 
 	private int currentWave = 0;
 	private int currentWaveDisplay = 0;
@@ -58,21 +63,26 @@ public class WaveSpawner : MonoBehaviour {
 		{
 			waveComplete = true;
 		}
-
 		if (bossIndex == bosses.Length)
 		{
 			bossComplete = true;
 		}
-
-		if (EnemiesAlive > 0 || BossAlive > 0)
+		if(readyTheBoss && finalBossCount <= 0)
 		{
-			return;
+			FinalBoss();
 		}
-
-		if (waveComplete && bossComplete)
+		if(FinalBossDie)
 		{
 			gameManager.WinLevel();
 			this.enabled = false;
+		}
+		if (waveComplete && bossComplete)
+		{
+			readyTheBoss = true;
+		}
+		if (EnemiesAlive > 0 || BossAlive > 0 || readyTheBoss)
+		{
+			return;
 		}
 		else
 		{
@@ -94,14 +104,7 @@ public class WaveSpawner : MonoBehaviour {
 				StartCoroutine(BossWave());
 				countdown = timeBetweenWaves;
 				++currentWave;
-				currentWaveText.text = "Mini Boss ";
-			}
-			else if (waveComplete)
-			{
-				StartCoroutine(BossWave());
-				countdown = timeBetweenWaves;
-				++currentWave;
-				currentWaveText.text = "Final boss";
+				currentWaveText.text = "Boss Wave";
 			}
 			else
 			{
@@ -185,7 +188,11 @@ public class WaveSpawner : MonoBehaviour {
 			}
 		}
 	}
-
+	void FinalBoss()
+	{
+		SpawnEnemy(lastBoss);
+		++finalBossCount;
+	}
 	void SpawnEnemy (GameObject enemy)
 	{
 		Instantiate(enemy, spawnPoint.position, spawnPoint.rotation);
