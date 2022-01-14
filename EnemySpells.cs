@@ -9,9 +9,9 @@ public class EnemySpells : MonoBehaviour {
 	private Transform target;
 	private Enemy targetEnemy;
 	public string enemyTag = "Enemy";
-	
+
 	public float range = 0;
-	
+
 	public bool buffHide = false;
 	public float countdownHide = 0;
 [HideInInspector] public float hideCount = 0;
@@ -20,28 +20,36 @@ public class EnemySpells : MonoBehaviour {
 	public float bonusHealth = 0;
 	public float countdownHealth = 0;
 [HideInInspector] public float healCount = 0;
-	
+
 	public bool buffImmune = false;
 	public float countdownImmune = 0;
 [HideInInspector] public float immuneCount = 0;
-	
+
 	public bool buffSpeed = false;
 	public float bonusSpeed = 0;
 	public float countdownSpeed = 0;
 [HideInInspector] public float speedCount = 0;
 
 	public bool duplicate = false;
-	
+
 	public bool buffLevitate = false;
 	public float countdownLevitate = 0;
 [HideInInspector] public float levitateCount = 0;
-	
+
 	public bool buffSummoner = false;
 	public GameObject[] summoningPool;
+	public float summonAmount = 0;
 	public float countdownSummon = 0;
 [HideInInspector] public float summonCount = 0;
-	
+
 	public bool vampire = false;
+	public float countdownVampire = 0;
+	public float vampireDamage = 0;
+	public float vampireCount = 0;
+	public LineRenderer lineRenderer;
+	public ParticleSystem impactEffect;
+	public Light impactLight;
+	public Transform firePoint;
 
 	void Start()
 	{
@@ -52,33 +60,83 @@ public class EnemySpells : MonoBehaviour {
 		summonCount = countdownSummon;
 		levitateCount = countdownLevitate;
 		immuneCount = countdownImmune;
+		vampireCount = countdownVampire;
 	}
 
 	void Update()
 	{
-		if (buffImmune)
+		if (enemy.silence)
 		{
-			BuffImmune();
+			Debug.Log("I can't cast!");
 		}
-		if (buffHealing)
+		else
 		{
-			BuffHealing();
+			if(vampire)
+			{
+				BuffVampire();
+			}
+			if (buffImmune)
+			{
+				BuffImmune();
+			}
+			if (buffHealing)
+			{
+				BuffHealing();
+			}
+			if (buffHide)
+			{
+				HideMe();
+			}
+			if (buffSpeed)
+			{
+				BuffSpeed();
+			}
+			if (buffSummoner)
+			{
+				BuffSummoner();
+			}
+			if (buffLevitate)
+			{
+				BuffLevitate();
+			}
 		}
-		if (buffHide)
+	}
+	void BuffVampire()
+	{
+		if (vampireCount <= 0)
 		{
-			HideMe();
+			lineRenderer.enabled = false;
+			impactEffect.Stop();
+			impactLight.enabled = false;
+			vampireCount += (countdownVampire * 2);
 		}
-		if (buffSpeed)
+		else if (vampireCount <= (countdownVampire / 2))
 		{
-			BuffSpeed();
+			vampireCount -= Time.deltaTime;
+			Debug.Log("I vant to suck your blood!");
+			TargetEnemy();
+			targetEnemy.Vampire(vampireDamage);
+
+			lineRenderer.enabled = true;
+			impactEffect.Play();
+			impactLight.enabled = true;
+
+			lineRenderer.SetPosition(0, firePoint.position);
+			lineRenderer.SetPosition(1, target.position);
+
+			Vector3 dir = firePoint.position - target.position;
+
+			impactEffect.transform.position = target.position + dir.normalized;
+
+			impactEffect.transform.rotation = Quaternion.LookRotation(dir);
 		}
-		if (buffSummoner)
+		else
 		{
-			BuffSummoner();
-		}
-		if (buffLevitate)
-		{
-			BuffLevitate();
+			lineRenderer.enabled = false;
+			impactEffect.Stop();
+			impactLight.enabled = false;
+			Debug.Log("Oh noes, no more blood!");
+			vampireCount -= Time.deltaTime;
 		}
 	}
 	void BuffImmune()
@@ -129,20 +187,20 @@ public class EnemySpells : MonoBehaviour {
 		if (summonCount < 0)
 		{
 			StartCoroutine(enemy.SummonNow());
-			Debug.Log("I summon youuu..");
+			//Debug.Log("I summon youuu..");
 			summonCount += (countdownSummon * 2);
 		}
 		else if (summonCount <= (countdownSummon / 2))
 		{
 			summonCount -= Time.deltaTime;
-			Debug.Log("What... I need to wait?");
+			//Debug.Log("What... I need to wait?");
 		}
 		else
 		{
 			summonCount -= Time.deltaTime;
 		}
 	}
-	
+
 	void BuffSpeed()
 	{
 		if (speedCount < 0)
@@ -157,7 +215,7 @@ public class EnemySpells : MonoBehaviour {
 			speedCount -= Time.deltaTime;
 		}
 	}
-	
+
 	void HideMe()
 	{
 		if (hideCount < 0)
@@ -167,7 +225,7 @@ public class EnemySpells : MonoBehaviour {
 			//[change opaqueness]
 			hideCount += (countdownHide * 2);
 		}
-		else if (hideCount <= 5)
+		else if (hideCount <= (countdownHide / 2))
 		{
 			enemy.gameObject.tag = "Enemy";
 			hideCount -= Time.deltaTime;
@@ -178,7 +236,7 @@ public class EnemySpells : MonoBehaviour {
 			hideCount -= Time.deltaTime;
 		}
 	}
-	
+
 	void TargetEnemy()
 	{
 		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
@@ -187,7 +245,7 @@ public class EnemySpells : MonoBehaviour {
 		foreach (GameObject enemy in enemies)
 		{
 			if (enemy == gameObject) continue;
-			
+
 			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
 			if (distanceToEnemy < shortestDistance)
 			{
@@ -195,7 +253,6 @@ public class EnemySpells : MonoBehaviour {
 				nearestEnemy = enemy;
 			}
 		}
-
 		if (nearestEnemy != null && shortestDistance <= range)
 		{
 			target = nearestEnemy.transform;
@@ -205,5 +262,5 @@ public class EnemySpells : MonoBehaviour {
 			target = null;
 		}
 	}
-	
+
 }

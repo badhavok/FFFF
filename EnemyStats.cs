@@ -6,14 +6,14 @@ public class EnemyStats : MonoBehaviour {
 
 	private Enemy enemy;
 
-	public static float Health;
+	//public static float Health;
 	public float startHealth = 100;
 
 	public static float Worth;
 	public float startWorth = 10;
 
-	public int physDef = 0;
-	public int magDef = 0;
+	public int startPhysDef = 0;
+	public int startMagDef = 0;
 
 	public int fireDef = 0; // DoT
 	public int iceDef = 0; // Slow

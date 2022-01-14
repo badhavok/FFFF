@@ -33,7 +33,8 @@ public class WaveSpawner : MonoBehaviour {
 	public int bosscounter = 0;
 	public int bcounter = 0;
 
-	private int currentWave = 0;
+	public static int CurrentWave;
+	public int currentWave = 0;
 	private int currentWaveDisplay = 0;
 	private int totalWaves = 0;
 	private int bossInterval = 0;
@@ -110,11 +111,11 @@ public class WaveSpawner : MonoBehaviour {
 				++currentWave;
 				currentWaveText.text = "Wave: " + currentWaveDisplay.ToString();
 			}
+			CurrentWave = currentWave;
 			return;
 		}
 
 		countdown -= Time.deltaTime;
-
 		countdown = Mathf.Clamp(countdown, 0f, Mathf.Infinity);
 
 		waveCountdownText.text = string.Format("{0:00.00}", countdown);

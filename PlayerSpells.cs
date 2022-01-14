@@ -54,63 +54,63 @@ public class PlayerSpells : MonoBehaviour {
 		Debug.Log("EMP Selected");
 		castEMP = true;
 	}
-	void SelectCastBarrage() //high dps
+	public void SelectCastBarrage() //high dps
 	{
 
 	}
-	void SelectCastMeteor() //dps with DoT
+	public void SelectCastMeteor() //dps with DoT
 	{
 
 	}
-	void SelectCastFear() // runs backwards
+	public void SelectCastFear() // runs backwards
 	{
 
 	}
-	void SelectCastChicken() //turns into chickens (no def)
+	public void SelectCastChicken() //turns into chickens (no def)
 	{
 
 	}
-	void SelectCastGravity() //high dps (25% HP) but ~25% chance to happen
+	public void SelectCastGravity() //high dps (25% HP) but ~25% chance to happen
 	{
 
 	}
-	void SelectCastSummonSpell() //summon basic mobs
+	public void SelectCastSummonSpell() //summon basic mobs
 	{
 
 	}
-	void SelectCastSummonSpellAdvanced() //summon from a pool of mobs
+	public void SelectCastSummonSpellAdvanced() //summon from a pool of mobs
 	{
 
 	}
-	void CastEMP () //dps with stun
+	public void CastEMP () //dps with stun
 	{
 		Debug.Log("I'm casting EMP");
 	}
-	void CastBarrage() //high dps
+	public void CastBarrage() //high dps
 	{
 
 	}
-	void CastMeteor() //dps with DoT
+	public void CastMeteor() //dps with DoT
 	{
 
 	}
-	void CastFear() // runs backwards
+	public void CastFear() // runs backwards
 	{
 
 	}
-	void CastChicken() //turns into chickens (no def)
+	public void CastChicken() //turns into chickens (no def)
 	{
 
 	}
-	void CastGravity() //high dps (25% HP) but ~25% chance to happen
+	public void CastGravity() //high dps (25% HP) but ~25% chance to happen
 	{
 
 	}
-	void CastSummonSpell() //summon basic mobs
+	public void CastSummonSpell() //summon basic mobs
 	{
 
 	}
-	void CastSummonSpellAdvanced() //summon from a pool of mobs
+	public void CastSummonSpellAdvanced() //summon from a pool of mobs
 	{
 
 	}

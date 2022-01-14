@@ -29,7 +29,7 @@ public class Turret : MonoBehaviour {
 	[Header("Use Laser")]
 	public bool useLaser = false;
 	public int physicalDamageOverTime = 0;
-	public int magicDamageOverTime = 30;
+	public int magicDamageOverTime = 0;
 	public float slowAmount = .5f;
 	public bool overHeat = false;
 	public float minHeat = 0f;
@@ -47,6 +47,12 @@ public class Turret : MonoBehaviour {
 	public float countdownAoe = 1f;
 	public float stunTime = 2f;
 	public float stunChance = 20f;
+	public float silenceTime = 0f;
+	public float silenceChance = 0f;
+	public float virusChance = 0f;
+	public float virusTime = 0f;
+	public float virusDamage = 0f;
+	public float virusRange = 0f;
 
 	public ParticleSystem aoeImpactEffect;
 	public Light aoeImpactLight;
@@ -153,7 +159,7 @@ public class Turret : MonoBehaviour {
 
 	void Laser ()
 	{
-		targetEnemy.TakeDamage(physicalDamageOverTime, magicDamageOverTime * Time.deltaTime);
+		targetEnemy.TakeDamage(physicalDamageOverTime * Time.deltaTime, magicDamageOverTime * Time.deltaTime);
 		targetEnemy.Slow(slowAmount, 0.1f);
 
 		if (!lineRenderer.enabled)
@@ -187,7 +193,6 @@ public class Turret : MonoBehaviour {
 
 	void AoE ()
 	{
-
 		Collider[] colliders = Physics.OverlapSphere(transform.position, range);
 		foreach (Collider collider in colliders)
 		{
@@ -196,9 +201,7 @@ public class Turret : MonoBehaviour {
 				AoEDamage(collider.transform);
 			}
 		}
-
 		//Vector3 dir = firePoint.position - target.position;
-
 	}
 
 	void AoEDamage (Transform enemy)
@@ -210,13 +213,30 @@ public class Turret : MonoBehaviour {
 		{
 			if (e.isFlying)
 			{
-				Debug.Log("Woah.. what was that");
+				Debug.Log("Woah.. is someone there?");
 				return;
 			}
 			else
 			{
 				e.TakeDamage(physicalDamageAoe, magicDamageAoe);
+				if(virusChance > 0)
+				{
+					var rand = Random.Range(1, 100);
 
+					if (rand < virusChance)
+					{
+						e.Virus(virusTime, virusRange, virusDamage);
+					}
+				}
+				if (silenceChance > 0)
+				{
+					var rand = Random.Range(1, 100);
+
+					if (rand < silenceChance)
+					{
+						e.Silence(silenceTime);
+					}
+				}
 				if (stunChance > 0)
 				{
 					var rand = Random.Range(1, 100);
@@ -225,7 +245,6 @@ public class Turret : MonoBehaviour {
 					{
 						e.Stop(stunTime);
 					}
-
 				}
 			}
 		}

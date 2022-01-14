@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class BuildManager : MonoBehaviour {
 
-	public int upgradeLevel, spellCount;
+	public int upgradeLevel, spellCount, currentWave, currentLevel;
+	public static int Wave, Level;
 
 	public NodeUI nodeUI;
 	public PlayerMenu playerMenu;
@@ -17,7 +18,11 @@ public class BuildManager : MonoBehaviour {
 			return;
 		}
 		instance = this;
+		ChickenEnemy = chickenEnemy;
 	}
+
+	public static GameObject ChickenEnemy;
+	public GameObject chickenEnemy;
 
 	public GameObject buildEffect;
 	public GameObject sellEffect;
@@ -25,7 +30,7 @@ public class BuildManager : MonoBehaviour {
 	public TurretBlueprint turretToBuild;
 	public BuildingBlueprint buildingToBuild;
 	public PlayerSpells selectedSpell;
-	
+
 	[HideInInspector]
 	public bool turretSelected, canBuildB, canBuildT, buildingSelected = false;
 	private Node selectedNode;
@@ -36,6 +41,8 @@ public class BuildManager : MonoBehaviour {
 
 	void Update()
 	{
+		Wave = WaveSpawner.CurrentWave;
+		Level = currentLevel;
 		if(AdvanceBuilding.IsExists)
 		{
 			upgradeLevel = AdvanceBuilding.BuildLevel;

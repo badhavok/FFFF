@@ -23,6 +23,10 @@ City Base	- Unlocks player spells - maximum of 3?
 
 Fix upgrade of "Buildings" (it fails to change to "done")  :  done?
 
+Add upgrade system for the player with level winnings
+
+Add upgrade menus with the level winnings
+
 Add story/scenario modes that focus on certain elements; allowing each towers to be used + more "play time" - then add menus for each category  "Fire" / ...
 
 Add unlimited mode
@@ -33,7 +37,7 @@ Add "Mega" (final) bosses - instant lose? OR 3 star system for upgrades?
 
 Add a "next wave now" option;  bonus gold?
 
-Add speed up/slow down function
+Add speed up/slow down function  :  done
 
 Add other status changing towers
 
@@ -49,28 +53,28 @@ Add other status changing towers
 
 - fear (runs backwards)  :  done
 
-- doom; gives a countdown to death (high damage to make it certain or "Die()"?)
+- doom; gives a countdown to death (high damage to make it certain or "Die()"?)  :  done
 
-- curse (lowers Max hp (counters healers?)/defence (all?)) + virus (spreads)
+- curse (lowers Max hp (counters healers?)/defence (all?)) + virus (spreads)  :  done
 
-- silence; stop enemy casting  -  Would be easier to create a casting class then an (if !silence)
+- silence; stop enemy casting  :  DONE
 
 - (not this game) add elements/weakness'/bonus damage  (lightening for stun, ice for slow etc..)
 	(do these stay for 'time' or 'ever'?)
 
 - (not this game) zombie (makes "heals" do damage"); won't work if enemy is undead already?
 
-- chicken (?); changes appearance + removes defence/immunity
+- chicken;  done, need correct gameobject
 
-- "gravity" / hp% chance?  (I.E 25% of maxHP)  -  high cost upgrade
+- "gravity" / hp% chance?  (I.E 25% of maxHP)  -  high cost upgrade  :  Done
 
 - increases debuff chances?  -  affects tower rate or enemy?
 
-- "mini/toad/micro" tower for the 'mid range' enemies (to reduce to normal enemies'?)
+- ignore defenses  ;  Create a function in Enemy that enables "ignorePhysD/ignoreMagD" (timer?) before actioning TakeDamage
 
-- "All" (Exhaustion) tower : chance to cause all effects; not on boss
+- "All" ("Exhaustion" on a timer?) tower : chance to cause all effects; not on boss/lower hit rate?
 
-- "boss" tower; insanely expensive but allows status effecs to work on bosses (much lower rates to effect) & removes weakness/immunity from normal mobs?
+- "boss" tower; insanely expensive but allows status effects to work on bosses (much lower rates to effect) & removes weakness/immunity from normal mobs?
 
 - Priority settings?  :  Set "closest/furthest/flying/ground"
 
@@ -80,7 +84,7 @@ Add other status changing towers
 
 Add 'advanced' flight path for random encounters?
 
-Add player spells ?  To do what?
+Add player spells ?  ;  In progress - need to think how I can implement the system
 
 Add AoE visual effects
 
@@ -88,7 +92,7 @@ Add EnemyStats class  :  In progress/complete?
 
 Add new models  :  in progress + animation is tested/working
 
-Separate spell class for types?
+Separate spell class :  done
 
 Add other enemies
 
@@ -105,7 +109,9 @@ Add other enemies
 
 - specific boss wave  : done
 
-- healing (done)  + max hp boost?
+- healing : done
+
+- max hp boost ;
 
 - grants stat/def bonus
 
@@ -113,25 +119,37 @@ Add other enemies
 	Make these so you tap the screen - done
 	Make an "announcement" -
 
-- speed(done)/defense(done)/stat boost
+- speed(done)/defense(done)
 
 - add formula to increase stats based on level/wave
-	[base + (base / 2) + (wave * 5)]
-	hp = 100 + (100 / 2) + (1 * 5) = 155
-	hp = 100 + (100 / 2) + (10 * 5) = 200
-	hp = 100 + (100 / 2) + (100 * 5) = 650
-	hp = 1000 + (1000 / 2) + (1 * 5) = 1505
-	hp = 1000 + (1000 / 2) + (10 * 5) = 1555
-	hp = 1000 + (1000 / 2) + (100 * 5) = 2000
+	[base + (base / 2) + (level * 5) + (wave * 5)]
+	hp = 100 + (100 / 2) + (1 * 5) + (1 * 5) =
+	hp = 100 + (100 / 2) + (1 * 5) + (10 * 5) =
+	hp = 100 + (100 / 2) + (1 * 5) + (100 * 5) = 655
+
+	hp = 1000 + (1000 / 2) + (1 * 10) = 1510
+	hp = 1000 + (1000 / 2) + (5 * 10) = 1550
+	hp = 1000 + (1000 / 2) + (10 * 10) = 1555
+	hp = 1000 + (1000 / 2) + (100 * 10) = 2000
 
 	[base + ((wave / 2) + base)];
 	def/element =  0 + ((1 / 2) + 0) = .5
 	def/element =  0 + ((10 / 2) + 0) = 5
 	def/element =  0 + ((100 / 2) + 0) = 50
+
 	def/element =  10 + ((1 / 2) + 10) = 20.5
 	def/element =  10 + ((5 / 2) + 10) = 22.5
 	def/element =  10 + ((10 / 2) + 10) = 25
 	def/element =  10 + ((100 / 2) + 10) = 75
+
+basic principles;
+ 		defence just replaces the need for more HP but it allows for units to be healed and survive longer on the path;  I.E  add healers around high defence units
+
+		Set certain levels that will be unique to some of the upgrades on certain towers - set prefabs for elemental/defences (try to make them relatable to the "class/race?")
+
+- Add races / weaknesses for those races; ships/armoured & aliens/carbon etc...
+
+- Add class weaknesses?  (healers etc..)
 
 - immunity  :  done
 
@@ -147,11 +165,10 @@ Add other enemies
 - necromancer/summoner/"spawner"  :  done
 		summons various mobs (maybe new/different ones?) slightly ahead of itself; later versions summon more and keep moving(?)
 
-- vampire
+- vampire  :  done
 		steals HP from nearby mobs? (for bosses that summon - create an AoE requirement)
 
 Add enemy defenses/weakness' - in progress
-
 
 Long term goals :
 
@@ -159,9 +176,7 @@ Achievments : Add hidden easter eggs/trophies; "I'm a hacker" (find secret menu 
 
 https://www.fortressofdoors.com/optimizing-tower-defense-for-focus-and-thinking-defenders-quest/
 
-Hide health bar when unit is full health
-
-Click on enemy to show stats
+Hide health bar when unit is full health  :  done
 
 Make a random spawner that allows for an infinite wave, selecting from a pool of each enemy type per wave
 
@@ -169,4 +184,4 @@ Procedurally generate environments
 
 Planetary Outpost UA-1  -  Add new "People" tower; enemies won't stop but these will have ~3-5 mini actions to assist with various status effects
 
-- effectively the same as the normal towers
+- effectively the same as the normal towers / units

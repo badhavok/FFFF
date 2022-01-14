@@ -8,15 +8,20 @@ public class Enemy : MonoBehaviour {
 	public EnemyMovement enemyMovement;
 	public EnemySpells enemySpells;
 
+	private Transform target;
+	private Enemy targetEnemy;
+	public string enemyTag = "Enemy";
+
 	public float startSpeed = 10f;
 
 	public float speed;
-	private float maxHealth;
+	public float maxHealth, baseHealth, updatedHealth;
+	public int physDef, magDef;
 	public bool isSpider = false;
 	public bool isFlying = false;
 	public bool isBoss = false;
-[HideInInspector] public static bool IsBoss;
-[HideInInspector] public float imFlying;
+	public bool isChicken = false;
+[HideInInspector] public float imFlying, countdownChicken, chk;
 [HideInInspector] public bool fromDropship = false;
 	private bool speedEnemy;
 	private float countdownSpeed, bonusSpeed;
@@ -36,10 +41,22 @@ public class Enemy : MonoBehaviour {
 [HideInInspector] public float countdownImmune, imm;
 	private bool immune = false;
 
+[HideInInspector] public float countdownSilence, sil;
+	public bool silence = false;
+
+[HideInInspector] public float countdownDoom, doo;
+	public bool doom = false;
+	public float virusR, virusT, spreadTime, spreadRange, damHP;
+	public bool virus = false;
+[HideInInspector] public float damVam = 0;
+
 	public GameObject deathEffect;
 
 	[Header("Unity Stuff")]
+	public GameObject canvas;
 	public Image healthBar;
+
+	public Text doomCountdownText;
 
 [HideInInspector] public float physAmount, physDamage, magAmount, magDamage;
 	public bool goldenEnemy = false;
@@ -50,23 +67,39 @@ public class Enemy : MonoBehaviour {
 	void Start ()
 	{
 		speed = startSpeed;
-		maxHealth = enemyStats.startHealth;
+		//[base + (base / 2) + (level * 10) + (wave * 10)]
+		if(isBoss)
+		{
+			maxHealth = updatedHealth;
+			updatedHealth = enemyStats.startHealth;
+			Debug.Log("Boss, I have " + updatedHealth + " HP");
+		}
+		else
+		{
+			baseHealth = enemyStats.startHealth;
+			updatedHealth = baseHealth + (baseHealth / 2) + (BuildManager.Level * 10) + (BuildManager.Wave * 10);
+			maxHealth = updatedHealth;
+
+			physDef = enemyStats.startPhysDef;
+			magDef = enemyStats.startMagDef;
+			Debug.Log("I have " + updatedHealth + " HP");
+		}
 	}
 
 	public void Healing (float healSpell)
 	{
-		if (enemyStats.startHealth == maxHealth)
+		if (updatedHealth == maxHealth)
 		{
 			Debug.Log("Thanks but don't need it");
 		}
 		else
 		{
-			enemyStats.startHealth += healSpell;
-			if (enemyStats.startHealth > maxHealth)
+			updatedHealth += healSpell;
+			if (updatedHealth > maxHealth)
 			{
-				enemyStats.startHealth = maxHealth;
+				updatedHealth = maxHealth;
 			}
-			healthBar.fillAmount = enemyStats.startHealth / maxHealth;
+			healthBar.fillAmount = updatedHealth / maxHealth;
 			Debug.Log("I'm being healed by " + healSpell);
 		}
 	}
@@ -78,8 +111,8 @@ public class Enemy : MonoBehaviour {
 			Debug.Log("I'm immune!");
 			return;
 		}
-		physDamage = physAmount - enemyStats.physDef;
-		magDamage = magAmount - enemyStats.magDef;
+		physDamage = physAmount - physDef;
+		magDamage = magAmount - magDef;
 
 		float amount = physDamage + magDamage;
 
@@ -89,22 +122,65 @@ public class Enemy : MonoBehaviour {
 		}
 		else
 		{
-			enemyStats.startHealth -= amount;
-			healthBar.fillAmount = enemyStats.startHealth / maxHealth;
+			updatedHealth -= amount;
+			healthBar.fillAmount = updatedHealth / maxHealth;
 		}
 
-		//Debug.Log("Am I healing? " + enemyStats.startHealth);
+		//Debug.Log("Am I healing? " + updatedHealth);
 
-		if (enemyStats.startHealth <= 0 && !isDead)
+		if (updatedHealth <= 0)
 		{
 			Die();
 		}
 		amount = 0;
 	}
+	public void Vampire(float damageVam)
+	{
+		damVam = damageVam;
+		updatedHealth -= damVam;
+		healthBar.fillAmount = updatedHealth / maxHealth;
+		Debug.Log("I have taken " + damVam + " damage!");
+		if (updatedHealth <= 0)
+		{
+			Die();
+		}
+	}
+	public void Virus(float virT, float virR, float damageHP)
+	{
+		virus = true;
+		virusT = virT;
+		virusR = virR;
+		damHP = damageHP;
+		spreadTime = virT;
+		spreadRange = virR;
+		maxHealth -= damHP;
+		updatedHealth -= damHP;
+	}
+	public void Doom(float doo)
+	{
+		doom = true;
+		countdownDoom = doo;
+	}
+	public void Chicken()
+	{
+		isChicken = true;
+		silence = true;
+		immune = false;
+	}
+	public void Silence(float sil)
+	{
+		countdownSilence = sil;
+		silence = true;
+	}
 	public void Immune (float imm)
 	{
 		countdownImmune = imm;
 		immune = true;
+		doom = false;
+		slowEnemy = false;
+		stopEnemy = false;
+		fearEnemy = false;
+		poisonEnemy = false;
 	}
 	public void Slow (float slo, float slt)
 	{
@@ -142,6 +218,52 @@ public class Enemy : MonoBehaviour {
 	}
 	void Update ()
 	{
+		if (updatedHealth == maxHealth)
+		{
+			canvas.SetActive(false);
+		}
+		else
+		{
+			canvas.SetActive(true);
+		}
+		if(virus)
+		{
+			TargetEnemy(virusR);
+			targetEnemy.Virus(spreadTime, spreadRange, damHP);
+			if(targetEnemy != null)
+			{
+				Debug.Log("I've spread!");
+			}
+			virusT -= Time.deltaTime;
+			if (virusT < 0)
+			{
+				virus = false;
+			}
+		}
+		if(isChicken)
+		{
+			Die();
+			GameObject enemy = Instantiate(BuildManager.ChickenEnemy, transform.position, Quaternion.identity);
+			enemy.GetComponent<Enemy>().fromDropship = true;
+			enemy.GetComponent<EnemyMovement>().wavepointIndex = enemyMovement.wavepointIndex;
+			++WaveSpawner.EnemiesAlive;
+		}
+		if (doom)
+		{
+			Debug.Log("I'm dooomeeddddd");
+			countdownDoom -= Time.deltaTime;
+			countdownDoom = Mathf.Clamp(countdownDoom, 0f, Mathf.Infinity);
+			doomCountdownText.text = string.Format("{0:00.00}", countdownDoom);
+			canvas.SetActive(true);
+			if(countdownDoom <= 0)
+			{
+				Die();
+			}
+		}
+		else if (!doom)
+		{
+			countdownDoom = 0;
+		}
 		if (immune)
 		{
 			countdownImmune -= Time.deltaTime;
@@ -150,7 +272,7 @@ public class Enemy : MonoBehaviour {
 				immune = false;
 			}
 		}
-		if (goldenEnemy)
+		if (goldenEnemy || isBoss)
 		{
 			goldBonus += Time.deltaTime;
 			if (Input.touchCount > 0)
@@ -163,9 +285,9 @@ public class Enemy : MonoBehaviour {
 						if (GetComponent<Collider>().gameObject.CompareTag("Enemy"))
 						 {
 							Debug.Log("I am touched");
-							enemyStats.startHealth -= 2;
-							healthBar.fillAmount = enemyStats.startHealth / maxHealth;
-							if (enemyStats.startHealth <= 0 && !isDead)
+							updatedHealth -= 2;
+							healthBar.fillAmount = updatedHealth / maxHealth;
+							if (updatedHealth <= 0 && !isDead)
 							{
 								Die();
 							}
@@ -182,10 +304,9 @@ public class Enemy : MonoBehaviour {
 			{
 				speedEnemy = false;
 				speed = startSpeed;
-				Debug.Log("Sorry... again please!");
+				//Debug.Log("Weeeee... again please!");
 			}
 		}
-
 		if (slowEnemy)
 		{
 			speed = startSpeed * (1f - slowSpeed);
@@ -198,7 +319,10 @@ public class Enemy : MonoBehaviour {
 				//Debug.Log("Yeah, " + speed + " baby.... Weeeeee");
 			}
 		}
-
+		else
+		{
+			speed = startSpeed;
+		}
 		if (stopEnemy)
 		{
 			speed = startSpeed * (1f - 1f);
@@ -211,7 +335,10 @@ public class Enemy : MonoBehaviour {
 				//Debug.Log("I'm free");
 			}
 		}
-
+		else
+		{
+			speed = startSpeed;
+		}
 		if (fearEnemy)
 		{
 			countdownFear -= Time.deltaTime;
@@ -221,7 +348,6 @@ public class Enemy : MonoBehaviour {
 				fearEnemy = false;
 			}
 		}
-
 		if (poisonEnemy)
 		{
 			countdownPoison -= Time.deltaTime;
@@ -274,7 +400,6 @@ public class Enemy : MonoBehaviour {
 			}
 		}
 	}
-
 	private IEnumerator Spawn()
 	{
 		for (int i = 0; i < enemyStats.dropAmount; i++)
@@ -286,18 +411,44 @@ public class Enemy : MonoBehaviour {
 					yield return new WaitForSeconds(1.0f);
 				}
 	}
-
 	public IEnumerator SummonNow()
 	{
 		int summoningIndex = Random.Range(0, enemySpells.summoningPool.Length);
 		Debug.Log("I'm in the summonloop with index: " + summoningIndex);
-		GameObject enemy = Instantiate(enemySpells.summoningPool[summoningIndex], transform.position, Quaternion.identity);
-		enemy.GetComponent<Enemy>().fromDropship = true;
-		enemy.GetComponent<EnemyMovement>().wavepointIndex = enemyMovement.wavepointIndex;
-		++WaveSpawner.EnemiesAlive;
-		yield return new WaitForSeconds(1.0f);
+		for (int i = 0; i < enemySpells.summonAmount; i++)
+			{
+				GameObject enemy = Instantiate(enemySpells.summoningPool[summoningIndex], transform.position, Quaternion.identity);
+				enemy.GetComponent<Enemy>().fromDropship = true;
+				enemy.GetComponent<EnemyMovement>().wavepointIndex = enemyMovement.wavepointIndex;
+				++WaveSpawner.EnemiesAlive;
+				yield return new WaitForSeconds(1.0f);
+			}
 	}
+	void TargetEnemy(float range)
+	{
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
+		float shortestDistance = Mathf.Infinity;
+		GameObject nearestEnemy = null;
+		foreach (GameObject enemy in enemies)
+		{
+			if (enemy == gameObject) continue;
 
+			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+			if (distanceToEnemy < shortestDistance)
+			{
+				shortestDistance = distanceToEnemy;
+				nearestEnemy = enemy;
+			}
+		}
+		if (nearestEnemy != null && shortestDistance <= range)
+		{
+			target = nearestEnemy.transform;
+			targetEnemy = nearestEnemy.GetComponent<Enemy>();
+		} else
+		{
+			target = null;
+		}
+	}
 	void Die ()
 	{
 		isDead = true;

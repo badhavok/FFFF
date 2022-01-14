@@ -16,15 +16,20 @@ public class Bullet : MonoBehaviour {
 	[Header ("AoE/Explosion")]
 	public float explosionRadius = 0f;
 	public GameObject impactEffect;
-	
-	public float fearChance = 0f;
-	public float fearTime = 0f;
-	
+
 	[Header ("Use Poison")]
 	public float poisonChance = 0f;
 	public int poisonStrength = 0;
 	public float poisonTime = 0f;
-	
+
+	public float fearChance, fearTime = 0f;
+
+	public float gravityChance = 0f;
+
+	public float chickenChance = 0f;
+
+	public float doomChance, doomTime = 0f;
+
 	public void Seek (Transform _target)
 	{
 		target = _target;
@@ -47,17 +52,15 @@ public class Bullet : MonoBehaviour {
 			HitTarget();
 			return;
 		}
-
 		transform.Translate(dir.normalized * distanceThisFrame, Space.World);
 		transform.LookAt(target);
-
 	}
 
 	void HitTarget ()
 	{
 		GameObject effectIns = (GameObject)Instantiate(impactEffect, transform.position, transform.rotation);
 		Destroy(effectIns, 5f);
-		
+
 		if (explosionRadius > 0f)
 		{
 			Explode();
@@ -87,22 +90,50 @@ public class Bullet : MonoBehaviour {
 
 		if (e != null)
 		{
+			if(gravityChance > 0)
+			{
+				var rand = Random.Range(1, 100);
+
+				if (rand < gravityChance)
+				{
+					Debug.Log("Gravity damage is: " + e.maxHealth / 8 + " phys + " + e.maxHealth / 8 + " mag");
+					e.TakeDamage(e.maxHealth / 8, e.maxHealth / 8);
+				}
+				return;
+			}
 			e.TakeDamage(damagePhysical, damageMagical);
-			
+
+			if(chickenChance > 0)
+			{
+				var rand = Random.Range(1,100);
+
+				if (rand < chickenChance)
+				{
+					e.isChicken = true;
+				}
+			}
+			if(doomChance > 0)
+			{
+				var rand = Random.Range(1, 100);
+
+				if (rand < doomChance)
+				{
+					e.Doom(doomTime);
+				}
+			}
 			if (fearChance > 0)
 			{
 				var rand = Random.Range(1,100);
-				
+
 				if (rand < fearChance)
 				{
 					e.Fear(fearTime);
 				}
 			}
-			
 			if (poisonChance > 0)
 			{
 				var rand = Random.Range(1,100);
-				
+
 				if (rand < poisonChance)
 				{
 					e.Poison(poisonStrength, poisonTime);
