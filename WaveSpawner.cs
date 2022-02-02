@@ -43,6 +43,7 @@ public class WaveSpawner : MonoBehaviour {
 	public Text currentWaveText;
 
 	public GameManager gameManager;
+//	public GFInit gfInit;
 
 	void Start()
 	{

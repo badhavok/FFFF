@@ -6,7 +6,9 @@ Focus of game is to get your buildings setup ready to defeat the boss, you will 
 
 	- Gold generator, can be placed anywhere - Working
 
-	Choice between two of the following?  Decides between branches?
+	Choice between two of the following?
+	- Decides between branches?
+	Depends on the level that you're playing?
 
 		- Gas generator, limited placement? (Choice/changes depending on weather effect)
 		- Liquid generator, limited placement?
@@ -21,17 +23,24 @@ City Base	- Unlocks player spells - maximum of 3?
 	- Unlocks multi-tower?
 	- Unlocks boss tower, increases rate of effect
 
-Fix upgrade of "Buildings" (it fails to change to "done")  :  done?
+Fix upgrade of "Buildings" (it fails to change to "done")  :  done
 
 Add upgrade system for the player with level winnings
 
 Add upgrade menus with the level winnings
 
-Add story/scenario modes that focus on certain elements; allowing each towers to be used + more "play time" - then add menus for each category  "Fire" / ...
+Add "capture system" that is an extra currency which allows for "special upgrades"?
+	-  I.E certain creatures (bosses?) will be capture-able in order to upgrade certain specialist upgrades;
+	 		-  I.E.E bosses on level 1 will "drop" this item, so in theory a few replay levels to get you ready for level2?
+			-  You need 10 items to upgrade; 1 drops from mid bosses, 2 from end bosses?
+					- between 10-20 waves per level (starting at 10 and increasing?); E.G 5 chances per level = 50>100
+						- increasing drops required when getting to level 10?
+
+Add story/scenario modes that focus on certain elements; allowing each towers to be used + more "play time" - then add menus for each category "Fire" / ...
 
 Add unlimited mode
 
-Add boss waves  :  Need to test further, should be working
+Add boss waves  :  Done
 
 Add "Mega" (final) bosses - instant lose? OR 3 star system for upgrades?
 
@@ -70,7 +79,7 @@ Add other status changing towers
 
 - increases debuff chances?  -  affects tower rate or enemy?
 
-- ignore defenses  ;  Create a function in Enemy that enables "ignorePhysD/ignoreMagD" (timer?) before actioning TakeDamage
+- ignore defenses  :  Done
 
 - "All" ("Exhaustion" on a timer?) tower : chance to cause all effects; not on boss/lower hit rate?
 
@@ -147,6 +156,12 @@ basic principles;
 
 		Set certain levels that will be unique to some of the upgrades on certain towers - set prefabs for elemental/defences (try to make them relatable to the "class/race?")
 
+		- base mobs x3 = standard stats
+		- magic users = high mag def, lower hp
+		- armoured = high phys def, small hp boost
+		- mini boss = medium hp, specialist stats designed for the level
+		- full boss = high hp, specialist stats designed for the level
+
 - Add races / weaknesses for those races; ships/armoured & aliens/carbon etc...
 
 - Add class weaknesses?  (healers etc..)
@@ -155,12 +170,13 @@ basic principles;
 
 - default immunity to #
 
-	- decoy/provoke
-		Makes towers in range focus on mob
-(same as each other)
-	- duplicate chance?
-		Earlier mobs stop for # while duplicating and quickens through the stages
-			(these do not move/make towers focus attention?)
+- decoy/provoke
+	Makes towers in range focus on mob
+		(same as each other)
+
+- duplicate chance?
+	Earlier mobs stop for # while duplicating and quickens through the stages
+		(these do not move/make towers focus attention?)
 
 - necromancer/summoner/"spawner"  :  done
 		summons various mobs (maybe new/different ones?) slightly ahead of itself; later versions summon more and keep moving(?)

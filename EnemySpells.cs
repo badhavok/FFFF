@@ -12,6 +12,8 @@ public class EnemySpells : MonoBehaviour {
 
 	public float range = 0;
 
+	public bool castSelf = false;
+
 	public bool buffHide = false;
 	public float countdownHide = 0;
 [HideInInspector] public float hideCount = 0;
@@ -85,7 +87,7 @@ public class EnemySpells : MonoBehaviour {
 			}
 			if (buffHide)
 			{
-				HideMe();
+				BuffHide();
 			}
 			if (buffSpeed)
 			{
@@ -116,13 +118,25 @@ public class EnemySpells : MonoBehaviour {
 			Debug.Log("I vant to suck your blood!");
 			TargetEnemy();
 			targetEnemy.Vampire(vampireDamage);
-
-			lineRenderer.enabled = true;
-			impactEffect.Play();
-			impactLight.enabled = true;
+			enemy.Healing(vampireDamage);
 
 			lineRenderer.SetPosition(0, firePoint.position);
 			lineRenderer.SetPosition(1, target.position);
+
+			if(targetEnemy != null)
+			{
+				lineRenderer.enabled = true;
+				impactEffect.Play();
+				impactLight.enabled = true;
+			}
+			else
+			{
+				lineRenderer.enabled = false;
+				impactEffect.Stop();
+				impactLight.enabled = false;
+				Debug.Log("Not attacking");
+				vampireCount -= Time.deltaTime;
+			}
 
 			Vector3 dir = firePoint.position - target.position;
 
@@ -143,8 +157,15 @@ public class EnemySpells : MonoBehaviour {
 	{
 		if (immuneCount <= 0)
 		{
+			if(castSelf)
+			{
+			enemy.Immune(countdownImmune);
+			}
+			else
+			{
 			TargetEnemy();
 			targetEnemy.Immune(countdownImmune);
+			}
 			//Debug.Log("Tis but a scratch!");
 			immuneCount += (countdownImmune * 2);
 		}
@@ -157,9 +178,16 @@ public class EnemySpells : MonoBehaviour {
 	{
 		if (healCount <= 0)
 		{
-			TargetEnemy();
-			targetEnemy.Healing(bonusHealth);
-			Debug.Log("Oh wow, look at me... I'm healing you!");
+			if(castSelf)
+			{
+				enemy.Healing(bonusHealth);
+			}
+			else
+			{
+				TargetEnemy();
+				targetEnemy.Healing(bonusHealth);
+				Debug.Log("Oh wow, look at me... I'm healing you!");
+			}
 			healCount += (countdownHealth * 2);
 		}
 		else
@@ -171,9 +199,17 @@ public class EnemySpells : MonoBehaviour {
 	{
 		if (levitateCount <= 0)
 		{
-			TargetEnemy();
-			targetEnemy.Flying(countdownLevitate);
-			Debug.Log("Woah, what's going on?");
+			if(castSelf)
+			{
+				enemy.Flying(countdownLevitate);
+				Debug.Log("I'm flying!!");
+			}
+			else
+			{
+				TargetEnemy();
+				targetEnemy.Flying(countdownLevitate);
+				Debug.Log("Woah, what's going on?");
+			}
 			//[change opaqueness]
 			levitateCount += (countdownLevitate * 2);
 		}
@@ -205,8 +241,15 @@ public class EnemySpells : MonoBehaviour {
 	{
 		if (speedCount < 0)
 		{
-			TargetEnemy();
-			targetEnemy.Speed(bonusSpeed, countdownSpeed);
+			if(castSelf)
+			{
+				enemy.Speed(bonusSpeed, countdownSpeed);
+			}
+			else
+			{
+				TargetEnemy();
+				targetEnemy.Speed(bonusSpeed, countdownSpeed);
+			}
 			//Debug.Log("Weeeeee.... don't say bye then!");
 			speedCount += (countdownSpeed * 2);
 		}
@@ -216,7 +259,7 @@ public class EnemySpells : MonoBehaviour {
 		}
 	}
 
-	void HideMe()
+	void BuffHide()
 	{
 		if (hideCount < 0)
 		{

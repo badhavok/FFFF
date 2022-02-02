@@ -159,7 +159,8 @@ public class Turret : MonoBehaviour {
 
 	void Laser ()
 	{
-		targetEnemy.TakeDamage(physicalDamageOverTime * Time.deltaTime, magicDamageOverTime * Time.deltaTime);
+		targetEnemy.TakePenDamage(physicalDamageOverTime * Time.deltaTime, magicDamageOverTime * Time.deltaTime);
+		Debug.Log("I'm taking " + physicalDamageOverTime * Time.deltaTime + " physical damage & " + magicDamageOverTime * Time.deltaTime + " magic damage.");
 		targetEnemy.Slow(slowAmount, 0.1f);
 
 		if (!lineRenderer.enabled)

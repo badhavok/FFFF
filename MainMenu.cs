@@ -3,12 +3,14 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour {
 
-	public string levelToLoad = "MainLevel";
+	public string levelToLoad = "SaveSelect";
 
 	public SceneFader sceneFader;
+//	public SaveSerial saveData;
 
 	public void Play ()
 	{
+//		saveData.LoadGame();
 		sceneFader.FadeTo(levelToLoad);
 	}
 
@@ -17,5 +19,4 @@ public class MainMenu : MonoBehaviour {
 		Debug.Log("Exciting...");
 		Application.Quit();
 	}
-
 }

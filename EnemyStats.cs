@@ -21,7 +21,7 @@ public class EnemyStats : MonoBehaviour {
 	public int earthDef = 0; // Debuffs
 
 	public bool isHovercraft = false;
-	public float hoverBoost = 0;
+	public float hoverTimeBoost = 0;
 [HideInInspector] public float hoverCount = 0;
 
 	public bool isDropship = false;
@@ -37,7 +37,7 @@ public class EnemyStats : MonoBehaviour {
 	{
 		enemy = GetComponent<Enemy>();
 		Worth = startWorth;
-		hoverCount = hoverBoost;
+		hoverCount = hoverTimeBoost;
 		dropCount = dropTime;
 	}
 

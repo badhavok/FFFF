@@ -13,7 +13,7 @@ public class CompleteLevel : MonoBehaviour {
 
 	public void Continue ()
 	{
-		//PlayerPrefs.SetInt("levelReached", levelToUnlock);
+		PlayerPrefs.SetInt("levelReached", levelToUnlock);
 		sceneFader.FadeTo(nextLevel);
 	}
 

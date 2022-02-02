@@ -14,40 +14,41 @@ public class Enemy : MonoBehaviour {
 
 	public float startSpeed = 10f;
 
-	public float speed;
-	public float maxHealth, baseHealth, updatedHealth;
-	public int physDef, magDef;
+[HideInInspector]	public float speed;
+[HideInInspector]	public float maxHealth, baseHealth;
+	public float updatedHealth;
+[HideInInspector]	public int physDef, magDef;
 	public bool isSpider = false;
 	public bool isFlying = false;
-	public bool isBoss = false;
 	public bool isChicken = false;
+	public bool isBoss = false;
 [HideInInspector] public float imFlying, countdownChicken, chk;
 [HideInInspector] public bool fromDropship = false;
-	private bool speedEnemy;
-	private float countdownSpeed, bonusSpeed;
+[HideInInspector]	private bool speedEnemy;
+[HideInInspector]	private float countdownSpeed, bonusSpeed;
 
-	private float countdownSlow, slowSpeed;
-	private bool slowEnemy;
+[HideInInspector]	private float countdownSlow, slowSpeed;
+[HideInInspector]	private bool slowEnemy;
 
-	private float countdownStop;
-	private bool stopEnemy = false;
+[HideInInspector]	private float countdownStop;
+[HideInInspector]	private bool stopEnemy = false;
 
-	private float countdownFear;
+[HideInInspector]	private float countdownFear;
 [HideInInspector] public bool fearEnemy = false;
 
-	private float countdownPoison,physicalStrengthPoison, magicalStrengthPoison;
-	private bool poisonEnemy;
+[HideInInspector]	private float countdownPoison,physicalStrengthPoison, magicalStrengthPoison;
+[HideInInspector]	private bool poisonEnemy;
 
 [HideInInspector] public float countdownImmune, imm;
-	private bool immune = false;
+[HideInInspector]	private bool immune = false;
 
 [HideInInspector] public float countdownSilence, sil;
-	public bool silence = false;
+[HideInInspector]	public bool silence = false;
 
 [HideInInspector] public float countdownDoom, doo;
-	public bool doom = false;
-	public float virusR, virusT, spreadTime, spreadRange, damHP;
-	public bool virus = false;
+[HideInInspector]	public bool doom = false;
+[HideInInspector]	public float virusR, virusT, spreadTime, spreadRange, damHP;
+[HideInInspector]	public bool virus = false;
 [HideInInspector] public float damVam = 0;
 
 	public GameObject deathEffect;
@@ -104,6 +105,32 @@ public class Enemy : MonoBehaviour {
 		}
 	}
 
+	public void TakePenDamage (float physAmount, float magAmount)
+	{
+		if (immune)
+		{
+			Debug.Log("I'm immune!");
+			return;
+		}
+
+		float amount = physAmount + magAmount;
+
+		if(amount <= 0)
+		{
+		}
+		else
+		{
+			updatedHealth -= amount;
+			healthBar.fillAmount = updatedHealth / maxHealth;
+		}
+
+		//Debug.Log("Am I healing? " + updatedHealth);
+		if (updatedHealth <= 0)
+		{
+			Die();
+		}
+		amount = 0;
+	}
 	public void TakeDamage (float physAmount, float magAmount)
 	{
 		if (immune)
@@ -116,7 +143,7 @@ public class Enemy : MonoBehaviour {
 
 		float amount = physDamage + magDamage;
 
-		//Debug.Log("I'm taking damage " + amount);
+		Debug.Log("I'm taking damage " + amount);
 		if(amount <= 0)
 		{
 		}
@@ -274,7 +301,10 @@ public class Enemy : MonoBehaviour {
 		}
 		if (goldenEnemy || isBoss)
 		{
-			goldBonus += Time.deltaTime;
+			if(goldenEnemy)
+			{
+				goldBonus += Time.deltaTime;
+			}
 			if (Input.touchCount > 0)
 			 {
 				Touch t = Input.GetTouch(0);
@@ -284,8 +314,8 @@ public class Enemy : MonoBehaviour {
 						Vector3 pos = t.position;
 						if (GetComponent<Collider>().gameObject.CompareTag("Enemy"))
 						 {
-							Debug.Log("I am touched");
-							updatedHealth -= 2;
+							Debug.Log("I am golden, I am offended by your touch");
+							updatedHealth -= 5;
 							healthBar.fillAmount = updatedHealth / maxHealth;
 							if (updatedHealth <= 0 && !isDead)
 							{
@@ -391,6 +421,7 @@ public class Enemy : MonoBehaviour {
 		{
 			if (enemyStats.dropCount <=0)
 			{
+				Debug.Log("I'm dropping ship... err... yeah");
 				StartCoroutine(Spawn());
 				enemyStats.dropCount += enemyStats.dropTime;
 			}
@@ -404,6 +435,7 @@ public class Enemy : MonoBehaviour {
 	{
 		for (int i = 0; i < enemyStats.dropAmount; i++)
 				{
+					Debug.Log("Spawn now! " + enemyStats.dropEnemy + " is chosen");
 					GameObject enemy = Instantiate(enemyStats.dropEnemy, transform.position, Quaternion.identity);
 					enemy.GetComponent<Enemy>().fromDropship = true;
 					enemy.GetComponent<EnemyMovement>().wavepointIndex = enemyMovement.wavepointIndex;

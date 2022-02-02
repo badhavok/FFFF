@@ -1,9 +1,16 @@
-using UnityEngine;
+using System;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.GameFoundation;
+using UnityEngine.GameFoundation.DefaultLayers;
+using UnityEngine.Promise;
 
 public class GameManager : MonoBehaviour {
 
 	public static bool GameIsOver;
+
+	public bool success;
+	public int diamondWin;
 
 	public GameObject gameOverUI;
 	public GameObject completeLevelUI;
@@ -32,6 +39,9 @@ public class GameManager : MonoBehaviour {
 
 	public void WinLevel ()
 	{
+//		player.diamondCurrency = 50;
+//		player.completedLevels = 2;
+//		player.SaveSave();
 		GameIsOver = true;
 		completeLevelUI.SetActive(true);
 	}

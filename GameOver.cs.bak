@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class GameOver : MonoBehaviour {
 
-	public string menuSceneName = "LevelSelect";
+	public string menuSceneName = "MainMenu";
 
 	public SceneFader sceneFader;
 

@@ -4,9 +4,9 @@ using System.Collections;
 public class PlayerSpells : MonoBehaviour {
 
 	public bool castEMP, castBarrage /*a laser shower*/, castMeteor, castFear, castChicken, castGravity, castSummonSpell = false;
-	public float counterEMP, counterBarrage, counterMeteor, counterFear, counterChicken, counterGravity, counterSummonSpell = 0;
+	public float range, counterEMP, counterBarrage, counterMeteor, counterFear, counterChicken, counterGravity, counterSummonSpell = 0;
 	[HideInInspector]
-	public float empCount, barrageCount, meteorCount, fearCount, chickenCount, gravityCount, summonSpellCount = 0;
+	public float damagePhysical, damageMagical, empCount, barrageCount, meteorCount, fearCount, chickenCount, gravityCount, summonSpellCount = 0;
 
 	void Start ()
 	{
@@ -18,8 +18,9 @@ public class PlayerSpells : MonoBehaviour {
 		gravityCount = counterGravity;
 		summonSpellCount = counterSummonSpell;
 	}
-	void Update()
+	void OnMouseDown()
 	{
+		Debug.Log("Spell test");
 		if (castEMP)
 		{
 			CastEMP();
@@ -51,8 +52,8 @@ public class PlayerSpells : MonoBehaviour {
 	}
 	public void SelectCastEMP () //dps with stun
 	{
-		Debug.Log("EMP Selected");
 		castEMP = true;
+		Debug.Log("EMP Selected");
 	}
 	public void SelectCastBarrage() //high dps
 	{
@@ -84,7 +85,12 @@ public class PlayerSpells : MonoBehaviour {
 	}
 	public void CastEMP () //dps with stun
 	{
-		Debug.Log("I'm casting EMP");
+		damagePhysical = 10;
+		damageMagical = 30;
+		range = 20f;
+		AoE(range);
+		Debug.Log("I'm casting EMP, range = " + range);
+		castEMP = false;
 	}
 	public void CastBarrage() //high dps
 	{
@@ -113,5 +119,46 @@ public class PlayerSpells : MonoBehaviour {
 	public void CastSummonSpellAdvanced() //summon from a pool of mobs
 	{
 
+	}
+	void AoE (float AoERange)
+	{
+		Debug.Log("AoE Cast test");
+		range = AoERange;
+		if (Input.touchCount > 0)
+		 {
+			Touch t = Input.GetTouch(0);
+			{
+				 if(t.phase == TouchPhase.Began)
+				 {
+					Vector3 pos = t.position;
+					if (GetComponent<Collider>().gameObject.CompareTag("Enemy"))
+					 {
+							Collider[] colliders = Physics.OverlapSphere(pos, range);
+							foreach (Collider collider in colliders)
+							{
+								if (collider.tag == "Enemy")
+								{
+									AoEDamage(collider.transform);
+								}
+							}
+						}
+					}
+				}
+			}
+		//Vector3 dir = firePoint.position - target.position;
+	}
+	void AoEDamage (Transform enemy)
+	{
+		Enemy e = enemy.GetComponent<Enemy>();
+
+		e.TakeDamage(damagePhysical, damageMagical);
+
+		if(castEMP)
+		{
+			e.Stop(20f);
+		}
+
+		damagePhysical = 0;
+		damageMagical = 0;
 	}
 }

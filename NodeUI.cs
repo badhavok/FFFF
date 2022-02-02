@@ -12,23 +12,17 @@ public class NodeUI : MonoBehaviour {
 	public Text upgradeCost;
 	public Button upgradeButton;
 
-	public bool imDPS, imSUP, imUpgraded = false;
+	public bool imDPS, imSUP, imUpgraded, upgradeLevelOne, upgradedLevelTwo, upgradedLevelThree = false;
 
 	public Text sellAmount;
 
 	private Node target;
 
+	BuildManager buildManager;
+
 	public void SetTarget (Node _target)
 	{
 		target = _target;
-		if (target.isSUP)
-		{
-			imSUP = true;
-		}
-		if (target.isDPS)
-		{
-			imDPS = true;
-		}
 		transform.position = target.GetBuildPosition();
 		Debug.Log("through loop");
 		if(target.isBuilding && !target.isBUpgrade)
@@ -69,25 +63,25 @@ public class NodeUI : MonoBehaviour {
 		}
 		else if (target.isSecondUpgrade && !target.isDPS && !target.isSUP)
 		{
-			Debug.Log("Ready to advance");
-			upgradeCost.text = "$" + target.turretBlueprint.upgradeCost;
-			upgradeButton.interactable = true;
-			advanceUI.SetActive(true);
-			Debug.Log("3");
+				Debug.Log("Ready to advance");
+				upgradeCost.text = "$" + target.turretBlueprint.upgradeCost;
+				upgradeButton.interactable = true;
+				advanceUI.SetActive(true);
+				Debug.Log("3");
 		}
 		else if (target.isDPS && !target.isDPSOne)
 		{
-			upgradeCost.text = "$" + target.turretBlueprint.upgradeCost;
-			upgradeButton.interactable = true;
-			advanceUIDPS.SetActive(true);
-			Debug.Log("4");
+				upgradeCost.text = "$" + target.turretBlueprint.upgradeCost;
+				upgradeButton.interactable = true;
+				advanceUIDPS.SetActive(true);
+				Debug.Log("4");
 		}
 		else if (target.isSUP && !target.isSUPOne)
 		{
-			upgradeCost.text = "$" + target.turretBlueprint.upgradeCost;
-			upgradeButton.interactable = true;
-			advanceUISUP.SetActive(true);
-			Debug.Log("5");
+				upgradeCost.text = "$" + target.turretBlueprint.upgradeCost;
+				upgradeButton.interactable = true;
+				advanceUISUP.SetActive(true);
+				Debug.Log("5");
 		}
 		else
 		{

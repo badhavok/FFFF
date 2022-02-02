@@ -15,7 +15,7 @@ public class Node : MonoBehaviour {
 	public BuildingBlueprint buildingBlueprint;
 	[HideInInspector]
 	public bool isBase = true;
-	[HideInInspector]
+	//[HideInInspector]
 	//listing all the turret upgrades
 	public bool isFirstUpgrade, isSecondUpgrade, isDPS, isDPSOne, isDPSTwo, isSUP, isSUPOne, isSUPTwo, advanceOne, advanceTwo, advanceThree, canBuildT = false;
 	[HideInInspector]
@@ -160,7 +160,7 @@ public class Node : MonoBehaviour {
 
 	public void UpgradeTurret ()
 	{
-	  if (PlayerStats.Money < turretBlueprint.upgradeCost || PlayerStats.Money < turretBlueprint.upgradeCostTwo || PlayerStats.Money < turretBlueprint.upgradeCostDps || PlayerStats.Money < turretBlueprint.upgradeCostSup)
+	  if (PlayerStats.Money < turretBlueprint.upgradeCost)
 	  {
 	    Debug.Log("Not enough money to upgrade that!");
 	    return;
@@ -181,7 +181,15 @@ public class Node : MonoBehaviour {
 
 	  isFirstUpgrade = true;
 	  }
-	  else if (isFirstUpgrade && AdvanceBuilding.BuildLevel > 0)
+	}
+	public void UpgradeTurretTwo()
+	{
+		if (PlayerStats.Money < turretBlueprint.upgradeCostTwo)
+		{
+			Debug.Log("Not enough money to upgrade that!");
+			return;
+		}
+		if (isFirstUpgrade && AdvanceBuilding.BuildLevel > 0)
 	  {
 	    PlayerStats.Money -= turretBlueprint.upgradeCostTwo;
 
@@ -221,7 +229,7 @@ public class Node : MonoBehaviour {
 		}
 		else
 		{
-			Debug.Log("Can't advance");
+			Debug.Log("Can't advance DPS");
 		}
 	}
 	public void UpgradeToSup ()
@@ -244,7 +252,7 @@ public class Node : MonoBehaviour {
 		}
 		else
 		{
-			Debug.Log("Can't advance");
+			Debug.Log("Can't advance SUP");
 		}
 	}
 	public void UpgradeTurretDpsOne ()
@@ -268,7 +276,7 @@ public class Node : MonoBehaviour {
 		}
 		else
 		{
-			Debug.Log("Can't advance");
+			Debug.Log("Can't advance DPS 1");
 		}
 	}
 	public void UpgradeTurretDpsTwo ()
@@ -309,6 +317,10 @@ public class Node : MonoBehaviour {
 
 		  isSUPOne = true;
 		  isSUPTwo = true;
+		}
+		else
+		{
+			Debug.Log("Can't upgrade to SUP 1");
 		}
 	}
 	public void UpgradeTurretSupTwo ()
@@ -353,6 +365,17 @@ public class Node : MonoBehaviour {
 		isBuilding = false;
 		isBUpgrade = false;
 		isBUpgrade2 = false;
+		
+		Destroy(turret);
+		turretBlueprint = null;
+		isFirstUpgrade = false;
+		isSecondUpgrade = false;
+		isDPS  = false;
+		isDPSOne  = false;
+		isDPSTwo  = false;
+		isSUP  = false;
+		isSUPOne  = false;
+		isSUPTwo  = false;
 	}
 	public void SellTurret ()
 	{
@@ -420,8 +443,6 @@ public class Node : MonoBehaviour {
 
 		//if (!buildManager.canBuildT)
 		//	return;
-
-
 		if (buildManager.HasMoney)
 		{
 			rend.material.color = hoverColor;
@@ -429,7 +450,6 @@ public class Node : MonoBehaviour {
 		{
 			rend.material.color = notEnoughMoneyColor;
 		}
-
 	}
 
 	void OnMouseExit ()

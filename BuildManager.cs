@@ -78,11 +78,11 @@ public class BuildManager : MonoBehaviour {
 		selectedNode = null;
 		nodeUI.Hide();
 	}
-	public void SelectSpell (PlayerSpells spell)
+/*	public void SelectSpell ()
 	{
 		Debug.Log("Selecting spell");
 		selectedSpell = spell;
-	}
+	}*/
 	public void SelectTurretToBuild (TurretBlueprint turret)
 	{
 		Debug.Log("Select turret in BuildManager");

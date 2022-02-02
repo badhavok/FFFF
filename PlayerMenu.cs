@@ -49,4 +49,8 @@ public class PlayerMenu : MonoBehaviour {
   {
     Time.timeScale = 0.5f;
   }
+  public void Pause()
+  {
+    Time.timeScale = 0f;
+  }
 }

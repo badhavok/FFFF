@@ -5,17 +5,45 @@ public class LevelSelector : MonoBehaviour {
 
 	public SceneFader fader;
 
+	public int currency;
+	public int displayCurrency;
+	public int completedLevels;
+	public int i;
+
+	public Text displayCurrencyText;
+
 	public Button[] levelButtons;
 
-	void Start ()
+	void Update ()
 	{
 		int levelReached = PlayerPrefs.GetInt("levelReached", 1);
+//		completedLevels = Player.CompletedLevels;
 
-		for (int i = 0; i < levelButtons.Length; i++)
+		if(completedLevels > levelReached)
 		{
-			if (i + 1 > levelReached)
-				levelButtons[i].interactable = false;
+			levelReached = completedLevels;
+			i = 0;
+			Debug.Log("I'm updating the levels completed! & level reached " + levelReached);
 		}
+
+		for (i = 0; i < levelButtons.Length; i++)
+		{
+			Debug.Log("Inside level loop");
+			if (i + 1 > levelReached)
+				{
+					levelButtons[i].interactable = false;
+					Debug.Log("I = " + i);
+				}
+				else
+				{
+					levelButtons[i].interactable = true;
+					Debug.Log("I = " + i);
+				}
+		}
+
+//		currency = Player.DiamondCurrency;
+//		displayCurrency = currency;
+//		displayCurrencyText.text = "D: " + displayCurrency.ToString();
 	}
 
 	public void Select (string levelName)
