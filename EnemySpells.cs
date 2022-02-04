@@ -25,7 +25,7 @@ public class EnemySpells : MonoBehaviour {
 
 	public bool buffImmune = false;
 	public float countdownImmune = 0;
-[HideInInspector] public float immuneCount = 0;
+[HideInInspector]	public float immuneCount = 0;
 
 	public bool buffSpeed = false;
 	public float bonusSpeed = 0;

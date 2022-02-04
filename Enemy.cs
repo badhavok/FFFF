@@ -43,7 +43,7 @@ public class Enemy : MonoBehaviour {
 [HideInInspector]	private bool immune = false;
 
 [HideInInspector] public float countdownSilence, sil;
-[HideInInspector]	public bool silence = false;
+public bool silence = false;
 
 [HideInInspector] public float countdownDoom, doo;
 [HideInInspector]	public bool doom = false;
@@ -73,7 +73,7 @@ public class Enemy : MonoBehaviour {
 		{
 			maxHealth = updatedHealth;
 			updatedHealth = enemyStats.startHealth;
-			Debug.Log("Boss, I have " + updatedHealth + " HP");
+			//Debug.Log("Boss, I have " + updatedHealth + " HP");
 		}
 		else
 		{
@@ -83,7 +83,7 @@ public class Enemy : MonoBehaviour {
 
 			physDef = enemyStats.startPhysDef;
 			magDef = enemyStats.startMagDef;
-			Debug.Log("I have " + updatedHealth + " HP");
+			//Debug.Log("I have " + updatedHealth + " HP");
 		}
 	}
 
@@ -103,6 +103,31 @@ public class Enemy : MonoBehaviour {
 			healthBar.fillAmount = updatedHealth / maxHealth;
 			Debug.Log("I'm being healed by " + healSpell);
 		}
+	}
+
+	public void GravityDMG (float gravity)
+	{
+		updatedHealth = maxHealth / gravity;
+		healthBar.fillAmount = updatedHealth / maxHealth;
+
+		if (updatedHealth <= 0)
+		{
+			Die();
+		}
+	}
+
+	public void IgnoreImmuneDMG (float physAmount, float magAmount)
+	{
+		float amount = physAmount + magAmount;
+
+		updatedHealth -= amount;
+		healthBar.fillAmount = updatedHealth / maxHealth;
+
+		if (updatedHealth <= 0)
+		{
+			Die();
+		}
+		amount = 0;
 	}
 
 	public void TakePenDamage (float physAmount, float magAmount)
@@ -219,13 +244,14 @@ public class Enemy : MonoBehaviour {
 	{
 		stopEnemy = true;
 		countdownStop = stp;
+		Silence(stp);
 	}
 	public void Fear (float fea)
 	{
 		fearEnemy = true;
 		countdownFear = fea;
 	}
-	public void Poison (int psnS, float psnT)
+	public void Poison (float psnS, float psnT)
 	{
 		poisonEnemy = true;
 		magicalStrengthPoison = psnS;
@@ -243,7 +269,7 @@ public class Enemy : MonoBehaviour {
 		enemyStats.isHovercraft = true;
 		imFlying = flyT;
 	}
-	void Update ()
+	void Update()
 	{
 		if (updatedHealth == maxHealth)
 		{
@@ -381,7 +407,7 @@ public class Enemy : MonoBehaviour {
 		if (poisonEnemy)
 		{
 			countdownPoison -= Time.deltaTime;
-			TakeDamage(physicalStrengthPoison, magicalStrengthPoison);
+			TakeDamage(0f, magicalStrengthPoison);
 			//Debug.Log("I'm taking damage: " + strengthPoison + " for " + countdownPoison + ".");
 			if (countdownPoison <= 0)
 			{
@@ -431,11 +457,11 @@ public class Enemy : MonoBehaviour {
 			}
 		}
 	}
-	private IEnumerator Spawn()
+	public IEnumerator Spawn()
 	{
 		for (int i = 0; i < enemyStats.dropAmount; i++)
 				{
-					Debug.Log("Spawn now! " + enemyStats.dropEnemy + " is chosen");
+					//Debug.Log("Spawn now! " + enemyStats.dropEnemy + " is chosen");
 					GameObject enemy = Instantiate(enemyStats.dropEnemy, transform.position, Quaternion.identity);
 					enemy.GetComponent<Enemy>().fromDropship = true;
 					enemy.GetComponent<EnemyMovement>().wavepointIndex = enemyMovement.wavepointIndex;
@@ -445,8 +471,9 @@ public class Enemy : MonoBehaviour {
 	}
 	public IEnumerator SummonNow()
 	{
+		// This line generates a number and then summons the enemy relating to that number from the pool assigned in the inspector
 		int summoningIndex = Random.Range(0, enemySpells.summoningPool.Length);
-		Debug.Log("I'm in the summonloop with index: " + summoningIndex);
+		//Debug.Log("I'm in the summonloop with index: " + summoningIndex);
 		for (int i = 0; i < enemySpells.summonAmount; i++)
 			{
 				GameObject enemy = Instantiate(enemySpells.summoningPool[summoningIndex], transform.position, Quaternion.identity);

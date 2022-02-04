@@ -85,7 +85,7 @@ public class BuildManager : MonoBehaviour {
 	}*/
 	public void SelectTurretToBuild (TurretBlueprint turret)
 	{
-		Debug.Log("Select turret in BuildManager");
+		Debug.Log("Selected turret in BuildManager");
 		canBuildT = true;
 		canBuildB = false;
 		turretToBuild = turret;
@@ -93,6 +93,7 @@ public class BuildManager : MonoBehaviour {
 	}
 	public void SelectBuildingToBuild (BuildingBlueprint building)
 	{
+		Debug.Log("Selected Building in BuildManager");
 		canBuildB = true;
 		canBuildT = false;
 		buildingToBuild = building;

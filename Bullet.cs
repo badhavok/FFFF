@@ -97,7 +97,7 @@ public class Bullet : MonoBehaviour {
 				if (rand < gravityChance)
 				{
 					Debug.Log("Gravity damage is: " + e.maxHealth / 8 + " phys + " + e.maxHealth / 8 + " mag");
-					e.TakeDamage(e.maxHealth / 8, e.maxHealth / 8);
+					e.TakePenDamage(e.maxHealth / 8, e.maxHealth / 8);
 				}
 				return;
 			}
