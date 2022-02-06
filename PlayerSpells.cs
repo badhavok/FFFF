@@ -156,7 +156,7 @@ public class PlayerSpells : MonoBehaviour {
 	{
 		dmgMulti = 20f;
 		castCount = 1;
-		range = 15f;
+		range = 20f;
 		AoE(range);
 		Debug.Log("Casting Chicken");
 		castChicken = false;
@@ -167,7 +167,7 @@ public class PlayerSpells : MonoBehaviour {
 		castCount = 1;
 		range = 15f;
 		AoE(range);
-		Debug.Log("Casting Gravity + active ");
+		Debug.Log("Casting Gravity");
   	castGravity = false;
 	}
 	public void CastBasicSummonSpell() //summon basic mobs
@@ -177,7 +177,7 @@ public class PlayerSpells : MonoBehaviour {
 		Debug.Log("I'm supposed to spawn now Basic");
 		castBasicSummonSpell = false;
 	}
-	public void CastAdvancedSummonSpell() //summon from a pool of mobs
+	public void CastAdvancedSummonSpell() //summon from a pool of mobs - Allow the player to select from a list??
 	{
 		summonAmount = 5;
 		StartCoroutine(AdvancedSummonSpell());
