@@ -293,7 +293,7 @@ public bool silence = false;
 				virus = false;
 			}
 		}
-		if(isChicken)
+		if(isChicken && !boss)
 		{
 			Die();
 			GameObject enemy = Instantiate(BuildManager.ChickenEnemy, transform.position, Quaternion.identity);
@@ -301,7 +301,7 @@ public bool silence = false;
 			enemy.GetComponent<EnemyMovement>().wavepointIndex = enemyMovement.wavepointIndex;
 			++WaveSpawner.EnemiesAlive;
 		}
-		if (doom)
+		if (doom && !boss)
 		{
 			Debug.Log("I'm dooomeeddddd");
 			countdownDoom -= Time.deltaTime;
@@ -315,9 +315,10 @@ public bool silence = false;
 		}
 		else if (!doom)
 		{
-			countdownDoom = 0;
+			countdownDoom = 20000;
+                        canvas.SetActive(false);
 		}
-		if (immune)
+		if (immune && !boss)
 		{
 			countdownImmune -= Time.deltaTime;
 			if (countdownImmune <= 0)
