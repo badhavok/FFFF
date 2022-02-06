@@ -93,7 +93,8 @@ Add other status changing towers
 
 Add 'advanced' flight path for random encounters?
 
-Add player spells ?  ;  In progress - need to think how I can implement the system
+Add player spells ?  ;  In progress - need to think how I can implement the system so that a player can only choose certain spells
+                      -  do I make them cost one of the uograde tower costs?
 
 Add AoE visual effects
 
@@ -185,6 +186,8 @@ basic principles;
 		steals HP from nearby mobs? (for bosses that summon - create an AoE requirement)
 
 Add enemy defenses/weakness' - in progress
+
+Update the touch input to input.mousePosition to reduce code and make sure only one touch is detected
 
 Long term goals :
 
