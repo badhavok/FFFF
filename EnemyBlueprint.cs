@@ -6,4 +6,5 @@ using UnityEngine;
      public GameObject enemy;
      public int enemyCount;
      public float enemyRate;
+     public int enemySpawn;
  }

@@ -1,13 +1,15 @@
 using UnityEngine;
 using System.Collections;
 
+//This is used to seperate some of the more specific stats used, to reduce the size of the 'main' enemy class
+//Might need to move more stats over to this script, or just add these back to the normal script
 [RequireComponent(typeof(Enemy))]
 public class EnemyStats : MonoBehaviour {
 
 	private Enemy enemy;
 
 	//public static float Health;
-	public float startHealth = 100;
+	public float startHealth = 10;
 
 	public static float Worth;
 	public float startWorth = 10;
@@ -26,7 +28,7 @@ public class EnemyStats : MonoBehaviour {
 
 	public bool isDropship = false;
 	public int dropAmount = 0;
-	public float dropTime = 0;
+	public float dropTime, dropSpeed = 0;
 [HideInInspector] public float dropCount = 0;
 	public GameObject dropEnemy;
 

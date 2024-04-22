@@ -6,12 +6,16 @@ public class Bullet : MonoBehaviour {
 
 	public float speed = 70f;
 
-	public int damagePhysical = 50;
+	public int damagePhysical = 5;
 	public int damageMagical = 0;
-	public int damageFire = 0;
-	public int damageWater = 0;
-	public int damageLightening = 0;
+
 	public int damageEarth = 0;
+	public int damageLightening = 0;
+	public int damageWater = 0;
+	public int damageFire = 0;
+	public int damageIce = 0;
+	public int damageWind = 0;
+
 
 	[Header ("AoE/Explosion")]
 	public float explosionRadius = 0f;
@@ -22,14 +26,23 @@ public class Bullet : MonoBehaviour {
 	public int poisonStrength = 0;
 	public float poisonTime = 0f;
 
+	[Header ("Use Fear")]
 	public float fearChance, fearTime = 0f;
 
+	[Header ("Use Gravity")]
 	public float gravityChance = 0f;
 
+	[Header ("Use Chicken")]
 	public float chickenChance = 0f;
 
+	[Header ("Use Doom")]
 	public float doomChance, doomTime = 0f;
 
+	void Start()
+	{
+
+	}
+	//Moves towards enemy
 	public void Seek (Transform _target)
 	{
 		target = _target;
@@ -64,24 +77,27 @@ public class Bullet : MonoBehaviour {
 		if (explosionRadius > 0f)
 		{
 			Explode();
-		} else
+		} 
+		else
 		{
 			Damage(target);
 		}
-
+		target = null;
 		Destroy(gameObject);
 	}
 
 	void Explode ()
 	{
-		Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
+		Collider[] colliders = Physics.OverlapSphere(target.position, explosionRadius);
 		foreach (Collider collider in colliders)
 		{
 			if (collider.tag == "Enemy")
 			{
 				Damage(collider.transform);
+				//Debug.Log($"{gameObject.name} is dealing explosion damage to {collider.gameObject.name}, which is {Vector3.Distance(collider.transform.position, target.position)} units from target position {target.position}, explosion Radius is {explosionRadius}");
 			}
 		}
+		colliders = null;
 	}
 
 	void Damage (Transform enemy)
@@ -96,7 +112,7 @@ public class Bullet : MonoBehaviour {
 
 				if (rand < gravityChance)
 				{
-					Debug.Log("Gravity damage is: " + e.maxHealth / 8 + " phys + " + e.maxHealth / 8 + " mag");
+					//Debug.Log("Gravity damage is: " + e.maxHealth / 8 + " phys + " + e.maxHealth / 8 + " mag");
 					e.TakePenDamage(e.maxHealth / 8, e.maxHealth / 8);
 				}
 				return;
@@ -106,7 +122,7 @@ public class Bullet : MonoBehaviour {
 			if(chickenChance > 0)
 			{
 				var rand = Random.Range(1,100);
-
+				//Debug.Log("I'm going to turn you into a chicken!");
 				if (rand < chickenChance)
 				{
 					e.isChicken = true;

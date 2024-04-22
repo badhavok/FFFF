@@ -1,21 +1,29 @@
 using UnityEngine;
 using System.Collections;
 
+//This is the script used to control all the movement code/functions
 [RequireComponent(typeof(Enemy))]
 public class EnemyMovement : MonoBehaviour {
 
 	public Transform target;
-	public Vector3 myPosition;
 	public int wavepointIndex = 0;
 	private bool runBack = false;
 	private bool goLeft;
 	private float finalCountdown;
+	private bool aboveGround;
+	private float wormMove;
+	private bool wormStop;
 
 	private Enemy enemy;
+	private Animation anim;
+
+	public float pathDistance, timeToDestination, remainingPathDistance;
 
 	void Start()
 	{
+		//This is used when the enemy is "duplicated" (I.E doesn't start at the beginning of the path)
 		enemy = GetComponent<Enemy>();
+		anim = gameObject.GetComponent<Animation>();
 		if (enemy.fromDropship)
 		{
 			target = Waypoints.points[wavepointIndex];
@@ -28,20 +36,54 @@ public class EnemyMovement : MonoBehaviour {
 		}
 		var rand = Random.Range(0, 4);
 		finalCountdown = rand;
+		pathDistance = Waypoints.totalLength;
+		timeToDestination = pathDistance / enemy.speed;
+		// essentially starts a countdown to the target.
+		// if speed * someTime = PathDistance then someTime = pathDistance/ speed
+		remainingPathDistance = pathDistance;
+		//starts at max, goes to 0
 	}
 
 	void Update()
 	{
+		if (enemy.stopEnemy || wormStop)
+		{
+
+		}
+		else if (enemy.speedEnemy)
+		{
+
+		}
+		else if	(enemy.slowEnemy)
+		{
+			timeToDestination -= Time.deltaTime / enemy.speed;
+			remainingPathDistance -= enemy.speed * Time.deltaTime;
+		}
+		else
+		{
+			timeToDestination -= Time.deltaTime;
+			remainingPathDistance -= enemy.speed * Time.deltaTime;
+		}
+		if (enemy.fearEnemy)
+		{
+			timeToDestination += Time.deltaTime / enemy.speed;
+			remainingPathDistance += enemy.speed * Time.deltaTime;
+		}
+
+		//Debug.Log("My speed is: " + enemy.speed + "... + Time to destination " + timeToDestination + ". My remaining distance is " + remainingPathDistance);
 		Vector3 dir = target.position - transform.position;
-		myPosition = dir;
 		transform.Translate(dir.normalized * enemy.speed * Time.deltaTime, Space.World);
-		
+		//Debug.Log("I'm travelling at a speed of " + enemy.speed + " .");
+
 		if (enemy.isFlying && enemy.enemyStats.isHovercraft)
 		{
 			transform.Translate(Vector3.up * Time.deltaTime / 2, Space.World);
 		}
+		//"isSpider" is used for any small creatures to make them more animated and 'walk' across the path more freely
+		//Might expand this with a variable so normal units can also walk a bit more freely, but less so than larger equivalents to keep them within the viewable path
 		if (enemy.isSpider)
 		{
+			//Which direction am I moving?
 			if (goLeft)
 			{
 				transform.Translate(Vector3.left * Time.deltaTime * 2);
@@ -50,7 +92,7 @@ public class EnemyMovement : MonoBehaviour {
 			{
 				transform.Translate(Vector3.right * Time.deltaTime * 2);
 			}
-			
+			//The counter to control how long the enemy is moving to one side
 			if (finalCountdown <= 0)
 			{
 				goLeft = true;
@@ -66,9 +108,43 @@ public class EnemyMovement : MonoBehaviour {
 				finalCountdown -= Time.deltaTime;
 			}
 		}
-		
+		if(enemy.isWorm)
+		{
+			if(aboveGround)
+			{
+				//remove opaque
+				//play animation to raise
+				anim.Play("Worm1-up");
+				this.gameObject.tag = "Enemy";
+				wormStop = true;
+			}
+			else //moving
+			{
+				this.gameObject.tag = "Fallen";
+				wormStop = false;
+				//make worm opaque (how can I show the worm still moving underground?) & stop being targeted (set tag as "Fallen")
+				//play animations to lower
+				//Move along path
+				//stop moving
+			}
+			if(wormMove <= 0)
+			{
+				aboveGround = true;
+				wormMove += 18;
+			}
+			else if(wormMove < 6)
+			{
+				aboveGround = false;
+				wormMove -= Time.deltaTime;
+			}
+			else
+			{
+				wormMove -= Time.deltaTime;
+			}
+		}
+		//Do I need to run backwards?
 		if (enemy.fearEnemy)
-		{	
+		{
 			if (!runBack)
 			{
 				GetLastWaypoint();
@@ -102,17 +178,16 @@ public class EnemyMovement : MonoBehaviour {
 					transform.LookAt(target);
 				}
 			}
-		}	
+		}
 	}
-	
-	
+	//Function to get the last waypoint when running backwards
 	void GetLastWaypoint()
 	{
 		--wavepointIndex;
 		target = Waypoints.points[wavepointIndex];
 		runBack = true;
 	}
-
+	//Function for moving forwards or detecting the enemy is at the end of the path
 	void GetNextWaypoint()
 	{
 		if (wavepointIndex >= Waypoints.points.Length - 1)
@@ -121,11 +196,12 @@ public class EnemyMovement : MonoBehaviour {
 			return;
 		}
 
+		//furthestOnPath += 10f;
 		++wavepointIndex;
 		target = Waypoints.points[wavepointIndex];
 		runBack = false;
 	}
-	
+	//When enemy is at the end path, lose a player life & despawn
 	void EndPath()
 	{
 		--PlayerStats.Lives;

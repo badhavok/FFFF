@@ -1,9 +1,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.GameFoundation;
-using UnityEngine.GameFoundation.DefaultLayers;
-using UnityEngine.Promise;
 
 public class GameManager : MonoBehaviour {
 

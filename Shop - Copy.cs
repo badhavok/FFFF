@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
-public class Shop : MonoBehaviour {
+public class ShopCopy : MonoBehaviour {
 
 	public GameObject menuUI;
 	public GameObject turretUI;
@@ -20,10 +20,9 @@ public class Shop : MonoBehaviour {
 	BuildManager buildManager;
 
 	//Sets which towers are going to be used in the game
-	public TurretBlueprint unit1,unit2,unit3,unit4,unit5,unit6;
-
+	public TurretBlueprint standardTurret, missileLauncher, laserBeamer, aoeTurret;
 	//Sets which buildings are going to be used in the game
-	//public BuildingBlueprint goldBuilding, advanceTower, gasBuilding, liquidBuilding, plasmaBuilding, mineralBuilding, spellTower;
+	public BuildingBlueprint goldBuilding, advanceTower, gasBuilding, liquidBuilding, plasmaBuilding, mineralBuilding, spellTower;
 
 	void Start ()
 	{
@@ -59,49 +58,57 @@ public class Shop : MonoBehaviour {
 		buildingUI.SetActive(false);
 		resourceUI.SetActive(false);
 		buildManager.SelectTurretToBuild(null);
-		buildManager.nothingSelected = true;
-		//buildManager.SelectBuildingToBuild(null);
+		buildManager.SelectBuildingToBuild(null);
 	}
 
 	//Section to set the button functions
 		//Select [x] tower/building`
-	public void Unit1 ()
+	public void SelectStandardTurret ()
 	{
 		Debug.Log("Standard Turret Selected");
-		buildManager.SelectTurretToBuild(unit1);
-		buildManager.nothingSelected = false;
+		buildManager.SelectTurretToBuild(standardTurret);
 	}
-	public void Unit2()
+	public void SelectMissileLauncher()
 	{
 		Debug.Log("Missile Launcher Selected");
-		buildManager.SelectTurretToBuild(unit2);
-		buildManager.nothingSelected = false;
+		buildManager.SelectTurretToBuild(missileLauncher);
 	}
-	public void Unit3()
+	public void SelectLaserBeamer()
 	{
 		Debug.Log("Laser Beamer Selected");
-		buildManager.SelectTurretToBuild(unit3);
-		buildManager.nothingSelected = false;
+		buildManager.SelectTurretToBuild(laserBeamer);
 	}
-	public void Unit4()
+	public void SelectAoETurret()
 	{
 		Debug.Log("AoE Turret Selected");
-		buildManager.SelectTurretToBuild(unit4);
-		buildManager.nothingSelected = false;
+		buildManager.SelectTurretToBuild(aoeTurret);
 	}
-	public void Unit5()
+	public void SelectGoldGenerator()
 	{
 		Debug.Log("Gold Generator Selected");
-		buildManager.SelectTurretToBuild(unit5);
-		buildManager.nothingSelected = false;
+		buildManager.SelectBuildingToBuild(goldBuilding);
 	}
-	public void Unit6()
+	public void SelectGasGenerator()
 	{
 		Debug.Log("Gas Generator Selected");
-		buildManager.SelectTurretToBuild(unit6);
-		buildManager.nothingSelected = false;
+		buildManager.SelectBuildingToBuild(gasBuilding);
 	}
-	/* public void SelectAdvanceTower()
+	public void SelectLiquidGenerator()
+	{
+		Debug.Log("Liquid Generator Selected");
+		buildManager.SelectBuildingToBuild(liquidBuilding);
+	}
+	public void SelectPlasmaGenerator()
+	{
+		Debug.Log("Plasma Generator Selected");
+		buildManager.SelectBuildingToBuild(plasmaBuilding);
+	}
+	public void SelectMineralGenerator()
+	{
+		Debug.Log("Mineral Generator Selected");
+		buildManager.SelectBuildingToBuild(mineralBuilding);
+	}
+	public void SelectAdvanceTower()
 	{
 		if (buildManager.upgradeLevel > 0)
 		{
@@ -126,36 +133,56 @@ public class Shop : MonoBehaviour {
 			Debug.Log("Spell Tower Selected");
 			buildManager.SelectBuildingToBuild(spellTower);
 		}
-	} */
+	}
 
 	//Section to show the tooltip on mouseover
 
-	public void TooltipUnit1 ()
+	public void TooltipSelectStandardTurret ()
 	{
 		//Set a Gameobject in Unity and activate/deactivate accordingly here
 		Debug.Log("Standard Turret Tooltip");
 		tooltipDisplay.text = "Standard Turret Tooltip";
 		//tooltipUI.SetActive(true);
 	}
-	public void TooltipUnit2()
+	public void TooltipSelectMissileLauncher()
 	{
 		Debug.Log("Missile Launcher Tooltip");
 	}
-	public void TooltipUnit3()
+	public void TooltipSelectLaserBeamer()
 	{
 		Debug.Log("Laser Beamer Tooltip");
 	}
-	public void TooltipUnit4()
+	public void TooltipSelectAoETurret()
 	{
 		Debug.Log("AoE Turret Tooltip");
 	}
-	public void TooltipUnit5()
+	public void TooltipSelectGoldGenerator()
 	{
 		Debug.Log("Gold Generator Tooltip");
 	}
-	public void TooltipUnit6()
+	public void TooltipSelectGasGenerator()
 	{
 		Debug.Log("Gas Generator Tooltip");
+	}
+	public void TooltipSelectLiquidGenerator()
+	{
+		Debug.Log("Liquid Generator Tooltip");
+	}
+	public void TooltipSelectPlasmaGenerator()
+	{
+		Debug.Log("Plasma Generator Tooltip");
+	}
+	public void TooltipSelectMineralGenerator()
+	{
+		Debug.Log("Mineral Generator Tooltip");
+	}
+	public void TooltipSelectAdvanceTower()
+	{
+		Debug.Log("Advance Tower Tooltip");
+	}
+	public void TooltipSelectSpellTower()
+	{
+		Debug.Log("Spell Tower Tooltip");
 	}
 	public void OnMouseExit()
 	{

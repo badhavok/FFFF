@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerSpells : MonoBehaviour {
@@ -8,9 +9,9 @@ public class PlayerSpells : MonoBehaviour {
 
 	public bool castEMP, castBarrage /*a laser shower*/, castMeteor, castFear, castChicken, castGravity, castBasicSummonSpell, castAdvancedSummonSpell = false;
 	public float range, counterEMP, stopTime, counterBarrage, counterMeteor, counterFear, counterChicken, counterGravity, counterSummonSpell = 0;
-	[HideInInspector] public int castCount, summonAmount;
+	[HideInInspector] public int castCount, summonAmount, i;
 	[HideInInspector]
-	public float dmgMulti, empCount, barrageCount, meteorCount, dotDmg, dotTime, fearCount, fearTime, chickenCount, gravityCount, summonSpellCount, gravityActive = 0;
+	public float globalCooldown, dmgMulti, empCount, barrageCount, meteorCount, dotDmg, dotTime, fearCount, fearTime, chickenCount, gravityCount, summonSpellCount, gravityActive = 0;
 	[HideInInspector] public string enemyTag = "Enemy";
 	[HideInInspector] private Transform target;
 	[HideInInspector] private Enemy targetEnemy;
@@ -22,23 +23,39 @@ public class PlayerSpells : MonoBehaviour {
 
 	void Start ()
 	{
-		empCount = counterEMP;
+		/*empCount = counterEMP;
 		barrageCount = counterBarrage;
 		meteorCount = counterMeteor;
 		fearCount = counterFear;
 		chickenCount = counterChicken;
 		gravityCount = counterGravity;
-		summonSpellCount = counterSummonSpell;
+		summonSpellCount = counterSummonSpell;*/
 		InvokeRepeating("UpdateTarget", 0f, 0.5f);
 	}
 	void Update()
 	{
+		//I've set a global cooldown for spells; set differently depending on what the spell does
+			if (globalCooldown > 0)
+			{
+				for (i = 0;	i < playerMenu.spellButtons.Length; i++)
+				{
+					playerMenu.spellButtons[i].interactable = false;
+				}
+				globalCooldown -= Time.deltaTime;
+				return;
+			}
+			else
+			{
+				for (i = 0;	i < playerMenu.spellButtons.Length; i++)
+				{
+					playerMenu.spellButtons[i].interactable = true;
+				}
+			}
 			if (Input.GetMouseButtonDown(0))
 			{
-				//Debug.Log("Spell test");
+				//Casts selected spell
 				if (castEMP)
 				{
-					Debug.Log("Casting EMP on mousedown");
 					CastEMP();
 				}
 				if (castBarrage)
@@ -63,15 +80,16 @@ public class PlayerSpells : MonoBehaviour {
 				}
 				if (castBasicSummonSpell)
 				{
-					Debug.Log("I should be spawning - coroutine");
 					CastBasicSummonSpell();
 				}
 				if(castAdvancedSummonSpell)
 				{
 					CastAdvancedSummonSpell();
 				}
+				Debug.Log("My globalCooldown is " + globalCooldown);
 			}
 	}
+	//Functions used by the buttons
 	public void SelectCastEMP () //dps with stun
 	{
 		castEMP = true;
@@ -112,6 +130,7 @@ public class PlayerSpells : MonoBehaviour {
 		castAdvancedSummonSpell = true;
 		playerMenu.HideSpell();
 	}
+	//Controls what the spell does
 	public void CastEMP () //dps with stun - 5% of HP
 	{
 		dmgMulti = 20f;
@@ -120,6 +139,7 @@ public class PlayerSpells : MonoBehaviour {
 		stopTime = empCount;
 		AoE(range);
 		Debug.Log("I'm casting EMP");
+		GlobalCooldown(60f);
 		castEMP = false;
 	}
 	public void CastBarrage() //high dps - .5% x 50
@@ -129,6 +149,7 @@ public class PlayerSpells : MonoBehaviour {
 		range = 10f;
 		AoE(range);
 		Debug.Log("Casting Barrage");
+		GlobalCooldown(60f);
 		castBarrage = false;
 	}
 	public void CastMeteor() //dps with DoT - 10% + 10s*.75%
@@ -140,6 +161,7 @@ public class PlayerSpells : MonoBehaviour {
 		range = 10f;
 		AoE(range);
 		Debug.Log("Casting Meteor");
+		GlobalCooldown(60f);
 		castMeteor = false;
 	}
 	public void CastFear() // runs backwards - 5% HP
@@ -150,6 +172,7 @@ public class PlayerSpells : MonoBehaviour {
 		range = 10f;
 		AoE(range);
 		Debug.Log("Casting Fear");
+		GlobalCooldown(60f);
 		castFear = false;
 	}
 	public void CastChicken() //turns into chickens (no def)
@@ -159,6 +182,7 @@ public class PlayerSpells : MonoBehaviour {
 		range = 20f;
 		AoE(range);
 		Debug.Log("Casting Chicken");
+		GlobalCooldown(60f);
 		castChicken = false;
 	}
 	public void CastGravity() //high dps (50% HP) but ~40% chance to happen
@@ -168,6 +192,7 @@ public class PlayerSpells : MonoBehaviour {
 		range = 15f;
 		AoE(range);
 		Debug.Log("Casting Gravity");
+		GlobalCooldown(60f);
   	castGravity = false;
 	}
 	public void CastBasicSummonSpell() //summon basic mobs
@@ -175,6 +200,7 @@ public class PlayerSpells : MonoBehaviour {
 		summonAmount = 10;
 		StartCoroutine(BasicSummonSpell());
 		Debug.Log("I'm supposed to spawn now Basic");
+		GlobalCooldown(30f);
 		castBasicSummonSpell = false;
 	}
 	public void CastAdvancedSummonSpell() //summon from a pool of mobs - Allow the player to select from a list??
@@ -182,14 +208,47 @@ public class PlayerSpells : MonoBehaviour {
 		summonAmount = 5;
 		StartCoroutine(AdvancedSummonSpell());
 		Debug.Log("I'm supposed to spawn now Advanced");
+		GlobalCooldown(45f);
 		castAdvancedSummonSpell = false;
 	}
+	//Spell tower upgrades reduce the cooldown for all of the spells
+	public void GlobalCooldown(float gCD)
+	{
+		globalCooldown = gCD;
+		if(SpellBuilding.SpellLevel == 2)
+		{
+			//reduce to 90%
+			globalCooldown = globalCooldown * 0.9f;
+		}
+		if(SpellBuilding.SpellLevel == 3)
+		{
+			//reduce to 80%
+			globalCooldown = globalCooldown * 0.8f;
+		}
+	}
+	//Function to deal damage based on where the user has clicked and imports the range value for the spell
 	void AoE (float AoERange)
 	{
 		Debug.Log("AoE Cast test");
 		range = AoERange;
 
-		if (Input.touchCount > 0)
+		RaycastHit mouseHit;
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		if (Physics.Raycast(ray, out mouseHit, 100))
+		{
+				myPosi = mouseHit.point;
+		}
+		//Debug.Log("Hallo... anyone there, mouse? + pos = " + myPosi + " + range = " + range);
+		Collider[] colliders = Physics.OverlapSphere(myPosi, range);
+		foreach (Collider collider in colliders)
+		{
+			//Debug.Log("Found enemy mouse");
+			if (collider.tag == "Enemy")
+				{
+					AoEDamage(collider.transform);
+				}
+		}
+		/*if (Input.touchCount > 0)
 		 {
 			Debug.Log("input test");
 			Touch u = Input.GetTouch(0);
@@ -236,12 +295,24 @@ public class PlayerSpells : MonoBehaviour {
 						AoEDamage(collider.transform);
 					}
 			}
-		}
+		} */
 		//Vector3 dir = firePoint.position - target.position;
 	}
+	//The "actual" damage per enemy in range
 	void AoEDamage (Transform enemy)
 	{
 		Enemy e = enemy.GetComponent<Enemy>();
+
+		if(castMeteor)
+		{
+			e.Poison(dotDmg, dotTime);
+		}
+		//If the enemy is a boss it won't deal status effects
+		if(e.isBoss)
+		{
+			Debug.Log("These spells won't work on me!");
+			return;
+		}
 
 		if(castGravity)
 		{
@@ -254,14 +325,10 @@ public class PlayerSpells : MonoBehaviour {
 			}
 			return;
 		}
-		//Debug.Log("I'm in AoEDamage");
+		Debug.Log("Yay no bosses... I'm in AoEDamage");
 		if(castEMP)
 		{
 			e.Stop(stopTime);
-		}
-		if(castMeteor)
-		{
-			e.Poison(dotDmg, dotTime);
 		}
 		if(castFear)
 		{
@@ -301,6 +368,7 @@ public class PlayerSpells : MonoBehaviour {
 			target = null;
 		}
 	}
+	//Code to spawn enemies at the start point
 	public IEnumerator BasicSummonSpell()
 	{
 		//Debug.Log("I'm in the summonloop with index: " + summoningIndex);

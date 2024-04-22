@@ -14,6 +14,7 @@ public class LevelSelector : MonoBehaviour {
 
 	public Button[] levelButtons;
 
+	//Used in the menu to detect what levels the player has unlocked and allows them to be clickable in the menu
 	void Update ()
 	{
 		int levelReached = PlayerPrefs.GetInt("levelReached", 1);
@@ -45,7 +46,7 @@ public class LevelSelector : MonoBehaviour {
 //		displayCurrency = currency;
 //		displayCurrencyText.text = "D: " + displayCurrency.ToString();
 	}
-
+	//Function to load the level that was selected
 	public void Select (string levelName)
 	{
 		fader.FadeTo(levelName);

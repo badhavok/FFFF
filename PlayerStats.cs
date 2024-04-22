@@ -15,7 +15,7 @@ public class PlayerStats : MonoBehaviour {
 
 	public static int Rounds;
 
-	void Start ()
+	void Awake ()
 	{
 		Money = startMoney;
 		Lives = startLives;

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 [System.Serializable]
-public class TurretBlueprint {
+public class TurretBlueprintCopy {
 
 	// Cost to build
 	public GameObject prefab;
@@ -16,7 +16,7 @@ public class TurretBlueprint {
 	public GameObject prefabUpgradeTwo;
 	public int upgradeCostTwo;
 
-	/* // Cost to chose DPS
+	// Cost to chose DPS
 	public GameObject prefabDps;
 	public int upgradeCostDps;
 	public int upgradeSpecialDps;
@@ -33,7 +33,7 @@ public class TurretBlueprint {
 	public GameObject prefabSup;
 	public int upgradeCostSup;
 	public int upgradeSpecialSup;
- */
+
 	// Cost to upgrade SUP
 	public GameObject prefabSupOne;
 	public int upgradeCostSupOne;
@@ -54,7 +54,7 @@ public class TurretBlueprint {
 	{
 		return upgradeCostTwo / 2;
 	}
-	/* public int GetUpgradeValueDps ()
+	public int GetUpgradeValueDps ()
 	{
 		return upgradeCostDps / 2;
 	}
@@ -77,5 +77,5 @@ public class TurretBlueprint {
 	public int GetUpgradeValueSupTwo ()
 	{
 		return upgradeCostSupTwo / 2;
-	} */
+	}
 }

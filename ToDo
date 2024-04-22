@@ -8,7 +8,8 @@ Focus of game is to get your buildings setup ready to defeat the boss, you will 
 
 	Choice between two of the following?
 	- Decides between branches?
-	Depends on the level that you're playing?
+	- Add a counter to the buildmanager which just adds when one of the upgrades are built; to a maximum of 2
+	...Depends on the level that you're playing?
 
 		- Gas generator, limited placement? (Choice/changes depending on weather effect)
 		- Liquid generator, limited placement?
@@ -25,14 +26,16 @@ City Base	- Unlocks player spells - maximum of 3?
 
 Fix upgrade of "Buildings" (it fails to change to "done")  :  done
 
+Add fire focus to towers - not sure if I'll let the player choose this per tower or if they will be set standard by me;  maybe add flying enemy focus, magic/phys def/'other'
+
 Add upgrade system for the player with level winnings
 
 Add upgrade menus with the level winnings
 
-Add "capture system" that is an extra currency which allows for "special upgrades"?
+Add "capture system" that is an extra currency which allows for "special upgrades"?  Need to decide if these will be 'bonus' drops that needs the player to click the screen
 	-  I.E certain creatures (bosses?) will be capture-able in order to upgrade certain specialist upgrades;
 	 		-  I.E.E bosses on level 1 will "drop" this item, so in theory a few replay levels to get you ready for level2?
-			-  You need 10 items to upgrade; 1 drops from mid bosses, 2 from end bosses?
+			-  You need 10 items to upgrade; possible 1 drops from mid bosses, 2 from end bosses?
 					- between 10-20 waves per level (starting at 10 and increasing?); E.G 5 chances per level = 50>100
 						- increasing drops required when getting to level 10?
 
@@ -42,9 +45,11 @@ Add unlimited mode
 
 Add boss waves  :  Done
 
+Need to test what is "fun" to play when using spells against a boss - Should there be a flat 1x [dmg] for all the spells since they aren't that effective on the boss; there may/will be a Boss tower which could be the final upgrade for any of the towers (specialist per branch?) or a mega tower like below -
+
 Add "Mega" (final) bosses - instant lose? OR 3 star system for upgrades?
 
-Add a "next wave now" option;  bonus gold?
+Add a "next wave now" option;  bonus gold = time*10?
 
 Add speed up/slow down function  :  done
 
@@ -56,7 +61,7 @@ Add other status changing towers
 
 - fix the DoT tic/countdown :  Is it needed?
 
-- chain laser - diminishing effects;
+- chain laser - diminishing effects;  "bounce/stream" to another enemy & weakens each time?
 
 - poison + 'splash' upgrade  :  done
 
@@ -68,7 +73,7 @@ Add other status changing towers
 
 - silence; stop enemy casting  :  DONE
 
-- (not this game) add elements/weakness'/bonus damage  (lightening for stun, ice for slow etc..)
+- (not this version/game?) add elements/weakness'/bonus damage  (lightening for stun, ice for slow etc..)
 	(do these stay for 'time' or 'ever'?)
 
 - (not this game) zombie (makes "heals" do damage"); won't work if enemy is undead already?
@@ -81,26 +86,32 @@ Add other status changing towers
 
 - ignore defenses  :  Done
 
-- "All" ("Exhaustion" on a timer?) tower : chance to cause all effects; not on boss/lower hit rate?
+- "All" ("Exhaustion" on a timer?) tower : chance to cause all effects; on boss/lower hit rate?
 
-- "boss" tower; insanely expensive but allows status effects to work on bosses (much lower rates to effect) & removes weakness/immunity from normal mobs?
+- "Final upgrade" tower per branch?
 
-- Priority settings?  :  Set "closest/furthest/flying/ground"
+- (separate) "boss" tower; insanely expensive but allows status effects to work on bosses? (much lower rates to effect) & removes weakness/immunity from normal mobs/ignores defense/does gravity damage (less effective on normal mobs but effective against bosses)
+
+- Priority settings?  :  Set "closest/furthest" ; in progress
 
 - money generator?  coal/water/wind/sun/fusion;
 		Add random weather effects to slow/stop generation?
-		Add time settings to switch game-play at night (PM) to use different generators?
+		Add regional/time settings to switch game-play at night (PM) to use different generators?
 
 Add 'advanced' flight path for random encounters?
+	- This would mean that the player should place certain towers in certain places - would it be too frustrating to find out after you lose a level?  Should I make it known there is a 'flight-path'?
 
-Add player spells ?  ;  In progress - need to think how I can implement the system so that a player can only choose certain spells
-                      -  do I make them cost one of the uograde tower costs?
+Add player spells ?  ;  In progress - need to think how I can implement the system so that a player can only choose certain spells(Is it needed?)
+                  -  do I make them cost one of the upgrade tower costs?  Trying to add more gameplay mechanics...
+		This is what is currently implemented
+		-  Maybe I could add a cooldown per spell; and the upgraded towers make the cooldown reduced by a certain % ?
+											- Cooldown is depending on how effective/powerful the skill is
 
-Add AoE visual effects
+Add visual effects  : in progress
 
-Add EnemyStats class  :  In progress/complete?
+Add EnemyStats class  :  In progress
 
-Add new models  :  in progress + animation is tested/working
+Add new models  :  in progress + animation MUST be tested/working
 
 Separate spell class :  done
 
@@ -108,26 +119,27 @@ Add other enemies
 
 - flying only  :  done
 
-- Transformer; periodically turns to a flying unit  : done
+- Hovercraft/Transformer; periodically turns to a flying unit  : done
 		Same/another which changes path?
 
 - hide from towers : done
 
 - levitate : done
 
-- add a specific timer that spawns "Mid" enemies; regardless of how the player plays (I.E if they have sped up the spawns)  :  Maybe set this at "major" stages (5/10 etc..)
+- Not sure if I 'want' to do this
+- add a specific timer that spawns "Mid" enemies; regardless of how the player plays (I.E if they have sped up the spawns)  :  Maybe set this at "major" stages (5/10 etc..) : This has been setup as a spell, maybe add it as a hidden effect on certain stages
 
 - specific boss wave  : done
 
 - healing : done
 
-- max hp boost ;
+- max hp boost ;  Is this really needed?
 
-- grants stat/def bonus
+- grants stat/def bonus  ;  Is this any different to healing/immunity?
 
-- "golden" mobs; reduce value over time (maybe set a rand & update color based on +/- gold)  done
+- "golden" mobs; increase value over time - done
 	Make these so you tap the screen - done
-	Make an "announcement" -
+	Make an "announcement" - Needs doing
 
 - speed(done)/defense(done)
 
@@ -164,36 +176,36 @@ basic principles;
 		- full boss = high hp, specialist stats designed for the level
 
 - Add races / weaknesses for those races; ships/armoured & aliens/carbon etc...
-
+AND/OR
 - Add class weaknesses?  (healers etc..)
 
 - immunity  :  done
 
-- default immunity to #
+- default immunity to #  ;  basically "50000 def"
 
-- decoy/provoke
+- decoy/provoke (except for AoE ofc) OR setup options for player OR always focus on the furthest (closest to finish) enemy along the path?
 	Makes towers in range focus on mob
 		(same as each other)
 
-- duplicate chance?
-	Earlier mobs stop for # while duplicating and quickens through the stages
-		(these do not move/make towers focus attention?)
+- duplicate chance?  :  done
+	Mobs stop for (spawnamount * 1f + 0.5f) while duplicating so it can be animated/flows with gameplay :  done
 
 - necromancer/summoner/"spawner"  :  done
-		summons various mobs (maybe new/different ones?) slightly ahead of itself; later versions summon more and keep moving(?)
+		Add a function that stops the enemy while it's "duplicating"  :  should be done
+		Give a special effect
 
 - vampire  :  done
 		steals HP from nearby mobs? (for bosses that summon - create an AoE requirement)
 
 Add enemy defenses/weakness' - in progress
 
-Update the touch input to input.mousePosition to reduce code and make sure only one touch is detected
+Update the touch input to input.mousePosition to reduce code and make sure only one touch is detected  :  Done
 
 Long term goals :
 
-Fix Summon/duplicate to add to "Current spawn count"
+Fix Summon/duplicate to add to "Current spawn count" : check this is working correctly
 
-Achievments : Add hidden easter eggs/trophies; "I'm a hacker" (find secret menu via GameGuardian/other)
+Achievements : Add hidden easter eggs/trophies; "I'm a hacker menu" (find secret menu via GameGuardian/other)
 
 https://www.fortressofdoors.com/optimizing-tower-defense-for-focus-and-thinking-defenders-quest/
 

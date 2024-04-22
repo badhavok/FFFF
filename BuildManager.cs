@@ -18,6 +18,7 @@ public class BuildManager : MonoBehaviour {
 			return;
 		}
 		instance = this;
+		//Used as the global variable to set Chicken textures for player spell
 		ChickenEnemy = chickenEnemy;
 	}
 
@@ -29,21 +30,39 @@ public class BuildManager : MonoBehaviour {
 
 	public TurretBlueprint turretToBuild;
 	public BuildingBlueprint buildingToBuild;
+	public int costOfTower;
 	public PlayerSpells selectedSpell;
 
 	[HideInInspector]
-	public bool turretSelected, canBuildB, canBuildT, buildingSelected = false;
+	public bool turretSelected, nothingSelected, canBuildB, canBuildT, buildingSelected = false;
 	private Node selectedNode;
+	private bool nodeMenu;
 
+	// Bools to detect whether the player is able to build
 	//public bool CanBuildT { get { return turretToBuild != null; } }
 	//public bool CanBuildB { get { return buildingToBuild != null; } }
-	public bool HasMoney { get { return PlayerStats.Money >= turretToBuild.cost; } }
+
+	//This is set to make debugging easier
+	public bool HasMoney = false;
 
 	void Update()
 	{
+		//Setting the variables for the player UI
 		Wave = WaveSpawner.CurrentWave;
 		Level = currentLevel;
-		if(AdvanceBuilding.IsExists)
+
+		if (PlayerStats.Money < costOfTower)
+		{
+			HasMoney = false;
+		}
+		else
+		{
+			HasMoney = true;
+			canBuildT = true;
+		}
+
+        //Detecting if the Advanced building is built and allows the towers to be upgraded
+        if (AdvanceBuilding.IsExists)
 		{
 			upgradeLevel = AdvanceBuilding.BuildLevel;
 		}
@@ -51,6 +70,7 @@ public class BuildManager : MonoBehaviour {
 		{
 			upgradeLevel = 0;
 		}
+		//Detecting if the Spell building is built and allows PlayerSpells to be used
 		if(SpellBuilding.SpellLevel > 0)
 		{
 			spellCount = SpellBuilding.SpellLevel;
@@ -60,23 +80,35 @@ public class BuildManager : MonoBehaviour {
 			spellCount = 0;
 		}
 	}
+
 	public void SelectNode (Node node)
 	{
+		//Selecting the node which the player is going to build on
 		if (selectedNode == node)
 		{
+			nodeMenu = false;
 			DeselectNode();
 			return;
 		}
 
 		selectedNode = node;
 		turretToBuild = null;
+		turretSelected = false;
 		buildingToBuild = null;
 		nodeUI.SetTarget(node);
+		nodeMenu = true;
 	}
+
 	public void DeselectNode()
 	{
+		//Deselects node once something is built or player clicks something else
 		selectedNode = null;
 		nodeUI.Hide();
+		nothingSelected = true;
+		if(!nodeMenu)
+		{
+			Time.timeScale = 1f;
+		}
 	}
 /*	public void SelectSpell ()
 	{
@@ -89,6 +121,10 @@ public class BuildManager : MonoBehaviour {
 		canBuildT = true;
 		canBuildB = false;
 		turretToBuild = turret;
+		if(turretToBuild != null)
+		{
+			costOfTower = turretToBuild.cost;
+		}
 		DeselectNode();
 	}
 	public void SelectBuildingToBuild (BuildingBlueprint building)
@@ -99,12 +135,15 @@ public class BuildManager : MonoBehaviour {
 		buildingToBuild = building;
 		DeselectNode();
 	}
+
 	public TurretBlueprint GetTurretToBuild ()
 	{
+		//Gets the turret from the shop UI
 		return turretToBuild;
 	}
 	public BuildingBlueprint GetBuildingToBuild ()
 	{
+		//Gets the building from the shop UI
 		return buildingToBuild;
 	}
 }

@@ -5,6 +5,7 @@ public class Node : MonoBehaviour {
 
 	public Color hoverColor;
 	public Color notEnoughMoneyColor;
+	public Color usedColor;
   public Vector3 positionOffset;
 
 	[HideInInspector]
@@ -15,9 +16,15 @@ public class Node : MonoBehaviour {
 	public BuildingBlueprint buildingBlueprint;
 	[HideInInspector]
 	public bool isBase = true;
-	//[HideInInspector]
+	//listing all the bonus upgrades given to turrets
+	[Header("Bonuses give:  RNG, DMG, MAG")]
+	public bool hasBonus = false;
+	public bool nodeUsed = false;
+	public int[] nodeBonuses = { 0, 0, 0 };
+
+	[HideInInspector]
 	//listing all the turret upgrades
-	public bool isFirstUpgrade, isSecondUpgrade, isDPS, isDPSOne, isDPSTwo, isSUP, isSUPOne, isSUPTwo, advanceOne, advanceTwo, advanceThree, canBuildT = false;
+	public bool isFirstUpgrade, isSecondUpgrade, isDPS, isDPSOne, isDPSTwo, isSUP, isSUPOne, isSUPTwo, advanceOne, advanceTwo, advanceThree = false;
 	[HideInInspector]
 	//listing all the building upgrades
 	public bool isBuilding, isBUpgrade, isBUpgrade2, canBuildB = false;
@@ -35,33 +42,47 @@ public class Node : MonoBehaviour {
 		buildManager = BuildManager.instance;
     }
 
-	public Vector3 GetBuildPosition ()
+	public Vector3 GetBuildPosition()
 	{
 		return transform.position + positionOffset;
 	}
 
-	void OnMouseDown ()
+	void OnMouseDown()
 	{
 		//Debug.Log("mousedown");
 		if (EventSystem.current.IsPointerOverGameObject())
 			return;
-
+		//Debug.Log("mousedown #2");
 		if (turret != null || building != null)
 		{
 			//Debug.Log("Selecting node");
+			Time.timeScale = 0f;
 			buildManager.SelectNode(this);
 			return;
 		}
 		//Debug.Log("Checking canbuild");
-		//if (!buildManager.canBuildT && !buildManager.canBuildB)
-		//	return;
+		if (buildManager.costOfTower <= 1 || buildManager.nothingSelected)
+			return;
 
 		BuildThis();
 
+		if (hasBonus)
+		{
+			turret.GetComponent<Turret>().isUpgradedByNode = true;
+			turret.GetComponent<Turret>().nodeBonuses = nodeBonuses;
+		}
+
+		buildManager.canBuildB = false;
+		buildManager.canBuildT = false;
+		nodeUsed = true;
+		buildManager.turretSelected = false;
+		buildManager.SelectTurretToBuild(null);
+		buildManager.nothingSelected = true;
 	}
+	//Final function to build what the player has selected
 	void BuildThis ()
 	{
-		//Debug.Log("Build this");
+		Debug.Log("Build this");
 		if (buildManager.canBuildB)
 		{
 			BuildBuilding(buildManager.GetBuildingToBuild());
@@ -75,6 +96,9 @@ public class Node : MonoBehaviour {
 			buildManager.turretToBuild = null;
 		}
 	}
+
+	//Due to multiple bool checks & menus used in the game, I have split out each build/upgrade depending on what the current upgrade level is
+
 	void BuildBuilding (BuildingBlueprint blueprintB)
 	{
 		//Debug.Log("In building loop");
@@ -97,6 +121,7 @@ public class Node : MonoBehaviour {
 		isBuilding = true;
 	  // Debug.Log("Turret build!");
 	}
+
 	public void UpgradeBuilding ()
 	{
 	  if (PlayerStats.Money < buildingBlueprint.upgradeBCost || PlayerStats.Money < buildingBlueprint.upgradeBCostTwo)
@@ -139,21 +164,22 @@ public class Node : MonoBehaviour {
 	void BuildTurret (TurretBlueprint blueprint)
 	{
 		Debug.Log("In build loop");
+		
 		if (PlayerStats.Money < blueprint.cost)
-	  {
-	    Debug.Log("Not enough money to build that!");
-	    return;
-	  }
+		{
+			Debug.Log("Not enough money to build that!");
+			return;
+		}
 
-	  PlayerStats.Money -= blueprint.cost;
+	    PlayerStats.Money -= blueprint.cost;
 
-	  GameObject _turret = (GameObject)Instantiate(blueprint.prefab, GetBuildPosition(), Quaternion.identity);
-	  turret = _turret;
+	  	GameObject _turret = (GameObject)Instantiate(blueprint.prefab, GetBuildPosition(), Quaternion.identity);
+	  	turret = _turret;
 
-	  turretBlueprint = blueprint;
+	  	turretBlueprint = blueprint;
 
-	  GameObject effect = (GameObject)Instantiate(buildManager.buildEffect, GetBuildPosition(), Quaternion.identity);
-	  Destroy(effect, 5f);
+	  	GameObject effect = (GameObject)Instantiate(buildManager.buildEffect, GetBuildPosition(), Quaternion.identity);
+	  	Destroy(effect, 5f);
 
 	  // Debug.Log("Turret build!");
 	}
@@ -209,7 +235,7 @@ public class Node : MonoBehaviour {
 			Debug.Log("Can't advance");
 		}
 	}
-	public void UpgradeToDPS ()
+	/* public void UpgradeToDPS ()
 	{
 		if (AdvanceBuilding.BuildLevel > 1)
 		{
@@ -342,7 +368,8 @@ public class Node : MonoBehaviour {
 		  isSUPTwo = true;
 		  isSUPOne = true;
 		}
-	}
+	} */
+	//Gets costs for the current building level when player wants to sell it
 	public void SellBuilding ()
 	{
 		if(isBUpgrade2)
@@ -365,7 +392,7 @@ public class Node : MonoBehaviour {
 		isBuilding = false;
 		isBUpgrade = false;
 		isBUpgrade2 = false;
-		
+
 		Destroy(turret);
 		turretBlueprint = null;
 		isFirstUpgrade = false;
@@ -377,9 +404,10 @@ public class Node : MonoBehaviour {
 		isSUPOne  = false;
 		isSUPTwo  = false;
 	}
+	//Gets turret costs for when the player decides to sell it
 	public void SellTurret ()
 	{
-	  if(isSUPTwo)
+	  /* if(isSUPTwo)
 	  {
 	    PlayerStats.Money += turretBlueprint.GetUpgradeValueSupTwo();
 	  }
@@ -402,8 +430,8 @@ public class Node : MonoBehaviour {
 	  else if(isDPS)
 	  {
 	    PlayerStats.Money += turretBlueprint.GetUpgradeValueDps();
-	  }
-	  else if(isSecondUpgrade)
+	  } */  //else
+	  if(isSecondUpgrade)
 	  {
 	    PlayerStats.Money += turretBlueprint.GetUpgradeValueTwo();
 	  }
@@ -421,6 +449,7 @@ public class Node : MonoBehaviour {
 
 	  Destroy(turret);
 	  turretBlueprint = null;
+	  nodeUsed = false;
 	  isFirstUpgrade = false;
 	  isSecondUpgrade = false;
 	  isDPS  = false;
@@ -438,11 +467,17 @@ public class Node : MonoBehaviour {
 	}
 	void OnMouseEnter ()
 	{
+		//Sets the colour of the node according to if the player can afford to build anything
 		if (EventSystem.current.IsPointerOverGameObject())
 			return;
 
-		//if (!buildManager.canBuildT)
-		//	return;
+		// if (!buildManager.canBuildT)
+		// 	return;
+		if(nodeUsed)
+		{
+			rend.material.color = usedColor;
+			return;
+		}
 		if (buildManager.HasMoney)
 		{
 			rend.material.color = hoverColor;
@@ -454,7 +489,8 @@ public class Node : MonoBehaviour {
 
 	void OnMouseExit ()
 	{
+		//Sets the colour back when the mouse has exited the node
 		rend.material.color = startColor;
-    }
+  }
 
 }

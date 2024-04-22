@@ -6,18 +6,30 @@ public class Turret : MonoBehaviour {
 	private Transform target;
 	private Enemy targetEnemy;
 
+//Most of the below settings are self explanitory
+
 	[Header("Unity Setup Fields")]
 
 	public string enemyTag = "Enemy";
+	public string baseTag = "Base";
 
 	public Transform partToRotate;
 	public float turnSpeed = 10f;
 
 	public Transform firePoint;
+	
+	[Header("Upgrades from scene")]
+	//rangeBonus, damageBonus, magDamageBonus (ready for fireBonus etc);
+	public int[] nodeBonuses = { 0, 0, 0 };
+	public bool isUpgradedByNode = false;
+	public GameObject buffsUI;
+	public GameObject rangeUI;
 
 	[Header("General")]
 
 	public float range = 15f;
+	public bool nearestEnemy, furthestEnemy, closestToStart, closestToEnd, healBase;
+	private int startLives;
 
 	[Header("Use Bullets")]
 
@@ -25,6 +37,7 @@ public class Turret : MonoBehaviour {
 	public GameObject bulletPrefab;
 	public float fireRate = 1f;
 	private float fireCountdown = 0f;
+	private bool doShoot = false;
 
 	[Header("Use Laser")]
 	public bool useLaser = false;
@@ -41,12 +54,20 @@ public class Turret : MonoBehaviour {
 
 	[Header("Use AoE")]
 	public bool useAoe = false;
+	public float AoERate = 3f;
+	private float countdownAoe = .5f;
 
 	public int physicalDamageAoe = 1;
 	public int magicDamageAoe = 1;
-	public float countdownAoe = 1f;
-	public float stunTime = 2f;
-	public float stunChance = 20f;
+
+	public ParticleSystem aoeImpactEffect;
+	//AoE (testing #52) = #27 Expose of Darkness OR #44 Purify water OR #52 Lightening field #33 Demoic sphere OR #43Darkdraw OR
+	public Light aoeImpactLight;
+
+	[Header("Added Effects")]
+	//Note that these are also added on bullets and shouldn't be duplicated
+	public float stunTime = 0f;
+	public float stunChance = 0f;
 	public float silenceTime = 0f;
 	public float silenceChance = 0f;
 	public float virusChance = 0f;
@@ -54,16 +75,25 @@ public class Turret : MonoBehaviour {
 	public float virusDamage = 0f;
 	public float virusRange = 0f;
 
-	public ParticleSystem aoeImpactEffect;
-	public Light aoeImpactLight;
+	[HideInInspector] float pathCompare, pathRemain = 10000;
 
-
-	// Use this for initialization
+	private Animator anim;
+	public float animCooldown = 0f;
+	
 	void Start () {
-		InvokeRepeating("UpdateTarget", 0f, 0.5f);
+		anim = gameObject.GetComponentInChildren<Animator>();
+		if(isUpgradedByNode)
+		{
+			buffsUI.SetActive(true);
+			if(nodeBonuses[0] > 0)
+			{
+				rangeUI.SetActive(true);
+				range = range + nodeBonuses[0];
+			}
+		}
+		startLives = PlayerStats.Lives;
 	}
-
-	void UpdateTarget ()
+    void NearestTarget ()
 	{
 		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
 		float shortestDistance = Mathf.Infinity;
@@ -86,23 +116,187 @@ public class Turret : MonoBehaviour {
 		{
 			target = null;
 		}
+		enemies = null;
+	}
+	//detects target literally furthest from tower (doesn't matter if enemy is closer to start OR finish)
+	void FurthestTarget ()
+	{
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
+		float furthestDistance = Mathf.Infinity;
+		GameObject furthestEnemy = null;
+		foreach (GameObject enemy in enemies)
+		{
+			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+			if (distanceToEnemy <= range)
+			{
+				furthestDistance = distanceToEnemy;
+				furthestEnemy = enemy;
+			}
+		}
 
+		if (furthestEnemy != null && furthestDistance <= range)
+		{
+			target = furthestEnemy.transform;
+			targetEnemy = furthestEnemy.GetComponent<Enemy>();
+		} else
+		{
+			target = null;
+		}
+		enemies = null;
 	}
 
-	// Update is called once per frame
+	//Detects the enemy closes to the Start
+	void ClosestToStartTarget ()
+	{
+
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
+		float closestToEnd = Mathf.Infinity;
+		GameObject closestToEndEnemy = null;
+		foreach (GameObject enemy in enemies)
+		{
+			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+
+			if (distanceToEnemy <= range)
+			{
+				closestToEnd = distanceToEnemy;
+				closestToEndEnemy = enemy;
+			}
+		}
+
+		if (closestToEndEnemy != null && closestToEnd <= range)
+		{
+			target = closestToEndEnemy.transform;
+			targetEnemy = closestToEndEnemy.GetComponent<Enemy>();
+		} else
+		{
+			target = null;
+		}
+		enemies = null;
+	}
+
+	//Detects the enemy closest to the finish
+	void ClosestToEndTarget ()
+	{
+		//Debug.Log("I'm trying to target");
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
+		float closestToEnd = Mathf.Infinity;
+		GameObject closestToEndEnemy = null;
+		foreach (GameObject enemy in enemies)
+		{
+			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+
+			Enemy pathRemaining = enemy.GetComponent<Enemy>();
+			pathRemain = pathRemaining.remainingPathDist;
+
+			if (distanceToEnemy <= range)
+			{
+				if (pathRemain <= pathCompare)
+				{
+					//Debug.Log("I'm in the path loop.  Remain = " + pathRemain + ".  Compare = " + pathCompare);
+					pathCompare = pathRemain;
+					closestToEnd = distanceToEnemy;
+					closestToEndEnemy = enemy;
+				}
+			}
+		}
+		if (closestToEndEnemy != null && closestToEnd <= range)
+		{
+			//Debug.Log("I'm targetting");
+			target = closestToEndEnemy.transform;
+			targetEnemy = closestToEndEnemy.GetComponent<Enemy>();
+		}
+		else
+		{
+			//Debug.Log("Clearing out");
+			target = null;
+			pathCompare = 10000;
+			pathRemain = 10000;
+		}
+		enemies = null;
+	}
+	void HealingBase ()
+	{
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag(baseTag);
+		float shortestDistance = Mathf.Infinity;
+		GameObject nearestEnemy = null;
+		foreach (GameObject enemy in enemies)
+		{
+			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+			if (distanceToEnemy < shortestDistance)
+			{
+				shortestDistance = distanceToEnemy;
+				nearestEnemy = enemy;
+			}
+		}
+
+		if (nearestEnemy != null && shortestDistance <= range)
+		{
+			target = nearestEnemy.transform;
+			targetEnemy = nearestEnemy.GetComponent<Enemy>();
+		} else
+		{
+			target = null;
+		}
+		enemies = null;
+	}
+	
+	//Update is called once per frame
 	void Update () {
+		//Which function am I going to use for enemy detection
+		if(nearestEnemy)
+		{
+			//Debug.Log("I'm looking for the target");
+			NearestTarget();
+		}
+		if(furthestEnemy)
+		{
+            FurthestTarget();
+		}
+        if (closestToStart)
+        {
+            ClosestToStartTarget();
+        }
+        if (closestToEnd)
+		{
+			ClosestToEndTarget();
+		}
+		if (healBase)
+		{
+			HealingBase();
+			LockOnTarget();
+			fireCountdown -= Time.deltaTime;
+			if(fireCountdown < 0)
+			{
+				Shoot();
+				if(PlayerStats.Lives == startLives)
+				{
+				
+				}
+				else
+				{
+					PlayerStats.Lives++;	
+				}
+				
+				fireCountdown = fireRate * 10;
+			}
+			else
+			{
+				fireCountdown -= Time.deltaTime;
+			}
+			return;
+		}
+		//allows laser weapons to decrease "overheat"
 		if (target == null)
 		{
+			//Set to force the cooldown for Laser even when it isn't targetting anything
 			if (useLaser)
 			{
+				minHeat -= Time.deltaTime;
+
 				if (minHeat < 0)
 				{
 					minHeat = 0;
 				}
-
-				minHeat -= Time.deltaTime;
-				countdownAoe -= Time.deltaTime;
-				fireCountdown -= Time.deltaTime;
 
 				if (lineRenderer.enabled)
 				{
@@ -114,11 +308,12 @@ public class Turret : MonoBehaviour {
 
 			return;
 		}
-
+		//Turns the turret to face the target
 		LockOnTarget();
 
 		if (useLaser)
 			{
+				countdownAoe -= Time.deltaTime;
 				if (overHeat)
 				{
 					minHeat -= Time.deltaTime;
@@ -127,6 +322,7 @@ public class Turret : MonoBehaviour {
 				}
 				else
 					Laser();
+					return;
 			}
 
 		else if (useAoe)
@@ -134,18 +330,38 @@ public class Turret : MonoBehaviour {
 			if (countdownAoe <= 0f)
 			{
 				AoE();
-				countdownAoe = 1f / fireRate;
+				countdownAoe += AoERate;
 			}
 			countdownAoe -= Time.deltaTime;
+			return;
 		}
 		else
 		{
+			//Debug.Log("I'm in the else");
+			fireCountdown -= Time.deltaTime;
+			animCooldown -= Time.deltaTime;
 			if (fireCountdown <= 0f)
 			{
-				Shoot();
+				anim.SetBool("Attack1", true);
+				animCooldown = 1f;
+				doShoot = true;
+				//Debug.Log("Bool is true");
 				fireCountdown = 1f / fireRate;
 			}
+
+			if (animCooldown <= 0f)
+			{
+				anim.SetBool("Attack1",false);
+				
+				if (doShoot == true)
+				{
+				Shoot();
+				//Debug.Log("Bool is false");
+				doShoot = false;
+				}
+			}
 			fireCountdown -= Time.deltaTime;
+			animCooldown -= Time.deltaTime;
 		}
 	}
 
@@ -160,7 +376,7 @@ public class Turret : MonoBehaviour {
 	void Laser ()
 	{
 		targetEnemy.TakePenDamage(physicalDamageOverTime * Time.deltaTime, magicDamageOverTime * Time.deltaTime);
-		Debug.Log("I'm taking " + physicalDamageOverTime * Time.deltaTime + " physical damage & " + magicDamageOverTime * Time.deltaTime + " magic damage.");
+		//Debug.Log("I'm taking " + physicalDamageOverTime * Time.deltaTime + " physical damage & " + magicDamageOverTime * Time.deltaTime + " magic damage.");
 		targetEnemy.Slow(slowAmount, 0.1f);
 
 		if (!lineRenderer.enabled)
@@ -194,6 +410,8 @@ public class Turret : MonoBehaviour {
 
 	void AoE ()
 	{
+		//Debug.Log("I'm shooting an emeny!");
+		aoeImpactEffect.Play();
 		Collider[] colliders = Physics.OverlapSphere(transform.position, range);
 		foreach (Collider collider in colliders)
 		{
@@ -203,6 +421,7 @@ public class Turret : MonoBehaviour {
 			}
 		}
 		//Vector3 dir = firePoint.position - target.position;
+		colliders = null;
 	}
 
 	void AoEDamage (Transform enemy)
@@ -214,7 +433,7 @@ public class Turret : MonoBehaviour {
 		{
 			if (e.isFlying)
 			{
-				Debug.Log("Woah.. is someone there?");
+				//Debug.Log("Woah.. is someone there?");
 				return;
 			}
 			else
@@ -242,9 +461,10 @@ public class Turret : MonoBehaviour {
 				{
 					var rand = Random.Range(1, 100);
 
-					if (rand < stunChance)
+					if (rand <= stunChance)
 					{
 						e.Stop(stunTime);
+						//Debug.Log("I'm being stunned");
 					}
 				}
 			}
@@ -253,11 +473,14 @@ public class Turret : MonoBehaviour {
 
 	void Shoot ()
 	{
+		//Debug.Log("FireAwayyyy");
 		GameObject bulletGO = (GameObject)Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+
 		Bullet bullet = bulletGO.GetComponent<Bullet>();
 
 		if (bullet != null)
 			bullet.Seek(target);
+		
 	}
 
 	void OnDrawGizmosSelected ()

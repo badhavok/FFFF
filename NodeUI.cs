@@ -3,23 +3,27 @@ using UnityEngine.UI;
 
 public class NodeUI : MonoBehaviour {
 
+	//Set which menus are being used
 	public GameObject ui;
 	public GameObject uiBuildings;
 	public GameObject advanceUI;
 	public GameObject advanceUIDPS;
 	public GameObject advanceUISUP;
 
-	public Text upgradeCost;
-	public Button upgradeButton;
-
+	//Variables used to detect what is "built" on the node
 	public bool imDPS, imSUP, imUpgraded, upgradeLevelOne, upgradedLevelTwo, upgradedLevelThree = false;
 
+	//Variables for the UI
+	public Text upgradeCost;
+	public Button upgradeButton;
 	public Text sellAmount;
 
 	private Node target;
 
 	BuildManager buildManager;
 
+	//Tell the game which node is currently selected, what it has built on it and then show the correct UI
+	//The general logic is "upgrade that's true, but 'next' upgrade is false"
 	public void SetTarget (Node _target)
 	{
 		target = _target;
@@ -54,14 +58,14 @@ public class NodeUI : MonoBehaviour {
 			ui.SetActive(true);
 			Debug.Log("1");
 		}
-		else if (target.isFirstUpgrade && !target.isSecondUpgrade)
+		else //(target.isFirstUpgrade && !target.isSecondUpgrade)
 		{
 			upgradeCost.text = "$" + target.turretBlueprint.upgradeCost;
 			upgradeButton.interactable = true;
 			ui.SetActive(true);
 			Debug.Log("2");
 		}
-		else if (target.isSecondUpgrade && !target.isDPS && !target.isSUP)
+		/* else if (target.isSecondUpgrade && !target.isDPS && !target.isSUP)
 		{
 				Debug.Log("Ready to advance");
 				upgradeCost.text = "$" + target.turretBlueprint.upgradeCost;
@@ -90,8 +94,9 @@ public class NodeUI : MonoBehaviour {
 			sellAmount.text = "$" + target.turretBlueprint.GetUpgradeValueSupTwo();
 			ui.SetActive(true);
 			Debug.Log("end");
-		}
+		} */
 	}
+	//These are the functions for the buttons used in the UI, to upgrade to the correct building
 	public void UpgradeBuilding ()
 	{
 			target.UpgradeBuilding();
@@ -102,7 +107,7 @@ public class NodeUI : MonoBehaviour {
 			target.UpgradeTurret();
 			BuildManager.instance.DeselectNode();
 	}
-	public void UpgradeToDPS ()
+	/* public void UpgradeToDPS ()
 	{
 			target.UpgradeToDPS();
 			BuildManager.instance.DeselectNode();
@@ -131,7 +136,8 @@ public class NodeUI : MonoBehaviour {
 	{
 			target.UpgradeTurretSupTwo();
 			BuildManager.instance.DeselectNode();
-	}
+	} */
+	//These are the functions used by the buttons when a building is going to be sold (May need to expand for the buildings once they're upgraded aswell)
 	public void Sell ()
 	{
 		target.SellTurret();
@@ -142,6 +148,7 @@ public class NodeUI : MonoBehaviour {
 		target.SellBuilding();
 		BuildManager.instance.DeselectNode();
 	}
+	//Function to hide the menu when not being used (I.E the player has clicked somewhere else)
 	public void Hide ()
 	{
 		advanceUIDPS.SetActive(false);
