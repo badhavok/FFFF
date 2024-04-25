@@ -1,18 +1,3 @@
-// private Transform[] path;
-
-// private void Start()
-// {
-//   path = Waypoints.GetPath(Enemy.path);
-// }
-
-// // waypoints
-// public Transform[] GetPath(int index)
-// {
-//   if (index == 1) { return path1; }
-  
-//   return path2;
-// }
-
 using UnityEngine;
 using System.Collections;
 
@@ -29,13 +14,14 @@ public class EnemyMovement : MonoBehaviour {
 	public float wormMove;
 	private bool wormStop;
 	private bool iDle;
+	public bool endPath, attackBase = false;
 
 	private Enemy enemy;
 	private Animator anim;
 
-	public float pathDistance, timeToDestination, remainingPathDistance, endPathCounter;
+	public float pathDistance, timeToDestination, remainingPathDistance, endPathCounter, attackCounter;
 
-	public float endPathTime = 8;
+	public float endPathTime = 6;
 
 	private float randomNumber, randomNumberTwo, lastNumber, lastNumberTwo;
 	private int maxAttempts = 10;
@@ -51,6 +37,10 @@ public class EnemyMovement : MonoBehaviour {
 		//Waypoints waypoints = new Waypoints();
 		if (enemy.fromDropship)
 		{
+			if(endPath)
+			{
+				return;
+			}
 			if(walkingPath == 2)
 			{
 				target = Waypoints.pathPoints2[wavepointIndex];
@@ -111,6 +101,29 @@ public class EnemyMovement : MonoBehaviour {
 		{
 			return;
 		}
+		if (endPath)
+		{
+			if (enemy.isWorm)
+			{
+				this.gameObject.tag = "Enemy";
+				anim.SetBool("Up", true);
+				anim.SetBool("Down", false);
+				anim.SetBool("Static", true);
+				Debug.Log("End path worm");
+			}
+			if (attackBase)
+			{
+				attackCounter -= Time.deltaTime;
+
+				if(attackCounter < 0)
+				{
+					--PlayerStats.Lives;
+					attackBase = false;
+				}
+			}
+			EndPath();
+			return;
+		}	
 		if (enemy.stopEnemy)
 		{
 		
@@ -307,14 +320,27 @@ public class EnemyMovement : MonoBehaviour {
 	//When enemy is at the end path, lose a player life & despawn
 	void EndPath()
 	{
+		endPath = true;
+
+		anim.SetBool("Move", false);
+		
 		if(endPathCounter < 0)
 		{
-			--PlayerStats.Lives;
+			attackBase = true;
+			attackCounter = 1;
+			anim.SetBool("Attack", true);
+			anim.SetBool("Static", false);
 			endPathCounter = endPathTime;
+		}
+		else if (endPathCounter > 5)
+		{
+			endPathCounter -= Time.deltaTime;
 		}
 		else
 		{
 			endPathCounter -= Time.deltaTime;
+			anim.SetBool("Attack", false);
+			anim.SetBool("Static", true);
 		}
 	}
 

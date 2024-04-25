@@ -125,7 +125,7 @@ public class BuildManager : MonoBehaviour {
 		{
 			costOfTower = turretToBuild.cost;
 		}
-		DeselectNode();
+		//DeselectNode();
 	}
 	public void SelectBuildingToBuild (BuildingBlueprint building)
 	{

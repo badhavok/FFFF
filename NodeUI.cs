@@ -9,6 +9,9 @@ public class NodeUI : MonoBehaviour {
 	public GameObject advanceUI;
 	public GameObject advanceUIDPS;
 	public GameObject advanceUISUP;
+	public GameObject targetOptions;
+
+	public Button healButton;
 
 	//Variables used to detect what is "built" on the node
 	public bool imDPS, imSUP, imUpgraded, upgradeLevelOne, upgradedLevelTwo, upgradedLevelThree = false;
@@ -148,6 +151,44 @@ public class NodeUI : MonoBehaviour {
 		target.SellBuilding();
 		BuildManager.instance.DeselectNode();
 	}
+	public void SetTargetOption()
+	{
+		ui.SetActive(false);
+		targetOptions.SetActive(true);
+		if(!target.enableButton)
+		{
+			healButton.interactable = false;
+		}
+		else
+		{
+			healButton.interactable = true;
+		}
+	}
+	public void NearEnd()
+	{
+		target.CloseEnd();
+		BuildManager.instance.DeselectNode();
+	}
+	public void NearStart()
+	{
+		target.CloseStart();
+		BuildManager.instance.DeselectNode();
+	}
+	public void NearTurret()
+	{
+		target.CloseTurret();
+		BuildManager.instance.DeselectNode();
+	}
+	public void FarFromTurret()
+	{
+		target.FarTurret();
+		BuildManager.instance.DeselectNode();
+	}
+	public void HealBase()
+	{
+		target.BaseHeal();
+		BuildManager.instance.DeselectNode();
+	} 
 	//Function to hide the menu when not being used (I.E the player has clicked somewhere else)
 	public void Hide ()
 	{
@@ -156,5 +197,6 @@ public class NodeUI : MonoBehaviour {
 		advanceUI.SetActive(false);
 		uiBuildings.SetActive(false);
 		ui.SetActive(false);
+		targetOptions.SetActive(false);
 	}
 }

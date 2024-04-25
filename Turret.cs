@@ -30,6 +30,11 @@ public class Turret : MonoBehaviour {
 	public float range = 15f;
 	public bool nearestEnemy, furthestEnemy, closestToStart, closestToEnd, healBase;
 	private int startLives;
+	
+	[Header("Healing")]
+	public bool canHeal;
+	public float healRate;
+	public GameObject healPrefab;
 
 	[Header("Use Bullets")]
 
@@ -93,7 +98,48 @@ public class Turret : MonoBehaviour {
 		}
 		startLives = PlayerStats.Lives;
 	}
-    void NearestTarget ()
+	
+	public void ClosestToEnd()
+	{
+		nearestEnemy = false;
+		furthestEnemy = false;
+		closestToStart = false;
+		healBase = false;
+		closestToEnd = true;
+	}
+    public void ClosestToStart()
+	{
+		nearestEnemy = false;
+		furthestEnemy = false;
+		closestToStart = true;
+		healBase = false;
+		closestToEnd = false;
+	}
+	public void NearestToTurret()
+	{
+		nearestEnemy = true;
+		furthestEnemy = false;
+		closestToStart = false;
+		healBase = false;
+		closestToEnd = false;
+	}
+	public void FarthestFromTurret()
+	{
+		nearestEnemy = false;
+		furthestEnemy = true;
+		closestToStart = false;
+		healBase = false;
+		closestToEnd = false;
+	}
+	public void HealTheBase()
+	{
+		nearestEnemy = false;
+		furthestEnemy = false;
+		closestToStart = false;
+		healBase = true;
+		closestToEnd = false;
+	}
+	void NearestTarget ()
 	{
 		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
 		float shortestDistance = Mathf.Infinity;
@@ -118,6 +164,7 @@ public class Turret : MonoBehaviour {
 		}
 		enemies = null;
 	}
+	
 	//detects target literally furthest from tower (doesn't matter if enemy is closer to start OR finish)
 	void FurthestTarget ()
 	{
@@ -233,6 +280,7 @@ public class Turret : MonoBehaviour {
 		{
 			target = nearestEnemy.transform;
 			targetEnemy = nearestEnemy.GetComponent<Enemy>();
+			LockOnTarget();
 		} else
 		{
 			target = null;
@@ -263,11 +311,10 @@ public class Turret : MonoBehaviour {
 		if (healBase)
 		{
 			HealingBase();
-			LockOnTarget();
 			fireCountdown -= Time.deltaTime;
 			if(fireCountdown < 0)
 			{
-				Shoot();
+				Heal();
 				if(PlayerStats.Lives == startLives)
 				{
 				
@@ -277,7 +324,7 @@ public class Turret : MonoBehaviour {
 					PlayerStats.Lives++;	
 				}
 				
-				fireCountdown = fireRate * 10;
+				fireCountdown = 1f / healRate;
 			}
 			else
 			{
@@ -475,6 +522,18 @@ public class Turret : MonoBehaviour {
 	{
 		//Debug.Log("FireAwayyyy");
 		GameObject bulletGO = (GameObject)Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+
+		Bullet bullet = bulletGO.GetComponent<Bullet>();
+
+		if (bullet != null)
+			bullet.Seek(target);
+		
+	}
+	
+	void Heal ()
+	{
+		//Debug.Log("FireAwayyyy");
+		GameObject bulletGO = (GameObject)Instantiate(healPrefab, firePoint.position, firePoint.rotation);
 
 		Bullet bullet = bulletGO.GetComponent<Bullet>();
 

@@ -2,12 +2,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
-public class GasUI : MonoBehaviour {
+public class PointsUI : MonoBehaviour {
 
-	public Text gasText;
+	public Text pointsText;
 
 	// Update is called once per frame
 	void Update () {
-		gasText.text = "$" + PlayerStats.Gas.ToString();
+		pointsText.text = PlayerStats.Points.ToString() + " points";
 	}
 }

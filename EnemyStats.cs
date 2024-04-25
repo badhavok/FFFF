@@ -13,6 +13,8 @@ public class EnemyStats : MonoBehaviour {
 
 	public static float Worth;
 	public float startWorth = 10;
+	public static float Points;
+	public float startPoints = 100;
 
 	public int startPhysDef = 0;
 	public int startMagDef = 0;
@@ -39,6 +41,7 @@ public class EnemyStats : MonoBehaviour {
 	{
 		enemy = GetComponent<Enemy>();
 		Worth = startWorth;
+		Points = startPoints;
 		hoverCount = hoverTimeBoost;
 		dropCount = dropTime;
 	}

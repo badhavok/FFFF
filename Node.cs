@@ -6,9 +6,9 @@ public class Node : MonoBehaviour {
 	public Color hoverColor;
 	public Color notEnoughMoneyColor;
 	public Color usedColor;
-  public Vector3 positionOffset;
+	public Vector3 positionOffset;
 
-	[HideInInspector]
+	//[HideInInspector]
 	public GameObject turret, building;
 	[HideInInspector]
 	public TurretBlueprint turretBlueprint;
@@ -16,10 +16,11 @@ public class Node : MonoBehaviour {
 	public BuildingBlueprint buildingBlueprint;
 	[HideInInspector]
 	public bool isBase = true;
+
 	//listing all the bonus upgrades given to turrets
 	[Header("Bonuses give:  RNG, DMG, MAG")]
 	public bool hasBonus = false;
-	public bool nodeUsed = false;
+	public bool nodeUsed, enableButton = false;
 	public int[] nodeBonuses = { 0, 0, 0 };
 
 	[HideInInspector]
@@ -58,6 +59,7 @@ public class Node : MonoBehaviour {
 			//Debug.Log("Selecting node");
 			Time.timeScale = 0f;
 			buildManager.SelectNode(this);
+			enableButton = turret.GetComponent<Turret>().canHeal;
 			return;
 		}
 		//Debug.Log("Checking canbuild");
@@ -464,6 +466,26 @@ public class Node : MonoBehaviour {
 		isBuilding = false;
 		isBUpgrade = false;
 		isBUpgrade2 = false;
+	}
+	public void CloseEnd()
+	{
+			turret.GetComponent<Turret>().ClosestToEnd();
+	}
+	public void CloseStart()
+	{
+			turret.GetComponent<Turret>().ClosestToStart();
+	}
+	public void CloseTurret()
+	{
+			turret.GetComponent<Turret>().NearestToTurret();
+	}
+	public void FarTurret()
+	{
+			turret.GetComponent<Turret>().FarthestFromTurret();
+	}
+	public void BaseHeal()
+	{
+			turret.GetComponent<Turret>().HealTheBase();
 	}
 	void OnMouseEnter ()
 	{

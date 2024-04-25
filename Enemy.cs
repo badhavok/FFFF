@@ -79,12 +79,17 @@ public class Enemy : MonoBehaviour {
 	[Header("Am I golden?")]
 	public bool goldenEnemy = false;
 	private float goldBonus = 0;
+	private float pointsBonus = 0;
 	public bool notKilled = false;
 	public bool isDead = false;
 	void Start ()
 	{
 		anim = gameObject.GetComponentInChildren<Animator>();
 		speed = startSpeed;
+		if(isBoss || isMiniBoss)
+		{
+			pointsBonus = enemyStats.startPoints;
+		}
 		//Calculation to adjust hp based on the level
 		//[base + (base / 2) + (level * 10) + (wave * 10)]
 		//Calculate the HP of a boss differently to an enemy
@@ -320,6 +325,10 @@ public class Enemy : MonoBehaviour {
 		remainingPathDist = enemyMovement.remainingPathDistance;
 		//Debug.Log("My path dist is : " + remainingPathDistance);
 
+		if(pointsBonus > 0)
+		{
+			pointsBonus -= speed * Time.deltaTime;
+		}
 		//Code to hide HP bar until the enemy has been attacked for the first time
 		if (updatedHealth == maxHealth)
 		{
@@ -575,6 +584,10 @@ public class Enemy : MonoBehaviour {
 				GameObject enemy = Instantiate(enemySpells.summoningPool[summoningIndex], transform.position, Quaternion.identity);
 				enemy.GetComponent<Enemy>().fromDropship = true;
 				enemy.GetComponent<EnemyMovement>().wavepointIndex = enemyMovement.wavepointIndex;
+				if(enemyMovement.endPath)
+				{
+					enemy.GetComponent<EnemyMovement>().endPath = enemyMovement.endPath;				
+				}
 				++WaveSpawner.EnemiesAlive;
 				yield return new WaitForSeconds(1.0f);
 			}
@@ -620,6 +633,10 @@ public class Enemy : MonoBehaviour {
 		float roundedResult = Mathf.Round(goldBonus / 2) * 2;
 		roundedResult += EnemyStats.Worth;
 		PlayerStats.Money += roundedResult;
+
+		float roundedResult2 = Mathf.Round(pointsBonus / 2) * 2;
+		roundedResult2 += EnemyStats.Points;
+		PlayerStats.Points += roundedResult2;
 		//Debug.Log("Gold bonus: " + goldBonus + " & Enemy worth: " + roundedResult);
 
 		//GameObject effect = (GameObject)Instantiate(deathEffect, transform.position, Quaternion.identity);
