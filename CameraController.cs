@@ -6,17 +6,16 @@ public class CameraController : MonoBehaviour {
 	public float panBorderThickness = 10f;
 
 	public float scrollSpeed = 5f;
-	public float minY = 10f;
-	public float maxY = 80f;
 	
 	public Vector3 myCamPos = Vector3.zero;
 	private static readonly float PanSpeed = 20f;
 	private static readonly float ZoomSpeedTouch = 0.005f;
 	private static readonly float ZoomSpeedMouse = 0.005f;
 
-	private static readonly float[] BoundsX = new float[]{-1000f,1005f};
-	private static readonly float[] BoundsZ = new float[]{-1000f, 14f};
-	private static readonly float[] ZoomBounds = new float[]{10f, 85f};
+	public float[] BoundsX = new float[]{-1000f,1005f};
+	public float[] BoundsZ = new float[]{-1000f, 14f};
+	public float[] BoundsY = new float[]{-40, 40};
+	public float[] ZoomBounds = new float[]{10f, 85f};
 
 	public Camera cam;
 
@@ -74,7 +73,9 @@ public class CameraController : MonoBehaviour {
 		Vector3 pos = transform.position;
 
 		pos.y -= scroll * 1000 * scrollSpeed * Time.deltaTime;
-		pos.y = Mathf.Clamp(pos.y, minY, maxY);
+		pos.y = Mathf.Clamp(pos.y, BoundsY[0], BoundsY[1]);
+		pos.x = Mathf.Clamp(pos.x, BoundsX[0], BoundsX[1]);
+		pos.z = Mathf.Clamp(pos.z, BoundsZ[0], BoundsZ[1]);
 
 		transform.position = pos;
 
@@ -156,6 +157,7 @@ public class CameraController : MonoBehaviour {
 		// Ensure the camera remains within bounds.
 		Vector3 pos = transform.position;
 		pos.x = Mathf.Clamp(transform.position.x, BoundsX[0], BoundsX[1]);
+		pos.y = Mathf.Clamp(transform.position.y, BoundsY[0], BoundsY[1]);
 		pos.z = Mathf.Clamp(transform.position.z, BoundsZ[0], BoundsZ[1]);
 		transform.position = pos;
 
