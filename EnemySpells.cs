@@ -6,10 +6,13 @@ using System.Collections;
 public class EnemySpells : MonoBehaviour {
 
 	private Enemy enemy;
+	private Turret tower;
 
 	private Transform target;
 	private Enemy targetEnemy;
+	private Turret targetTower;
 	public string enemyTag = "Enemy";
+	public string towerTag = "Tower";
 
 	public float range = 0;
 	public bool casting;
@@ -37,9 +40,10 @@ public class EnemySpells : MonoBehaviour {
 
 	//This makes the enemy move faster
 	public bool buffSpeed = false;
-	public float bonusSpeed = 0;
-	public float countdownSpeed = 0;
-	public float speedCount = 0;
+	public float bonusSpeed, countdownSpeed, speedCount = 0;
+	
+	public bool debuffTowerSpeed = false;
+	public float debuffSpeed, countdownDebuffSpeed, debuffSpeedCount = 0;
 
 	//This makes an enemy duplicate itself (weaker than summon as it detects current HP as well)
 	public bool duplicate = false;
@@ -120,14 +124,16 @@ public ParticleSystem[] castList;
 				isCasting = m_CurrentClipLength * 3;
 				enemy.Casting(m_CurrentClipLength * 3);
 				casting = false;
-foreach (ParticleSystem casting in castList)
-		{
-		if(!casting.isPlaying)
-    			{
-		        casting.Play();
-    			}
-		}
+				
+				foreach (ParticleSystem casting in castList)
+				{
+				if(!casting.isPlaying)
+						{
+						casting.Play();
+						}
+				}
 			}
+			
 			if(vampire)
 			{
 				BuffVampire();
@@ -155,6 +161,10 @@ foreach (ParticleSystem casting in castList)
 			if (buffLevitate)
 			{
 				BuffLevitate();
+			}
+			if (debuffTowerSpeed)
+			{
+				DebuffSpeed();
 			}
 		}
 	}
@@ -379,5 +389,54 @@ foreach (ParticleSystem casting in castList)
 		}
 	}
 
+	void DebuffSpeed()
+	{
+		if (debuffSpeedCount < 0)
+		{
+			
+			//Debug.Log("Targeting");
+			TargetTower();
+
+			if(targetTower)
+			{
+				//Debug.Log("Enemy targeted - " + targetEnemy + " .");
+				targetTower.DebuffSpeed(debuffSpeed, countdownDebuffSpeed);
+			}
+			//Debug.Log("Weeeeee.... don't say bye then!");
+			debuffSpeedCount += (countdownDebuffSpeed * 1.5f);
+		}
+		else
+		{
+			debuffSpeedCount -= Time.deltaTime;
+		}
+	}
+
+	void TargetTower()
+	{
+		Debug.Log("Targeting Tower");
+		casting = true;
+		GameObject[] towers = GameObject.FindGameObjectsWithTag(towerTag);
+		float shortestDistance = Mathf.Infinity;
+		GameObject nearestTower = null;
+		foreach (GameObject tower in towers)
+		{
+			if (tower == gameObject) continue;
+
+			float distanceToTower = Vector3.Distance(transform.position, tower.transform.position);
+			if (distanceToTower < shortestDistance)
+			{
+				shortestDistance = distanceToTower;
+				nearestTower = tower;
+			}
+		}
+		if (nearestTower != null && shortestDistance <= range)
+		{
+			target = nearestTower.transform;
+			targetTower = nearestTower.GetComponent<Turret>();
+		} else
+		{
+			target = null;
+		}
+	}
 
 }

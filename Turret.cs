@@ -40,7 +40,7 @@ public class Turret : MonoBehaviour {
 
 	public bool useBullets = false;
 	public GameObject bulletPrefab;
-	public float fireRate = 1f;
+	public float fireRate, startFireRate = 1f;
 	private float fireCountdown = 0f;
 	private bool doShoot = false;
 
@@ -96,9 +96,15 @@ public class Turret : MonoBehaviour {
 	private Animator anim;
 	public float animCooldown = 0f;
 	private Camera cam;
+
+	public bool debuffSpeedTower;
+	private bool debuffSpeedTrigger;
+	public float debuffSpeed, countdownDebuffSpeed;
 	
 	void Start () {
+		
 		anim = gameObject.GetComponentInChildren<Animator>();
+		startFireRate = fireRate;
 		if(isUpgradedByNode)
 		{
 			cam = CameraController.PlayerCam;
@@ -300,6 +306,15 @@ public class Turret : MonoBehaviour {
 		enemies = null;
 	}
 	
+	public void DebuffSpeed (float dBSpd, float dBCountdown)
+	{
+		//Debug.Log("I'm in the speed loop");
+		debuffSpeedTower = true;
+		debuffSpeedTrigger = true;
+		debuffSpeed = dBSpd;
+		countdownDebuffSpeed = dBCountdown;
+	}
+
 	//Update is called once per frame
 	void Update () {
 		//Which function am I going to use for enemy detection
@@ -311,6 +326,23 @@ public class Turret : MonoBehaviour {
 		{
 			rangeUI.transform.LookAt(cam.transform);
 		}
+		if (debuffSpeedTower)
+		{
+			//Debug.Log("Tower speed loop + " + debuffSpeed + " .");
+			if(debuffSpeedTrigger)
+			{
+				fireRate = fireRate / debuffSpeed;
+				debuffSpeedTrigger = false;
+			}
+			countdownDebuffSpeed -= Time.deltaTime;
+			if (countdownDebuffSpeed <= 0)
+			{
+				debuffSpeedTower = false;
+				fireRate = startFireRate;
+				//Debug.Log("Weeeee... again please!");
+			}
+		}
+		
 		if(nearestEnemy)
 		{
 			//Debug.Log("I'm looking for the target");
