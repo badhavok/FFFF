@@ -44,26 +44,37 @@ public class Turret : MonoBehaviour {
 	private float fireCountdown = 0f;
 	private bool doShoot = false;
 
-	[Header("Use Laser")]
-	public bool useLaser = false;
-	public int physicalDamageOverTime = 0;
-	public int magicDamageOverTime = 0;
-	public float slowAmount = .5f;
-	public bool overHeat = false;
-	public float minHeat = 0f;
-	public float maxHeat = 2f;
+	// [Header("Use Laser")]
+	// public bool useLaser = false;
+	// public int physicalDamageOverTime = 0;
+	// public int magicDamageOverTime = 0;
+	// public float slowAmount = .5f;
+	// public bool overHeat = false;
+	// public float minHeat = 0f;
+	// public float maxHeat = 2f;
 
-	public LineRenderer lineRenderer;
-	public ParticleSystem impactEffect;
-	public Light impactLight;
+	// public LineRenderer lineRenderer;
+	// public ParticleSystem impactEffect;
+	// public Light impactLight;
 
 	[Header("Use AoE")]
 	public bool useAoe = false;
 	public float AoERate = 3f;
 	private float countdownAoe = .5f;
 
-	public int physicalDamageAoe = 1;
+	//public int physicalDamageAoe = 1;
 	public int magicDamageAoe = 1;
+
+	public int bluntDamageAoE = 0;
+	public int slashingDamageAoE = 0;
+	public int piercingDamageAoE = 0;
+
+	// public int damageEarthAoE = 0;
+	// public int damageLighteningAoE = 0;
+	// public int damageWaterAoE = 0;
+	// public int damageFireAoE = 0;
+	// public int damageIceAoE = 0;
+	// public int damageWindAoE = 0;
 
 	public ParticleSystem aoeImpactEffect;
 	//AoE (testing #52) = #27 Expose of Darkness OR #44 Purify water OR #52 Lightening field #33 Demoic sphere OR #43Darkdraw OR
@@ -335,44 +346,44 @@ public class Turret : MonoBehaviour {
 		//allows laser weapons to decrease "overheat"
 		if (target == null)
 		{
-			//Set to force the cooldown for Laser even when it isn't targetting anything
-			if (useLaser)
-			{
-				minHeat -= Time.deltaTime;
+		// 	//Set to force the cooldown for Laser even when it isn't targetting anything
+		// 	if (useLaser)
+		// 	{
+		// 		minHeat -= Time.deltaTime;
 
-				if (minHeat < 0)
-				{
-					minHeat = 0;
-				}
+		// 		if (minHeat < 0)
+		// 		{
+		// 			minHeat = 0;
+		// 		}
 
-				if (lineRenderer.enabled)
-				{
-					lineRenderer.enabled = false;
-					impactEffect.Stop();
-					impactLight.enabled = false;
-				}
-			}
+		// 		if (lineRenderer.enabled)
+		// 		{
+		// 			lineRenderer.enabled = false;
+		// 			impactEffect.Stop();
+		// 			impactLight.enabled = false;
+		// 		}
+		// 	}
 
 			return;
 		}
 		//Turns the turret to face the target
 		LockOnTarget();
 
-		if (useLaser)
-			{
-				countdownAoe -= Time.deltaTime;
-				if (overHeat)
-				{
-					minHeat -= Time.deltaTime;
-					if (minHeat <= 0f)
-						overHeat = false;
-				}
-				else
-					Laser();
-					return;
-			}
+		// if (useLaser)
+		// 	{
+		// 		countdownAoe -= Time.deltaTime;
+		// 		if (overHeat)
+		// 		{
+		// 			minHeat -= Time.deltaTime;
+		// 			if (minHeat <= 0f)
+		// 				overHeat = false;
+		// 		}
+		// 		else
+		// 			Laser();
+		// 			return;
+		// 	}
 
-		else if (useAoe)
+		if (useAoe)
 		{
 			if (countdownAoe <= 0f)
 			{
@@ -420,40 +431,40 @@ public class Turret : MonoBehaviour {
 		partToRotate.rotation = Quaternion.Euler(0f, rotation.y, 0f);
 	}
 
-	void Laser ()
-	{
-		targetEnemy.TakePenDamage(physicalDamageOverTime * Time.deltaTime, magicDamageOverTime * Time.deltaTime);
-		//Debug.Log("I'm taking " + physicalDamageOverTime * Time.deltaTime + " physical damage & " + magicDamageOverTime * Time.deltaTime + " magic damage.");
-		targetEnemy.Slow(slowAmount, 0.1f);
+	// void Laser ()
+	// {
+	// 	targetEnemy.TakePenDamage(physicalDamageOverTime * Time.deltaTime, magicDamageOverTime * Time.deltaTime);
+	// 	//Debug.Log("I'm taking " + physicalDamageOverTime * Time.deltaTime + " physical damage & " + magicDamageOverTime * Time.deltaTime + " magic damage.");
+	// 	targetEnemy.Slow(slowAmount, 0.1f);
 
-		if (!lineRenderer.enabled)
-		{
-			lineRenderer.enabled = true;
-			impactEffect.Play();
-			impactLight.enabled = true;
-		}
+	// 	if (!lineRenderer.enabled)
+	// 	{
+	// 		lineRenderer.enabled = true;
+	// 		impactEffect.Play();
+	// 		impactLight.enabled = true;
+	// 	}
 
-		lineRenderer.SetPosition(0, firePoint.position);
-		lineRenderer.SetPosition(1, target.position);
+	// 	lineRenderer.SetPosition(0, firePoint.position);
+	// 	lineRenderer.SetPosition(1, target.position);
 
-		Vector3 dir = firePoint.position - target.position;
+	// 	Vector3 dir = firePoint.position - target.position;
 
-		impactEffect.transform.position = target.position + dir.normalized;
+	// 	impactEffect.transform.position = target.position + dir.normalized;
 
-		impactEffect.transform.rotation = Quaternion.LookRotation(dir);
+	// 	impactEffect.transform.rotation = Quaternion.LookRotation(dir);
 
-		minHeat += Time.deltaTime;
-			if (minHeat > maxHeat)
-			{
-				overHeat = true;
-				if (lineRenderer.enabled)
-					{
-						lineRenderer.enabled = false;
-						impactEffect.Stop();
-						impactLight.enabled = false;
-					}
-			}
-	}
+	// 	minHeat += Time.deltaTime;
+	// 		if (minHeat > maxHeat)
+	// 		{
+	// 			overHeat = true;
+	// 			if (lineRenderer.enabled)
+	// 				{
+	// 					lineRenderer.enabled = false;
+	// 					impactEffect.Stop();
+	// 					impactLight.enabled = false;
+	// 				}
+	// 		}
+	// }
 
 	void AoE ()
 	{
@@ -485,7 +496,7 @@ public class Turret : MonoBehaviour {
 			}
 			else
 			{
-				e.TakeDamage(physicalDamageAoe, magicDamageAoe);
+				e.TakeDamage(bluntDamageAoE, slashingDamageAoE, piercingDamageAoE, magicDamageAoe);
 				if(virusChance > 0)
 				{
 					var rand = Random.Range(1, 100);

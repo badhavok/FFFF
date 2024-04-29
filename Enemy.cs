@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour {
 	public float speed;
 [HideInInspector]	public float maxHealth, baseHealth;
 	public float updatedHealth;
-[HideInInspector]	public int physDef, magDef;
+[HideInInspector] public int bluntDef, slashDef, pierceDef, magDef;
 [HideInInspector] public float imFlying, countdownChicken, chk;
 //This is to set the path of any summons, to where the enemy that spawned them, is (E.G not the very start of the path)
 [HideInInspector] public bool fromDropship = false;
@@ -50,7 +50,7 @@ public class Enemy : MonoBehaviour {
 [HideInInspector]	public float countdownFear;
 [HideInInspector] public bool fearEnemy = false;
 
-[HideInInspector]	public float countdownPoison, physicalStrengthPoison, magicalStrengthPoison;
+[HideInInspector]	public float countdownPoison, poisonInterval, physicalStrengthPoison, magicalStrengthPoison;
 [HideInInspector]	public bool poisonEnemy;
 
 [HideInInspector] public float countdownImmune, imm;
@@ -72,7 +72,7 @@ public class Enemy : MonoBehaviour {
 
 	private Animator anim;
 
-[HideInInspector] public float physAmount, physDamage, magAmount, magDamage;
+[HideInInspector] public float slashingDamage, piercingDamage, bluntDamage, magDamage;
 	public float remainingPathDist;
 	public static int path;
 
@@ -106,7 +106,11 @@ public class Enemy : MonoBehaviour {
 			updatedHealth = baseHealth + (baseHealth / 2) + (BuildManager.Level * 10) + (BuildManager.Wave * 10);
 			maxHealth = updatedHealth;
 
-			physDef = enemyStats.startPhysDef;
+			//physDef = enemyStats.startPhysDef;
+			
+			bluntDef = enemyStats.startBluntDef;
+			slashDef = enemyStats.startSlashDef;
+			pierceDef = enemyStats.startPierceDef;
 			magDef = enemyStats.startMagDef;
 			//Debug.Log("I have " + updatedHealth + " HP");
 		}
@@ -143,10 +147,10 @@ public class Enemy : MonoBehaviour {
 			Die();
 		}
 	}
-	//Function used by "specialist" things to ignore all forms of defence
-	public void IgnoreImmuneDMG (float physAmount, float magAmount)
+	//Function used by "specialist" things to ignore all forms of defence - reserved for Breath attacks
+	public void IgnoreImmuneDMG (float bluntDamage, float piercingDamage, float slashingDamage, float magDamage)
 	{
-		float amount = physAmount + magAmount;
+		float amount = bluntDamage + piercingDamage + slashingDamage + magDamage;
 
 		updatedHealth -= amount;
 		healthBar.fillAmount = updatedHealth / maxHealth;
@@ -157,8 +161,8 @@ public class Enemy : MonoBehaviour {
 		}
 		amount = 0;
 	}
-	//Function for any "special" towers that may have ignore armour but not ignore immune spells
-	public void TakePenDamage (float physAmount, float magAmount)
+	//Function for any "special" towers that may have ignore armour/defenses but not ignore immune spells
+	public void TakePenDamage (float bluntDamage, float piercingDamage, float slashingDamage, float magDamage)
 	{
 		if (immune)
 		{
@@ -166,7 +170,7 @@ public class Enemy : MonoBehaviour {
 			return;
 		}
 
-		float amount = physAmount + magAmount;
+		float amount = bluntDamage + piercingDamage + slashingDamage + magDamage;
 
 		if(amount <= 0)
 		{
@@ -185,17 +189,31 @@ public class Enemy : MonoBehaviour {
 		amount = 0;
 	}
 	//Function to calculate standard damage and deduct any defense the unit may have, including immunity
-	public void TakeDamage (float physAmount, float magAmount)
+	public void TakeDamage (float bluntDamage, float piercingDamage, float slashingDamage, float magDamage)
 	{
 		if (immune)
 		{
 			//Debug.Log("I'm immune!");
 			return;
 		}
-		physDamage = physAmount - physDef;
-		magDamage = magAmount - magDef;
-
-		float amount = physDamage + magDamage;
+		if(bluntDamage > 0)
+		{
+		bluntDamage = bluntDamage - bluntDef;
+		}
+		if(piercingDamage > 0)
+		{
+		piercingDamage = piercingDamage - pierceDef;
+		}
+		if(slashingDamage > 0)
+		{
+		slashingDamage = slashingDamage - slashDef;
+		}
+		if(magDamage > 0)
+		{
+		magDamage = magDamage - magDef;
+		}
+		
+		float amount = bluntDamage + piercingDamage + slashingDamage + magDamage;
 
 		//Debug.Log("I'm taking damage " + amount);
 		if(amount <= 0)
@@ -299,7 +317,8 @@ public class Enemy : MonoBehaviour {
 	{
 		poisonEnemy = true;
 		magicalStrengthPoison = psnS;
-		countdownPoison = psnT;
+		countdownPoison = 1;
+		poisonInterval = psnT;
 	}
 	//Buff to speed up enemies
 	public void Speed (float spdB, float spdD)
@@ -387,13 +406,22 @@ public class Enemy : MonoBehaviour {
 		}
 		if (poisonEnemy)
 		{
-			countdownPoison -= Time.deltaTime;
-			TakeDamage(0f, magicalStrengthPoison);
-			//Debug.Log("I'm taking damage: " + strengthPoison + " for " + countdownPoison + ".");
-			if (countdownPoison <= 0)
+			if (poisonInterval > 0)
 			{
-				poisonEnemy = false;
-				//Debug.Log("Poison end");
+				Debug.Log("In poison loop - interval = " + poisonInterval);
+				if (countdownPoison >= 1.0f)
+				{
+					poisonInterval--;
+					TakeDamage(0f, 0f, 0f, magicalStrengthPoison);
+					Debug.Log("I'm taking damage: " + magicalStrengthPoison + " for " + poisonInterval + ".");
+					countdownPoison = 0;
+				}
+				countdownPoison += Time.deltaTime;
+			}
+			else
+			{
+					poisonEnemy = false;
+					Debug.Log("Poison end");
 			}
 		}
 		if (castingEnemy)

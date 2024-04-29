@@ -16,7 +16,9 @@ public class EnemyStats : MonoBehaviour {
 	public static float Points;
 	public float startPoints = 100;
 
-	public int startPhysDef = 0;
+	public int startBluntDef = 0;
+	public int startSlashDef = 0;
+	public int startPierceDef = 0;
 	public int startMagDef = 0;
 
 	public int fireDef = 0; // DoT

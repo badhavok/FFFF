@@ -6,8 +6,13 @@ public class Bullet : MonoBehaviour {
 
 	public float speed = 70f;
 
-	public int damagePhysical = 5;
+	//public int damagePhysical = 5;
 	public int damageMagical = 0;
+
+	public int damageBlunt = 0;
+	public int damageSlashing = 0;
+	public int damagePiercing = 0;
+	
 
 	public int damageEarth = 0;
 	public int damageLightening = 0;
@@ -106,18 +111,19 @@ public class Bullet : MonoBehaviour {
 
 		if (e != null)
 		{
-			if(gravityChance > 0)
-			{
-				var rand = Random.Range(1, 100);
+			// if(gravityChance > 0)
+			// {
+			// 	var rand = Random.Range(1, 100);
 
-				if (rand < gravityChance)
-				{
-					//Debug.Log("Gravity damage is: " + e.maxHealth / 8 + " phys + " + e.maxHealth / 8 + " mag");
-					e.TakePenDamage(e.maxHealth / 8, e.maxHealth / 8);
-				}
-				return;
-			}
-			e.TakeDamage(damagePhysical, damageMagical);
+			// 	if (rand < gravityChance)
+			// 	{
+			// 		//Debug.Log("Gravity damage is: " + e.maxHealth / 8 + " phys + " + e.maxHealth / 8 + " mag");
+			// 		e.TakePenDamage(e.maxHealth / 8, e.maxHealth / 8);
+			// 	}
+			// 	return;
+			// }
+			
+			e.TakeDamage(damageBlunt, damagePiercing, damageSlashing, damageMagical);
 
 			if(chickenChance > 0)
 			{
@@ -148,11 +154,19 @@ public class Bullet : MonoBehaviour {
 			}
 			if (poisonChance > 0)
 			{
-				var rand = Random.Range(1,100);
-
-				if (rand < poisonChance)
+				if(!e.poisonEnemy)
 				{
-					e.Poison(poisonStrength, poisonTime);
+					var rand = Random.Range(1,100);
+
+					if (rand < poisonChance)
+					{
+						Debug.Log("MUAHAHAA... Poison!");
+						e.Poison(poisonStrength, poisonTime);
+					}
+				}
+				else
+				{
+					Debug.Log("Already poisoned");
 				}
 			}
 		}
