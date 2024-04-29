@@ -8,6 +8,6 @@ public class PointsUI : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		pointsText.text = PlayerStats.Points.ToString() + " points";
+		pointsText.text = PlayerStats.Points.ToString() + " POINTS";
 	}
 }

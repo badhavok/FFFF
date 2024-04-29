@@ -84,17 +84,17 @@ public class Node : MonoBehaviour {
 	//Final function to build what the player has selected
 	void BuildThis ()
 	{
-		Debug.Log("Build this");
+		//Debug.Log("Build this");
 		if (buildManager.canBuildB)
 		{
 			BuildBuilding(buildManager.GetBuildingToBuild());
-			Debug.Log("I'm building a building");
+			//Debug.Log("I'm building a building");
 			buildManager.buildingToBuild = null;
 		}
 		if (buildManager.canBuildT)
 		{
 			BuildTurret(buildManager.GetTurretToBuild());
-			Debug.Log("I'm building a turret");
+			//Debug.Log("I'm building a turret");
 			buildManager.turretToBuild = null;
 		}
 	}
@@ -106,7 +106,7 @@ public class Node : MonoBehaviour {
 		//Debug.Log("In building loop");
 		if (PlayerStats.Money < blueprintB.costB)
 	  {
-	    Debug.Log("Not enough money to build that!");
+	    //Debug.Log("Not enough money to build that!");
 	    return;
 	  }
 
@@ -128,7 +128,7 @@ public class Node : MonoBehaviour {
 	{
 	  if (PlayerStats.Money < buildingBlueprint.upgradeBCost || PlayerStats.Money < buildingBlueprint.upgradeBCostTwo)
 	  {
-	    Debug.Log("Not enough money to upgrade that!");
+	    //Debug.Log("Not enough money to upgrade that!");
 	    return;
 	  }
 	  if (!isBUpgrade)
@@ -165,11 +165,11 @@ public class Node : MonoBehaviour {
 	}
 	void BuildTurret (TurretBlueprint blueprint)
 	{
-		Debug.Log("In build loop");
+		//Debug.Log("In build loop");
 		
 		if (PlayerStats.Money < blueprint.cost)
 		{
-			Debug.Log("Not enough money to build that!");
+			//Debug.Log("Not enough money to build that!");
 			return;
 		}
 
@@ -190,7 +190,7 @@ public class Node : MonoBehaviour {
 	{
 	  if (PlayerStats.Money < turretBlueprint.upgradeCost)
 	  {
-	    Debug.Log("Not enough money to upgrade that!");
+	   // Debug.Log("Not enough money to upgrade that!");
 	    return;
 	  }
 	  if (!isFirstUpgrade)
@@ -214,7 +214,7 @@ public class Node : MonoBehaviour {
 	{
 		if (PlayerStats.Money < turretBlueprint.upgradeCostTwo)
 		{
-			Debug.Log("Not enough money to upgrade that!");
+			//Debug.Log("Not enough money to upgrade that!");
 			return;
 		}
 		if (isFirstUpgrade && AdvanceBuilding.BuildLevel > 0)

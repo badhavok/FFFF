@@ -18,6 +18,7 @@ public class CameraController : MonoBehaviour {
 	public float[] ZoomBounds = new float[]{10f, 85f};
 
 	public Camera cam;
+	public static Camera PlayerCam;
 
 	private Vector3 lastPanPosition;
 	private int panFingerId; // Touch mode only
@@ -32,6 +33,7 @@ public class CameraController : MonoBehaviour {
 	void Awake()
 	{
 		cam = GetComponent<Camera>();
+		PlayerCam = cam;
 	}
 
 	// Update is called once per frame

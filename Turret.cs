@@ -95,11 +95,13 @@ public class Turret : MonoBehaviour {
 
 	private Animator anim;
 	public float animCooldown = 0f;
+	private Camera cam;
 	
 	void Start () {
 		anim = gameObject.GetComponentInChildren<Animator>();
 		if(isUpgradedByNode)
 		{
+			cam = CameraController.PlayerCam;
 			buffsUI.SetActive(true);
 			if(nodeBonuses[0] > 0)
 			{
@@ -107,7 +109,6 @@ public class Turret : MonoBehaviour {
 				range = range + nodeBonuses[0];
 			}
 		}
-		startLives = PlayerStats.Lives;
 	}
 	
 	public void ClosestToEnd()
@@ -302,6 +303,14 @@ public class Turret : MonoBehaviour {
 	//Update is called once per frame
 	void Update () {
 		//Which function am I going to use for enemy detection
+		if (!isUpgradedByNode)
+		{
+
+		}
+		else
+		{
+			rangeUI.transform.LookAt(cam.transform);
+		}
 		if(nearestEnemy)
 		{
 			//Debug.Log("I'm looking for the target");
@@ -326,11 +335,7 @@ public class Turret : MonoBehaviour {
 			if(fireCountdown < 0)
 			{
 				Heal();
-				if(PlayerStats.Lives == startLives)
-				{
-				
-				}
-				else
+				if(PlayerStats.Lives != PlayerStats.StartLives)
 				{
 					PlayerStats.Lives++;	
 				}

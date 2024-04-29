@@ -89,7 +89,7 @@ public class EnemyMovement : MonoBehaviour {
 	{
 		for(int i=0; randomNumberTwo == lastNumberTwo && i < maxAttempts; i++)
 		{
-			randomNumberTwo = Random.Range(10, 15);
+			randomNumberTwo = Random.Range(10, 14);
 		}
 
 		lastNumberTwo = randomNumberTwo;
@@ -108,7 +108,7 @@ public class EnemyMovement : MonoBehaviour {
 				this.gameObject.tag = "Enemy";
 				anim.SetBool("Up", true);
 				anim.SetBool("Down", false);
-				anim.SetBool("Static", true);
+				anim.SetBool("Move", true);
 				Debug.Log("End path worm");
 			}
 			if (attackBase)
@@ -199,16 +199,16 @@ public class EnemyMovement : MonoBehaviour {
 				NewRandomNumberTwo();
 				//Debug.Log("My Random number is " + randomNumberTwo + " ... wow");
 				wormMove += randomNumberTwo;
-				enemy.Stop(randomNumberTwo / 1.75f);
+				enemy.Stop(randomNumberTwo / 1.55f);
 			}
-			else if(wormMove < 10 && wormMove > 8 )
+			else if(wormMove < 12 && wormMove > 8 )
 			{
 				//Debug.Log("I'm in wormMove ++");
 				//aboveGround = true;
 				this.gameObject.tag = "Enemy";
 				anim.SetBool("Up", true);
 				anim.SetBool("Down", false);
-				anim.SetBool("Static", true);
+				anim.SetBool("Move", false);
 				wormMove -= Time.deltaTime;
 			}
 			else if(wormMove < 8 && wormMove > 6)
@@ -216,7 +216,7 @@ public class EnemyMovement : MonoBehaviour {
 				this.gameObject.tag = "Enemy";
 				anim.SetBool("Up", true);
 				anim.SetBool("Down", false);
-				anim.SetBool("Static", true);
+				anim.SetBool("Move", false);
 				//Debug.Log("Setting Idle status");
 				wormMove -= Time.deltaTime;
 			}
@@ -228,7 +228,7 @@ public class EnemyMovement : MonoBehaviour {
 				wormMove -= Time.deltaTime;
 				anim.SetBool("Up", false);
 				anim.SetBool("Down", true);
-				anim.SetBool("Static", false);
+				anim.SetBool("Move", true);
 			}
 			else
 			{

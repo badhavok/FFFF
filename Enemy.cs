@@ -50,7 +50,7 @@ public class Enemy : MonoBehaviour {
 [HideInInspector]	public float countdownFear;
 [HideInInspector] public bool fearEnemy = false;
 
-[HideInInspector]	public float countdownPoison, poisonInterval, physicalStrengthPoison, magicalStrengthPoison;
+	public float countdownPoison, poisonInterval, physicalStrengthPoison, magicalStrengthPoison;
 [HideInInspector]	public bool poisonEnemy;
 
 [HideInInspector] public float countdownImmune, imm;
@@ -82,9 +82,13 @@ public class Enemy : MonoBehaviour {
 	private float pointsBonus = 0;
 	public bool notKilled = false;
 	public bool isDead = false;
+
+	private Camera cam;
+	
 	void Start ()
 	{
 		anim = gameObject.GetComponentInChildren<Animator>();
+		cam = CameraController.PlayerCam;
 		speed = startSpeed;
 		if(isBoss || isMiniBoss)
 		{
@@ -213,6 +217,7 @@ public class Enemy : MonoBehaviour {
 		magDamage = magDamage - magDef;
 		}
 		
+		Debug.Log("The damage I'm taking is - " + bluntDamage + " blunt; " + piercingDamage + " pierce; " + slashingDamage + " slashing; " + magDamage + " magic;");
 		float amount = bluntDamage + piercingDamage + slashingDamage + magDamage;
 
 		//Debug.Log("I'm taking damage " + amount);
@@ -357,6 +362,7 @@ public class Enemy : MonoBehaviour {
 		{
 			//Debug.Log("I'm not at max HP");
 			canvas.SetActive(true);
+			canvas.transform.LookAt(cam.transform);
 		}
 		
 		//Code to set the effects on the "current" enemy
@@ -408,12 +414,12 @@ public class Enemy : MonoBehaviour {
 		{
 			if (poisonInterval > 0)
 			{
-				Debug.Log("In poison loop - interval = " + poisonInterval);
+				//Debug.Log("In poison loop - interval = " + poisonInterval);
 				if (countdownPoison >= 1.0f)
 				{
 					poisonInterval--;
 					TakeDamage(0f, 0f, 0f, magicalStrengthPoison);
-					Debug.Log("I'm taking damage: " + magicalStrengthPoison + " for " + poisonInterval + ".");
+					//Debug.Log("I'm taking damage: " + magicalStrengthPoison + " for " + poisonInterval + ".");
 					countdownPoison = 0;
 				}
 				countdownPoison += Time.deltaTime;
@@ -421,19 +427,19 @@ public class Enemy : MonoBehaviour {
 			else
 			{
 					poisonEnemy = false;
-					Debug.Log("Poison end");
+					//Debug.Log("Poison end");
 			}
 		}
 		if (castingEnemy)
 		{
 			speed = startSpeed * (1f - 1f);
 			countdownCasting -= Time.deltaTime;
-			Debug.Log("Stopped");
+			//Debug.Log("Stopped");
 			if (countdownCasting <= 0)
 			{
 				castingEnemy = false;
 				speed = startSpeed;
-				Debug.Log("I'm free");
+				//Debug.Log("I'm free");
 			}
 		}
 		//Any code below this will not run if the enemy is a boss; this is to ignore any buffs/debuffs that would make the boss OP and no need to run through the loops

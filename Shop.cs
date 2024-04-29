@@ -67,37 +67,37 @@ public class Shop : MonoBehaviour {
 		//Select [x] tower/building`
 	public void Unit1 ()
 	{
-		Debug.Log("Standard Turret Selected");
+		//Debug.Log("Standard Turret Selected");
 		buildManager.SelectTurretToBuild(unit1);
 		buildManager.nothingSelected = false;
 	}
 	public void Unit2()
 	{
-		Debug.Log("Missile Launcher Selected");
+		//Debug.Log("Missile Launcher Selected");
 		buildManager.SelectTurretToBuild(unit2);
 		buildManager.nothingSelected = false;
 	}
 	public void Unit3()
 	{
-		Debug.Log("Laser Beamer Selected");
+		//Debug.Log("Laser Beamer Selected");
 		buildManager.SelectTurretToBuild(unit3);
 		buildManager.nothingSelected = false;
 	}
 	public void Unit4()
 	{
-		Debug.Log("AoE Turret Selected");
+		//Debug.Log("AoE Turret Selected");
 		buildManager.SelectTurretToBuild(unit4);
 		buildManager.nothingSelected = false;
 	}
 	public void Unit5()
 	{
-		Debug.Log("Gold Generator Selected");
+		//Debug.Log("Gold Generator Selected");
 		buildManager.SelectTurretToBuild(unit5);
 		buildManager.nothingSelected = false;
 	}
 	public void Unit6()
 	{
-		Debug.Log("Gas Generator Selected");
+		//Debug.Log("Gas Generator Selected");
 		buildManager.SelectTurretToBuild(unit6);
 		buildManager.nothingSelected = false;
 	}
@@ -133,29 +133,29 @@ public class Shop : MonoBehaviour {
 	public void TooltipUnit1 ()
 	{
 		//Set a Gameobject in Unity and activate/deactivate accordingly here
-		Debug.Log("Standard Turret Tooltip");
+		//Debug.Log("Standard Turret Tooltip");
 		tooltipDisplay.text = "Standard Turret Tooltip";
 		//tooltipUI.SetActive(true);
 	}
 	public void TooltipUnit2()
 	{
-		Debug.Log("Missile Launcher Tooltip");
+		//Debug.Log("Missile Launcher Tooltip");
 	}
 	public void TooltipUnit3()
 	{
-		Debug.Log("Laser Beamer Tooltip");
+		//Debug.Log("Laser Beamer Tooltip");
 	}
 	public void TooltipUnit4()
 	{
-		Debug.Log("AoE Turret Tooltip");
+		//Debug.Log("AoE Turret Tooltip");
 	}
 	public void TooltipUnit5()
 	{
-		Debug.Log("Gold Generator Tooltip");
+		//Debug.Log("Gold Generator Tooltip");
 	}
 	public void TooltipUnit6()
 	{
-		Debug.Log("Gas Generator Tooltip");
+		//Debug.Log("Gas Generator Tooltip");
 	}
 	public void OnMouseExit()
 	{

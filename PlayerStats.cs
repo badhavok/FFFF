@@ -5,7 +5,7 @@ public class PlayerStats : MonoBehaviour {
 
 	public static float Money;
 	public float startMoney = 300;
-	public static int Lives;
+	public static int Lives, StartLives;
 	public int startLives = 20;
 	public static float Points;
 	public float startPoints;
@@ -16,6 +16,7 @@ public class PlayerStats : MonoBehaviour {
 	{
 		Money = startMoney;
 		Lives = startLives;
+		StartLives = startLives;
 		Points = startPoints;
 
 		Rounds = 0;
