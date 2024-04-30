@@ -76,7 +76,6 @@ public class Node : MonoBehaviour {
 
 		buildManager.canBuildB = false;
 		buildManager.canBuildT = false;
-		nodeUsed = true;
 		buildManager.turretSelected = false;
 		buildManager.SelectTurretToBuild(null);
 		buildManager.nothingSelected = true;
@@ -169,9 +168,11 @@ public class Node : MonoBehaviour {
 		
 		if (PlayerStats.Money < blueprint.cost)
 		{
-			//Debug.Log("Not enough money to build that!");
+			Debug.Log("Not enough money to build that!");
 			return;
 		}
+
+		nodeUsed = true;
 
 	    PlayerStats.Money -= blueprint.cost;
 
