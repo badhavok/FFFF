@@ -41,6 +41,10 @@ public class EnemySpells : MonoBehaviour {
 	//This makes the enemy move faster
 	public bool buffSpeed = false;
 	public float bonusSpeed, countdownSpeed, speedCount = 0;
+	public bool buffDefences = false;
+	public int buffDefSlash, buffDefBlunt, buffDefPierce, buffDefMag;
+[HideInInspector] public float buffDefCount;
+	public float countdownBuffDef = 0;
 	
 	public bool debuffTowerSpeed = false;
 	public float debuffSpeed, countdownDebuffSpeed, debuffSpeedCount = 0;
@@ -88,6 +92,7 @@ public ParticleSystem[] castList;
 		levitateCount = countdownLevitate;
 		immuneCount = countdownImmune;
 		vampireCount = countdownVampire;
+		buffDefCount = countdownBuffDef;
 	}
 	void Update()
 	{
@@ -141,6 +146,10 @@ public ParticleSystem[] castList;
 			if (buffImmune)
 			{
 				BuffImmune();
+			}
+			if (buffDefences)
+			{
+				BuffDefences();
 			}
 			if (buffHealing)
 			{
@@ -264,6 +273,38 @@ public ParticleSystem[] castList;
 		{
 			//Debug.Log("I'm counting down");
 			healCount -= Time.deltaTime;
+		}
+	}
+	void BuffDefences()
+	{
+		//Debug.Log("I'm in the healing void");
+		if (buffDefCount <= 0)
+		{
+			if(castSelf)
+			{
+				casting = true;
+				enemy.BuffSlashDef(buffDefSlash, countdownBuffDef);
+				enemy.BuffBluntDef(buffDefBlunt, countdownBuffDef);
+				enemy.BuffPierceDef(buffDefPierce, countdownBuffDef);
+				enemy.BuffMagDef(buffDefMag, countdownBuffDef);
+				//Debug.Log("Oh wow, look at me... I'm healing me!");
+			}
+			else
+			{
+				TargetEnemy();
+				targetEnemy.BuffSlashDef(buffDefSlash, countdownBuffDef);
+				targetEnemy.BuffBluntDef(buffDefBlunt, countdownBuffDef);
+				targetEnemy.BuffPierceDef(buffDefPierce, countdownBuffDef);
+				targetEnemy.BuffMagDef(buffDefMag, countdownBuffDef);
+				//Debug.Log("Oh wow, look at me... I'm healing you!");
+			}
+			buffDefCount += (countdownBuffDef * 2.0f);
+			//Debug.Log("Heal count is above 0");
+		}
+		else
+		{
+			//Debug.Log("I'm counting down");
+			buffDefCount -= Time.deltaTime;
 		}
 	}
 	void BuffLevitate()

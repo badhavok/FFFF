@@ -34,6 +34,9 @@ public class Enemy : MonoBehaviour {
 [HideInInspector]	public float maxHealth, baseHealth;
 	public float updatedHealth;
 [HideInInspector] public int bluntDef, slashDef, pierceDef, magDef;
+[HideInInspector] public int startBluntDef, startSlashDef, startPierceDef, startMagDef;
+[HideInInspector] public bool buffSlashDef, buffPierceDef, buffBluntDef, buffMagDef = false;
+[HideInInspector] public float countdownSlashBuffDef, countdownPierceBuffDef, countdownBluntBuffDef, countdownMagBuffDef;
 [HideInInspector] public float imFlying, countdownChicken, chk;
 //This is to set the path of any summons, to where the enemy that spawned them, is (E.G not the very start of the path)
 [HideInInspector] public bool fromDropship = false;
@@ -73,6 +76,7 @@ public class Enemy : MonoBehaviour {
 	private Animator anim;
 
 [HideInInspector] public float slashingDamage, piercingDamage, bluntDamage, magDamage;
+
 	public float remainingPathDist;
 	public static int path;
 
@@ -90,6 +94,11 @@ public class Enemy : MonoBehaviour {
 		anim = gameObject.GetComponentInChildren<Animator>();
 		cam = CameraController.PlayerCam;
 		speed = startSpeed;
+		bluntDef = enemyStats.startBluntDef;
+		slashDef = enemyStats.startSlashDef;
+		pierceDef = enemyStats.startPierceDef;
+		magDef = enemyStats.startMagDef;
+
 		if(isBoss || isMiniBoss)
 		{
 			pointsBonus = enemyStats.startPoints;
@@ -112,10 +121,6 @@ public class Enemy : MonoBehaviour {
 
 			//physDef = enemyStats.startPhysDef;
 			
-			bluntDef = enemyStats.startBluntDef;
-			slashDef = enemyStats.startSlashDef;
-			pierceDef = enemyStats.startPierceDef;
-			magDef = enemyStats.startMagDef;
 			//Debug.Log("I have " + updatedHealth + " HP");
 		}
 	}
@@ -138,6 +143,30 @@ public class Enemy : MonoBehaviour {
 			healthBar.fillAmount = updatedHealth / maxHealth;
 			//Debug.Log("I'm being healed by " + healSpell);
 		}
+	}
+	public void BuffSlashDef (int buffingSlashDef, float buffingSlashDefCountdown)
+	{
+		buffSlashDef = true;
+		slashDef = slashDef + buffingSlashDef;
+		countdownSlashBuffDef = buffingSlashDefCountdown;
+	}
+	public void BuffBluntDef (int buffingBluntDef, float buffingBluntDefCountdown)
+	{
+		buffBluntDef = true;
+		bluntDef = bluntDef + buffingBluntDef;
+		countdownBluntBuffDef = buffingBluntDefCountdown;
+	}
+	public void BuffPierceDef (int buffingPierceDef, float buffingPierceDefCountdown)
+	{
+		buffPierceDef = true;
+		pierceDef = pierceDef + buffingPierceDef;
+		countdownPierceBuffDef = buffingPierceDefCountdown;
+	}
+	public void BuffMagDef (int buffingMagDef, float buffingMagDefCountdown)
+	{
+		buffMagDef = true;
+		magDef = magDef + buffingMagDef;
+		countdownMagBuffDef = buffingMagDefCountdown;
 	}
 	//Calculate "Gravity" attacks differently since they are a ratio of max HP (Might adjust to current HP if too OP)
 	public void GravityDMG (float gravity)
@@ -216,7 +245,22 @@ public class Enemy : MonoBehaviour {
 		{
 		magDamage = magDamage - magDef;
 		}
-		
+		if(bluntDamage < 0)
+		{
+		bluntDamage = 0;
+		}
+		if(piercingDamage < 0)
+		{
+		piercingDamage = 0;
+		}
+		if(slashingDamage < 0)
+		{
+		slashingDamage = 0;
+		}
+		if(magDamage < 0)
+		{
+		magDamage = 0;
+		}
 		Debug.Log("The damage I'm taking is - " + bluntDamage + " blunt; " + piercingDamage + " pierce; " + slashingDamage + " slashing; " + magDamage + " magic;");
 		float amount = bluntDamage + piercingDamage + slashingDamage + magDamage;
 
@@ -441,6 +485,58 @@ public class Enemy : MonoBehaviour {
 				speed = startSpeed;
 				//Debug.Log("I'm free");
 			}
+		}
+		if(buffSlashDef)
+		{
+			countdownSlashBuffDef -= Time.deltaTime;
+			if (countdownSlashBuffDef <= 0)
+			{
+				buffSlashDef = false;
+				slashDef = enemyStats.startSlashDef;
+			}
+		}
+		else
+		{
+			slashDef = enemyStats.startSlashDef;
+		}
+		if(buffBluntDef)
+		{
+			countdownBluntBuffDef -= Time.deltaTime;
+			if (countdownBluntBuffDef <= 0)
+			{
+				buffBluntDef = false;
+				bluntDef = enemyStats.startBluntDef;
+			}
+		}
+		else
+		{
+			slashDef = enemyStats.startBluntDef;
+		}
+		if(buffPierceDef)
+		{
+			countdownPierceBuffDef -= Time.deltaTime;
+			if (countdownPierceBuffDef <= 0)
+			{
+				buffPierceDef = false;
+				pierceDef = enemyStats.startPierceDef;
+			}
+		}
+		else
+		{
+			slashDef = enemyStats.startPierceDef;
+		}
+		if(buffMagDef)
+		{
+			countdownMagBuffDef -= Time.deltaTime;
+			if (countdownMagBuffDef <= 0)
+			{
+				buffMagDef = false;
+				magDef = enemyStats.startMagDef;
+			}
+		}
+		else
+		{
+			slashDef = enemyStats.startMagDef;
 		}
 		//Any code below this will not run if the enemy is a boss; this is to ignore any buffs/debuffs that would make the boss OP and no need to run through the loops
 		if(isBoss)

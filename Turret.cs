@@ -30,6 +30,8 @@ public class Turret : MonoBehaviour {
 	public float range = 15f;
 	public bool nearestEnemy, furthestEnemy, closestToStart, closestToEnd, healBase;
 	private int startLives;
+	public int startHealthPoints = 4;
+	public int healthPoints;
 	
 	[Header("Healing")]
 	public bool canHeal;
@@ -103,6 +105,8 @@ public class Turret : MonoBehaviour {
 	
 	void Start () {
 		
+		healthPoints = startHealthPoints;
+
 		anim = gameObject.GetComponentInChildren<Animator>();
 		startFireRate = fireRate;
 		if(isUpgradedByNode)
@@ -318,6 +322,10 @@ public class Turret : MonoBehaviour {
 	//Update is called once per frame
 	void Update () {
 		//Which function am I going to use for enemy detection
+		if (healthPoints <= 0)
+		{
+			Destroy(gameObject, 1);
+		}
 		if (!isUpgradedByNode)
 		{
 
