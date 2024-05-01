@@ -42,7 +42,8 @@ public class Turret : MonoBehaviour {
 
 	public bool useBullets = false;
 	public GameObject bulletPrefab;
-	public float fireRate, startFireRate = 1f;
+	public float fireRate; 
+	private float startFireRate;
 	private float fireCountdown = 0f;
 	private bool doShoot = false;
 

@@ -173,7 +173,7 @@ public ParticleSystem[] castList;
 			}
 			if (debuffTowerSpeed)
 			{
-				DebuffSpeed();
+				DebuffTowerSpeed();
 			}
 		}
 	}
@@ -389,7 +389,7 @@ public ParticleSystem[] castList;
 			enemy.gameObject.tag = "Fallen";
 			//Debug.Log("Shhh nothing to see hear");
 			//[change opaqueness]
-			hideCount += (countdownHide * 1.5f);
+			hideCount += (countdownHide * 2.0f);
 		}
 		else if (hideCount <= (countdownHide / 2))
 		{
@@ -430,7 +430,7 @@ public ParticleSystem[] castList;
 		}
 	}
 
-	void DebuffSpeed()
+	void DebuffTowerSpeed()
 	{
 		if (debuffSpeedCount < 0)
 		{
@@ -454,7 +454,7 @@ public ParticleSystem[] castList;
 
 	void TargetTower()
 	{
-		Debug.Log("Targeting Tower");
+		//Debug.Log("Targeting Tower");
 		casting = true;
 		GameObject[] towers = GameObject.FindGameObjectsWithTag(towerTag);
 		float shortestDistance = Mathf.Infinity;
