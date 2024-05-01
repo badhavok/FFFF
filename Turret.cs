@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Turret : MonoBehaviour {
 
+	public AudioSource audioSource;
+	public AudioClip[] audioClipArray;
 	private Transform target;
 	private Enemy targetEnemy;
 
@@ -26,12 +28,12 @@ public class Turret : MonoBehaviour {
 	public GameObject rangeUI;
 
 	[Header("General")]
+	public int startHealthPoints = 4;
+	public int healthPoints;
 
 	public float range = 15f;
 	public bool nearestEnemy, furthestEnemy, closestToStart, closestToEnd, healBase;
 	private int startLives;
-	public int startHealthPoints = 4;
-	public int healthPoints;
 	
 	[Header("Healing")]
 	public bool canHeal;
@@ -110,6 +112,7 @@ public class Turret : MonoBehaviour {
 
 		anim = gameObject.GetComponentInChildren<Animator>();
 		startFireRate = fireRate;
+		audioSource.clip = audioClipArray[0];
 		if(isUpgradedByNode)
 		{
 			cam = CameraController.PlayerCam;
@@ -325,7 +328,8 @@ public class Turret : MonoBehaviour {
 		//Which function am I going to use for enemy detection
 		if (healthPoints <= 0)
 		{
-			Destroy(gameObject, 1);
+			anim.SetBool("Death", true);
+			Destroy(gameObject, 3);
 		}
 		if (!isUpgradedByNode)
 		{
@@ -333,7 +337,7 @@ public class Turret : MonoBehaviour {
 		}
 		else
 		{
-			rangeUI.transform.LookAt(cam.transform);
+			buffsUI.transform.LookAt(cam.transform);
 		}
 		if (debuffSpeedTower)
 		{
@@ -450,7 +454,7 @@ public class Turret : MonoBehaviour {
 				animCooldown = 1f;
 				doShoot = true;
 				//Debug.Log("Bool is true");
-				fireCountdown = 1f / fireRate;
+				fireCountdown = 100f / fireRate;
 			}
 
 			if (animCooldown <= 0f)
@@ -584,7 +588,8 @@ public class Turret : MonoBehaviour {
 
 		if (bullet != null)
 			bullet.Seek(target);
-		
+			audioSource.clip = audioClipArray[0];
+			audioSource.Play();	
 	}
 	
 	void Heal ()

@@ -10,17 +10,6 @@ public class BuildManager : MonoBehaviour {
 
 	public static BuildManager instance;
 
-	void Awake ()
-	{
-		if (instance != null)
-		{
-			Debug.LogError("More than one BuildManager in scene!");
-			return;
-		}
-		instance = this;
-		//Used as the global variable to set Chicken textures for player spell
-		ChickenEnemy = chickenEnemy;
-	}
 
 	public static GameObject ChickenEnemy;
 	public GameObject chickenEnemy;
@@ -44,6 +33,18 @@ public class BuildManager : MonoBehaviour {
 
 	//This is set to make debugging easier
 	public bool HasMoney = false;
+
+	void Awake ()
+	{
+		if (instance != null)
+		{
+			Debug.LogError("More than one BuildManager in scene!");
+			return;
+		}
+		instance = this;
+		//Used as the global variable to set Chicken textures for player spell
+		ChickenEnemy = chickenEnemy;
+	}
 
 	void Update()
 	{

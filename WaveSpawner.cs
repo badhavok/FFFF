@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class WaveSpawner : MonoBehaviour {
 
+	public AudioSource audioSource;
+	public AudioClip[] audioClipArray;
 	public static int EnemiesAlive = 0;
 	public int enemiesAlive;
 	public static int BossAlive = 0;
@@ -66,6 +68,8 @@ public class WaveSpawner : MonoBehaviour {
 		StartCoroutine(EnemyCount());
 		StartCoroutine(BossCount());
 		totalWaves = waves.Length + bosses.Length;
+		audioSource.clip = audioClipArray[0];
+		audioSource.Play();
 	}
 
 	void Update ()
@@ -120,6 +124,7 @@ public class WaveSpawner : MonoBehaviour {
 				countdown = timeBetweenWaves;
 				++currentWave;
 				currentWaveText.text = "Mini Boss ";
+				audioSource.Stop();
 			}
 			else if (waveComplete)
 			{
@@ -129,6 +134,7 @@ public class WaveSpawner : MonoBehaviour {
 				countdown = timeBetweenWaves;
 				//++currentWave;
 				currentWaveText.text = "Final boss";
+				audioSource.Stop();
 			}
 			else
 			{
@@ -138,6 +144,8 @@ public class WaveSpawner : MonoBehaviour {
 				countdown = timeBetweenWaves;
 				++currentWave;
 				currentWaveText.text = "Wave: " + currentWaveDisplay.ToString();
+				audioSource.clip = audioClipArray[2];
+				audioSource.Play();
 			}
 			CurrentWave = currentWave;
 			waveCountdownText.text = " In progress";
@@ -146,7 +154,14 @@ public class WaveSpawner : MonoBehaviour {
 		//If none of the above, assume a level just ended and run the timer in the UI
 		countdown -= Time.deltaTime;
 		countdown = Mathf.Clamp(countdown, 0f, Mathf.Infinity);
-
+		if(currentWave > 0)
+		{
+			audioSource.clip = audioClipArray[1];
+			if(!audioSource.isPlaying)
+			{
+				audioSource.Play();
+			}
+		}
 		waveCountdownText.text = string.Format("{0:00.00}", countdown);
 	}
 
