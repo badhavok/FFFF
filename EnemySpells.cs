@@ -76,14 +76,14 @@ public class EnemySpells : MonoBehaviour {
 	private Animator anim;
 	AnimatorClipInfo[] m_CurrentClipInfo;
     float m_CurrentClipLength;
-public ParticleSystem[] castList;
-//public bool includeChildren = true;
+	public ParticleSystem[] castList;
+	//public bool includeChildren = true;
 
 	void Start()
 	{
 		enemy = GetComponent<Enemy>();
 		anim = gameObject.GetComponentInChildren<Animator>();
-//casting = gameObject.GetComponentsInChildren<ParticleSystem>();
+		//casting = gameObject.GetComponentsInChildren<ParticleSystem>();
 		//Sets the variables used by the counters
 		hideCount = countdownHide;
 		healCount = countdownHealth;

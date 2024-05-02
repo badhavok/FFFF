@@ -4,7 +4,6 @@ using UnityEngine.UI;
 public class LivesUI : MonoBehaviour {
 
 	public Text livesText;
-	public Text wavesText;
 
 	// Update is called once per frame
 	void Update () {

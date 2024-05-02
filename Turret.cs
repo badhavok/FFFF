@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Turret : MonoBehaviour {
 
@@ -30,10 +31,16 @@ public class Turret : MonoBehaviour {
 	[Header("General")]
 	public int startHealthPoints = 4;
 	public int healthPoints;
+	public GameObject healthUI;
+	public Text healthText;
 
 	public float range = 15f;
 	public bool nearestEnemy, furthestEnemy, closestToStart, closestToEnd, healBase;
 	private int startLives;
+	[Header("Animations")]
+	AnimatorClipInfo[] m_CurrentClipInfo;
+    float m_CurrentClipLength;
+	public ParticleSystem[] castList;
 	
 	[Header("Healing")]
 	public bool canHeal;
@@ -110,13 +117,13 @@ public class Turret : MonoBehaviour {
 		
 		healthPoints = startHealthPoints;
 
+		cam = CameraController.PlayerCam;
 		anim = gameObject.GetComponentInChildren<Animator>();
 		startFireRate = fireRate;
 		audioSource.clip = audioClipArray[0];
 		if(isUpgradedByNode)
 		{
-			cam = CameraController.PlayerCam;
-			buffsUI.SetActive(true);
+			//buffsUI.SetActive(true);
 			if(nodeBonuses[0] > 0)
 			{
 				rangeUI.SetActive(true);
@@ -329,7 +336,32 @@ public class Turret : MonoBehaviour {
 		if (healthPoints <= 0)
 		{
 			anim.SetBool("Death", true);
-			Destroy(gameObject, 3);
+			anim.SetBool("Idle", false);
+			m_CurrentClipInfo = this.anim.GetCurrentAnimatorClipInfo(0);
+			m_CurrentClipLength = m_CurrentClipInfo[0].clip.length;
+			//Debug.Log("The clip length is - " + m_CurrentClipLength + " .");
+			//isCasting = m_CurrentClipLength * 3;
+			//enemy.Casting(m_CurrentClipLength * 3);
+			foreach (ParticleSystem casting in castList)
+				{
+				if(!casting.isPlaying)
+						{
+						casting.Play();
+						}
+				}
+
+			Destroy(gameObject, 1.5f);
+			return;
+		}
+		else if (healthPoints > 0 & healthPoints < startHealthPoints)
+		{
+			healthUI.SetActive(true);
+			healthText.text = healthPoints.ToString() + " / " + startHealthPoints + " health";
+			healthUI.transform.LookAt(cam.transform);
+		}
+		if(healthPoints == startHealthPoints)
+		{
+			healthUI.SetActive(false);
 		}
 		if (!isUpgradedByNode)
 		{
@@ -451,6 +483,7 @@ public class Turret : MonoBehaviour {
 			if (fireCountdown <= 0f)
 			{
 				anim.SetBool("Attack1", true);
+				anim.SetBool("Idle", false);
 				animCooldown = 1f;
 				doShoot = true;
 				//Debug.Log("Bool is true");
@@ -460,6 +493,7 @@ public class Turret : MonoBehaviour {
 			if (animCooldown <= 0f)
 			{
 				anim.SetBool("Attack1",false);
+				anim.SetBool("Idle", true);
 				
 				if (doShoot == true)
 				{
