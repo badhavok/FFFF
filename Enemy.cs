@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour {
 	public float speed;
 [HideInInspector]	public float maxHealth, baseHealth;
 	public float updatedHealth;
-[HideInInspector] public int bluntDef, slashDef, pierceDef, magDef;
+	public int bluntDef, slashDef, pierceDef, magDef;
 [HideInInspector] public int startBluntDef, startSlashDef, startPierceDef, startMagDef;
 [HideInInspector] public bool buffSlashDef, buffPierceDef, buffBluntDef, buffMagDef = false;
 [HideInInspector] public float countdownSlashBuffDef, countdownPierceBuffDef, countdownBluntBuffDef, countdownMagBuffDef;
@@ -42,13 +42,13 @@ public class Enemy : MonoBehaviour {
 [HideInInspector] public bool fromDropship = false;
 
 	public bool speedEnemy;
-	public float countdownSpeed, bonusSpeed;
+[HideInInspector] public float countdownSpeed, bonusSpeed;
 
 [HideInInspector] public float countdownSlow, slowSpeed;
 [HideInInspector]	public bool slowEnemy;
 
 [HideInInspector] public float countdownStop, countdownCasting;
-[HideInInspector] public bool stopEnemy, castingEnemy = false;
+	public bool stopEnemy, castingEnemy = false;
 
 [HideInInspector]	public float countdownFear;
 [HideInInspector] public bool fearEnemy = false;
@@ -128,13 +128,14 @@ public class Enemy : MonoBehaviour {
 	public void Healing (float healSpell)
 	{
 		//If Max HP, move on
-		if (updatedHealth == maxHealth)
+		if (updatedHealth == maxHealth + 1)
 		{
-			// Debug.Log("Thanks but don't need it");
+			Debug.Log("Thanks but don't need it, healing was " + healSpell);
 		}
 		else
 		{
-			updatedHealth += healSpell;
+			updatedHealth *= healSpell;
+			Debug.Log("Health is now " + updatedHealth);
 			if (updatedHealth > maxHealth)
 			{
 				//If overhealed - adjust HP back to MaxHP
@@ -476,14 +477,14 @@ public class Enemy : MonoBehaviour {
 		}
 		if (castingEnemy)
 		{
-			speed = startSpeed * (1f - 1f);
+			speed = 0;
 			countdownCasting -= Time.deltaTime;
-			//Debug.Log("Stopped");
+			Debug.Log("Stopped");
 			if (countdownCasting <= 0)
 			{
 				castingEnemy = false;
 				speed = startSpeed;
-				//Debug.Log("I'm free");
+				Debug.Log("I'm free");
 			}
 		}
 		if(buffSlashDef)
@@ -510,7 +511,7 @@ public class Enemy : MonoBehaviour {
 		}
 		else
 		{
-			slashDef = enemyStats.startBluntDef;
+			bluntDef = enemyStats.startBluntDef;
 		}
 		if(buffPierceDef)
 		{
@@ -523,7 +524,7 @@ public class Enemy : MonoBehaviour {
 		}
 		else
 		{
-			slashDef = enemyStats.startPierceDef;
+			pierceDef = enemyStats.startPierceDef;
 		}
 		if(buffMagDef)
 		{
@@ -536,7 +537,7 @@ public class Enemy : MonoBehaviour {
 		}
 		else
 		{
-			slashDef = enemyStats.startMagDef;
+			magDef = enemyStats.startMagDef;
 		}
 		//Any code below this will not run if the enemy is a boss; this is to ignore any buffs/debuffs that would make the boss OP and no need to run through the loops
 		if(isBoss)
@@ -579,7 +580,7 @@ public class Enemy : MonoBehaviour {
 				immune = false;
 			}
 		}
-		if (speedEnemy)
+		if (speedEnemy & !castingEnemy)
 		{
 			//Debug.Log("Speed enemy loop + " + bonusSpeed + " .");
 			speed = startSpeed + bonusSpeed;

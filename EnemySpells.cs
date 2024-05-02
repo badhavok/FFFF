@@ -29,6 +29,9 @@ public class EnemySpells : MonoBehaviour {
 	//Is the enemy casting on itself
 	[Header("Self casting")]
 	public bool castSelf = false;
+	[Header("AoE casting")]
+	public bool aoECast = false;
+	[Header("Spell list")]
 
 	//This makes the enemy invisible to detection
 	public bool buffHide = false;
@@ -312,26 +315,38 @@ public class EnemySpells : MonoBehaviour {
 			vampireCount -= Time.deltaTime;
 		}
 	}
-	void BuffImmune()
+	void BuffSpeed()
 	{
-		if (immuneCount <= 0)
+		// Debug.Log("I'm in the speed void");
+		if (speedCount < 0)
 		{
 			if(castSelf)
 			{
-			enemy.Immune(countdownImmune);
-			casting = true;
+				casting = true;
+				//Debug.Log("I'm casting now");
+				enemy.Speed(bonusSpeed, countdownSpeed);
+				//casting = true;
+			}
+			else if (aoECast)
+			{
+				AoE(0);
 			}
 			else
 			{
-			TargetEnemy();
-			targetEnemy.Immune(countdownImmune);
+				//Debug.Log("Targeting");
+				TargetEnemy();
+				if(targetEnemy)
+				{
+					// Debug.Log("Enemy targeted - " + targetEnemy + " .");
+					targetEnemy.Speed(bonusSpeed, countdownSpeed);
+				}
 			}
-			//Debug.Log("Tis but a scratch!");
-			immuneCount += (countdownImmune * 1.5f);
+			//Debug.Log("Weeeeee.... don't say bye then!");
+			speedCount += (countdownSpeed);
 		}
 		else
 		{
-			immuneCount -= Time.deltaTime;
+			speedCount -= Time.deltaTime;
 		}
 	}
 	void BuffHealing()
@@ -344,6 +359,10 @@ public class EnemySpells : MonoBehaviour {
 				casting = true;
 				enemy.Healing(bonusHealth);
 				// Debug.Log("Oh wow, look at me... I'm healing me!");
+			}
+			else if (aoECast)
+			{
+				AoE(1);
 			}
 			else
 			{
@@ -377,6 +396,10 @@ public class EnemySpells : MonoBehaviour {
 				enemy.BuffMagDef(buffDefMag, countdownBuffDef);
 				// Debug.Log("Oh wow, look at me... I'm raising my defence!");
 			}
+			else if (aoECast)
+			{
+				AoE(2);
+			}
 			else
 			{
 				TargetEnemy();
@@ -396,6 +419,28 @@ public class EnemySpells : MonoBehaviour {
 		{
 			//Debug.Log("I'm counting down");
 			buffDefCount -= Time.deltaTime;
+		}
+	}
+	void BuffImmune()
+	{
+		if (immuneCount <= 0)
+		{
+			if(castSelf)
+			{
+			enemy.Immune(countdownImmune);
+			casting = true;
+			}
+			else
+			{
+			TargetEnemy();
+			targetEnemy.Immune(countdownImmune);
+			}
+			//Debug.Log("Tis but a scratch!");
+			immuneCount += (countdownImmune * 1.5f);
+		}
+		else
+		{
+			immuneCount -= Time.deltaTime;
 		}
 	}
 	void BuffLevitate()
@@ -442,36 +487,6 @@ public class EnemySpells : MonoBehaviour {
 		}
 	}
 
-	void BuffSpeed()
-	{
-		// Debug.Log("I'm in the speed void");
-		if (speedCount < 0)
-		{
-			if(castSelf)
-			{
-				casting = true;
-				//Debug.Log("I'm casting now");
-				enemy.Speed(bonusSpeed, countdownSpeed);
-				//casting = true;
-			}
-			else
-			{
-				//Debug.Log("Targeting");
-				TargetEnemy();
-				if(targetEnemy)
-				{
-					// Debug.Log("Enemy targeted - " + targetEnemy + " .");
-					targetEnemy.Speed(bonusSpeed, countdownSpeed);
-				}
-			}
-			//Debug.Log("Weeeeee.... don't say bye then!");
-			speedCount += (countdownSpeed);
-		}
-		else
-		{
-			speedCount -= Time.deltaTime;
-		}
-	}
 
 	void BuffHide()
 	{
@@ -521,6 +536,47 @@ public class EnemySpells : MonoBehaviour {
 			target = null;
 		}
 	}
+
+	void AoE (int spellNumber)
+	{
+		//Debug.Log("I'm shooting an emeny!");
+		casting = true;
+		Collider[] colliders = Physics.OverlapSphere(transform.position, range);
+		foreach (Collider collider in colliders)
+		{
+			if (collider.tag == "Enemy")
+			{
+				AoEDamage(collider.transform, spellNumber);
+			}
+		}
+		//Vector3 dir = firePoint.position - target.position;
+		colliders = null;
+	}
+
+	void AoEDamage (Transform enemy, int castingSpell)
+	{
+		Enemy e = enemy.GetComponent<Enemy>();
+		Debug.Log("Enemy targeted - " + e + " .");
+		switch(castingSpell)
+		{
+			default :
+				break;
+			case 0:
+				e.Speed(bonusSpeed, countdownSpeed);
+				break;
+			case 1:
+				e.Healing(bonusHealth);
+				break;
+			case 2:
+				e.BuffSlashDef(buffDefSlash, countdownBuffDef);
+				e.BuffBluntDef(buffDefBlunt, countdownBuffDef);
+				e.BuffPierceDef(buffDefPierce, countdownBuffDef);
+				e.BuffMagDef(buffDefMag, countdownBuffDef);
+				break;
+		}
+		
+	}
+
 
 	void DebuffTowerSpeed()
 	{
@@ -572,4 +628,9 @@ public class EnemySpells : MonoBehaviour {
 		}
 	}
 
+	void OnDrawGizmosSelected ()
+	{
+		Gizmos.color = Color.red;
+		Gizmos.DrawWireSphere(transform.position, range);
+	}
 }
