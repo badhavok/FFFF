@@ -130,7 +130,7 @@ public class Enemy : MonoBehaviour {
 		//If Max HP, move on
 		if (updatedHealth == maxHealth)
 		{
-			//Debug.Log("Thanks but don't need it");
+			// Debug.Log("Thanks but don't need it");
 		}
 		else
 		{
@@ -141,7 +141,7 @@ public class Enemy : MonoBehaviour {
 				updatedHealth = maxHealth;
 			}
 			healthBar.fillAmount = updatedHealth / maxHealth;
-			//Debug.Log("I'm being healed by " + healSpell);
+			// Debug.Log("I'm being healed by " + healSpell);
 		}
 	}
 	public void BuffSlashDef (int buffingSlashDef, float buffingSlashDefCountdown)

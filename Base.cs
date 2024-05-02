@@ -48,7 +48,7 @@ public class Base : MonoBehaviour {
                 // twentyHealth.SetActive(false);
         		// tenHealth.SetActive(false);
                 // lastHealth.SetActive(false);
-                Debug.Log("Full");
+                // Debug.Log("Full");
                 return;
 
                 case var expression when (health < healthBar && health >= healthBar * 90 / 100):
@@ -63,7 +63,7 @@ public class Base : MonoBehaviour {
                 twentyHealth.SetActive(false);
         		tenHealth.SetActive(false);
                 lastHealth.SetActive(false);
-                Debug.Log("90");
+                // Debug.Log("90");
                 return;
                 
                 case var expression when (health <= healthBar * 90 / 100 && health >= healthBar * 80 / 100):
@@ -78,7 +78,7 @@ public class Base : MonoBehaviour {
                 twentyHealth.SetActive(false);
         		tenHealth.SetActive(false);
                 lastHealth.SetActive(false);
-                Debug.Log("80");
+                // Debug.Log("80");
                 return;
                 
                 case var expression when (health < healthBar * 80 / 100 && health >= healthBar * 70 / 100):
@@ -93,7 +93,7 @@ public class Base : MonoBehaviour {
                 twentyHealth.SetActive(false);
         		tenHealth.SetActive(false);
                 lastHealth.SetActive(false);
-                Debug.Log("70");
+                // Debug.Log("70");
                 return;
 
                 case var expression when (health < healthBar * 70 / 100 && health >= healthBar * 60 / 100):
@@ -108,7 +108,7 @@ public class Base : MonoBehaviour {
                 twentyHealth.SetActive(false);
         		tenHealth.SetActive(false);
                 lastHealth.SetActive(false);
-                Debug.Log("60");
+                // Debug.Log("60");
                 return;
 
                 case var expression when (health < healthBar * 60 / 100 && health >= healthBar * 50 / 100):
@@ -123,7 +123,7 @@ public class Base : MonoBehaviour {
                 twentyHealth.SetActive(false);
         		tenHealth.SetActive(false);
                 lastHealth.SetActive(false);
-                Debug.Log("50");
+                // Debug.Log("50");
                 return;
 
                 case var expression when (health < healthBar * 50 / 100 && health >= healthBar * 40 / 100):
@@ -138,7 +138,7 @@ public class Base : MonoBehaviour {
                 twentyHealth.SetActive(false);
         		tenHealth.SetActive(false);
                 lastHealth.SetActive(false);
-                Debug.Log("40");
+                // Debug.Log("40");
                 return;
 
                 case var expression when (health < healthBar * 40 / 100 && health >= healthBar * 30 / 100):
@@ -153,7 +153,7 @@ public class Base : MonoBehaviour {
                 // twentyHealth.SetActive(false);
         		tenHealth.SetActive(false);
                 lastHealth.SetActive(false);
-                Debug.Log("30");
+                // Debug.Log("30");
                 return;
                 
                 case var expression when (health < healthBar * 30 / 100 && health >= healthBar * 20 / 100):
@@ -168,7 +168,7 @@ public class Base : MonoBehaviour {
                 twentyHealth.SetActive(true);
         		tenHealth.SetActive(false);
                 lastHealth.SetActive(false);
-                Debug.Log("20");
+                // Debug.Log("20");
                 return;
                 
                 case var expression when (health < healthBar * 20 / 100 && health >= healthBar * 10 / 100):
@@ -183,7 +183,7 @@ public class Base : MonoBehaviour {
                 twentyHealth.SetActive(false);
         		tenHealth.SetActive(true);
                 //lastHealth.SetActive(false);
-                Debug.Log("10");
+                // Debug.Log("10");
                 return;
 
                 case var expression when (health < healthBar * 10 / 100 && health >= 0):
@@ -198,11 +198,11 @@ public class Base : MonoBehaviour {
                 twentyHealth.SetActive(false);
         		tenHealth.SetActive(false);
                 lastHealth.SetActive(true);
-                Debug.Log("almost gone");
+                // Debug.Log("almost gone");
                 return;
 
                 case var expression when (health < 0):
-                Debug.Log("over");
+                // Debug.Log("over");
                 return;
 
             }

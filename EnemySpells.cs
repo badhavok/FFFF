@@ -128,43 +128,6 @@ public class EnemySpells : MonoBehaviour {
 		}
 		else
 		{
-			switch(castingThisSpell)
-			{
-				default:
-					buffSpeed = false;
-					buffDefences = false;
-					buffHealing = false;
-					buffSummoner = false;
-
-					break;
-
-				case "buffDefences" : 
-					
-					buffDefences = true;
-
-					break;
-
-				case "buffHealing" :
-
-					buffHealing = true;
-
-					break; 
-
-				case "buffSpeed" :
-
-					buffSpeed = true;
-					
-					break; 
-				case "buffSummoner" :
-
-					buffSummoner = true;
-
-					break;
-			}
-			if(customSpell)
-			{
-				RandomSpell();
-			}
 			if(casting)
 			{
 				anim.SetBool("Cast", true);
@@ -221,27 +184,83 @@ public class EnemySpells : MonoBehaviour {
 			{
 				DebuffTowerSpeed();
 			}
+			if(customSpell)
+			{
+				
+				if(customCastTime < 0)
+				{
+					RandomSpell();
+				}
+				else if (customCastTime >= 0 & customCastTime < customCastCountdown -1)
+				{
+					castingThisSpell = "empty";
+					customCastTime -= Time.deltaTime;
+				}
+				else
+				{
+					customCastTime -= Time.deltaTime;
+				}
+				
+				switch(castingThisSpell)
+				{
+					default:
+						buffSpeed = false;
+						buffDefences = false;
+						buffHealing = false;
+						buffSummoner = false;
+
+						hideCount = countdownHide;
+						countdownHealth =0;
+						healCount = countdownHealth;
+						countdownSpeed = 0;
+						speedCount = countdownSpeed;
+						countdownSummon =0;
+						summonCount = countdownSummon;
+						levitateCount = countdownLevitate;
+						immuneCount = countdownImmune;
+						vampireCount = countdownVampire;
+						countdownBuffDef = 0;
+						buffDefCount = countdownBuffDef;
+						
+						break;
+
+					case "buffDefences" : 
+						
+						buffDefences = true;
+						countdownBuffDef = 5;
+
+						break;
+
+					case "buffHealing" :
+
+						buffHealing = true;
+						countdownHealth =5;
+
+						break; 
+
+					case "buffSpeed" :
+
+						buffSpeed = true;
+						countdownSpeed = 5;
+
+						break; 
+					case "buffSummoner" :
+
+						buffSummoner = true;
+						countdownSummon =5;
+
+						break;
+				}
+				
+			}
 		}
 	}
 	void RandomSpell()
 	{
-		if(customCastTime < 0)
-		{
 			spellToCast = Random.Range(0, customSpellList.Length);
 			castingThisSpell = customSpellList[spellToCast];
-			Debug.Log("Spell number " + spellToCast + " is the spell " + castingThisSpell + " ... or " + customSpellList[spellToCast] + " ...");
-			
-			customCastTime = customCastCountdown * 1.5f;
-		}
-		else if (customCastTime >= 0 & customCastTime < 5)
-		{
-			castingThisSpell = "empty";
-			customCastTime -= Time.deltaTime;
-		}
-		else
-		{
-			customCastTime -= Time.deltaTime;
-		}
+			//Debug.Log("Spell number " + spellToCast + " is the spell " + castingThisSpell + " ... or " + customSpellList[spellToCast] + " ...");
+			customCastTime = customCastCountdown;
 	}
 	void BuffVampire()
 	{
@@ -317,14 +336,14 @@ public class EnemySpells : MonoBehaviour {
 	}
 	void BuffHealing()
 	{
-		Debug.Log("I'm in the healing void");
+		// Debug.Log("I'm in the healing void");
 		if (healCount <= 0)
 		{
 			if(castSelf)
 			{
 				casting = true;
 				enemy.Healing(bonusHealth);
-				//Debug.Log("Oh wow, look at me... I'm healing me!");
+				// Debug.Log("Oh wow, look at me... I'm healing me!");
 			}
 			else
 			{
@@ -332,10 +351,10 @@ public class EnemySpells : MonoBehaviour {
 				if (targetEnemy)
 				{
 				targetEnemy.Healing(bonusHealth);
-				//Debug.Log("Oh wow, look at me... I'm healing you!");
+				// Debug.Log("Oh wow, look at me... I'm healing you!");
 				}
 			}
-			healCount += (countdownHealth * 1.5f);
+			healCount += (countdownHealth);
 			//Debug.Log("Heal count is above 0");
 		}
 		else
@@ -346,7 +365,7 @@ public class EnemySpells : MonoBehaviour {
 	}
 	void BuffDefences()
 	{
-		Debug.Log("I'm in the defences void");
+		// Debug.Log("I'm in the defences void");
 		if (buffDefCount <= 0)
 		{
 			if(castSelf)
@@ -356,7 +375,7 @@ public class EnemySpells : MonoBehaviour {
 				enemy.BuffBluntDef(buffDefBlunt, countdownBuffDef);
 				enemy.BuffPierceDef(buffDefPierce, countdownBuffDef);
 				enemy.BuffMagDef(buffDefMag, countdownBuffDef);
-				//Debug.Log("Oh wow, look at me... I'm healing me!");
+				// Debug.Log("Oh wow, look at me... I'm raising my defence!");
 			}
 			else
 			{
@@ -367,10 +386,10 @@ public class EnemySpells : MonoBehaviour {
 				targetEnemy.BuffBluntDef(buffDefBlunt, countdownBuffDef);
 				targetEnemy.BuffPierceDef(buffDefPierce, countdownBuffDef);
 				targetEnemy.BuffMagDef(buffDefMag, countdownBuffDef);
-				//Debug.Log("Oh wow, look at me... I'm raising your defences!");
+				// Debug.Log("Oh wow, look at me... I'm raising your defence!");
 				}
 			}
-			buffDefCount += (countdownBuffDef * 2.0f);
+			buffDefCount += (countdownBuffDef);
 			//Debug.Log("Heal count is above 0");
 		}
 		else
@@ -409,7 +428,7 @@ public class EnemySpells : MonoBehaviour {
 		{
 			casting = true;
 			StartCoroutine(enemy.SummonNow());
-			//Debug.Log("I summon youuu..");
+			// Debug.Log("I summon youuu..");
 			summonCount += (countdownSummon * 2);
 		}
 		// else if (summonCount <= (countdownSummon / 2))
@@ -425,7 +444,7 @@ public class EnemySpells : MonoBehaviour {
 
 	void BuffSpeed()
 	{
-		Debug.Log("I'm in the speed void");
+		// Debug.Log("I'm in the speed void");
 		if (speedCount < 0)
 		{
 			if(castSelf)
@@ -441,12 +460,12 @@ public class EnemySpells : MonoBehaviour {
 				TargetEnemy();
 				if(targetEnemy)
 				{
-					//Debug.Log("Enemy targeted - " + targetEnemy + " .");
+					// Debug.Log("Enemy targeted - " + targetEnemy + " .");
 					targetEnemy.Speed(bonusSpeed, countdownSpeed);
 				}
 			}
 			//Debug.Log("Weeeeee.... don't say bye then!");
-			speedCount += (countdownSpeed * 1.5f);
+			speedCount += (countdownSpeed);
 		}
 		else
 		{
@@ -508,12 +527,12 @@ public class EnemySpells : MonoBehaviour {
 		if (debuffSpeedCount < 0)
 		{
 			
-			//Debug.Log("Targeting");
+			// Debug.Log("Targeting");
 			TargetTower();
 
 			if(targetTower)
 			{
-				//Debug.Log("Enemy targeted - " + targetEnemy + " .");
+				// Debug.Log("Tower targeted - " + targetTower + " .");
 				targetTower.DebuffSpeed(debuffSpeed, countdownDebuffSpeed);
 			}
 			//Debug.Log("Weeeeee.... don't say bye then!");
