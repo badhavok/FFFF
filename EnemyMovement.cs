@@ -168,11 +168,11 @@ public class EnemyMovement : MonoBehaviour {
 			//Which direction am I moving?
 			if (goLeft)
 			{
-				transform.Translate(Vector3.left * Time.deltaTime * 2);
+				transform.Translate(Vector3.left * Time.deltaTime * 1.5f);
 			}
 			else
 			{
-				transform.Translate(Vector3.right * Time.deltaTime * 2);
+				transform.Translate(Vector3.right * Time.deltaTime * 1.5f);
 			}
 			//The counter to control how long the enemy is moving to one side
 			if (finalCountdown <= 0)

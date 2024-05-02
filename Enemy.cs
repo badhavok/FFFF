@@ -705,7 +705,7 @@ public class Enemy : MonoBehaviour {
 	public IEnumerator SummonNow()
 	{
 		// Adding a wait so that the casting animation can play
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(1.5f);
 		// This line generates a number and then summons the enemy relating to that number from the pool assigned in the inspector
 		int summoningIndex = Random.Range(0, enemySpells.summoningPool.Length);
 		//Debug.Log("I'm in the summonloop with index: " + summoningIndex);

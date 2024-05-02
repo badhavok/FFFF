@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 //This class is used for enemies that have spells, only needs to be assigned if the enemy needs it
 [RequireComponent(typeof(Enemy))]
@@ -11,10 +12,17 @@ public class EnemySpells : MonoBehaviour {
 	private Transform target;
 	private Enemy targetEnemy;
 	private Turret targetTower;
+	public float range = 0;
 	public string enemyTag = "Enemy";
 	public string towerTag = "Tower";
 
-	public float range = 0;
+	//List<EnemySpells> floatList = new List<EnemySpells>();
+	public string[] customSpellList;
+	private string castingThisSpell;
+	public bool customSpell, timeToCastSpell;
+	public float customCastCountdown;
+	public float customCastTime;
+	private int spellToCast;
 	public bool casting;
 	public float isCasting = 0;
 
@@ -31,7 +39,7 @@ public class EnemySpells : MonoBehaviour {
 	public bool buffHealing = false;
 	public float bonusHealth = 0;
 	public float countdownHealth = 0;
-	public float healCount = 0;
+	private float healCount = 0;
 
 	//This makes an enemy immune to damage/debuffs - but the towers will still shoot at it
 	public bool buffImmune = false;
@@ -93,6 +101,7 @@ public class EnemySpells : MonoBehaviour {
 		immuneCount = countdownImmune;
 		vampireCount = countdownVampire;
 		buffDefCount = countdownBuffDef;
+		customCastTime = customCastCountdown;
 	}
 	void Update()
 	{
@@ -119,6 +128,43 @@ public class EnemySpells : MonoBehaviour {
 		}
 		else
 		{
+			switch(castingThisSpell)
+			{
+				default:
+					buffSpeed = false;
+					buffDefences = false;
+					buffHealing = false;
+					buffSummoner = false;
+
+					break;
+
+				case "buffDefences" : 
+					
+					buffDefences = true;
+
+					break;
+
+				case "buffHealing" :
+
+					buffHealing = true;
+
+					break; 
+
+				case "buffSpeed" :
+
+					buffSpeed = true;
+					
+					break; 
+				case "buffSummoner" :
+
+					buffSummoner = true;
+
+					break;
+			}
+			if(customSpell)
+			{
+				RandomSpell();
+			}
 			if(casting)
 			{
 				anim.SetBool("Cast", true);
@@ -175,6 +221,26 @@ public class EnemySpells : MonoBehaviour {
 			{
 				DebuffTowerSpeed();
 			}
+		}
+	}
+	void RandomSpell()
+	{
+		if(customCastTime < 0)
+		{
+			spellToCast = Random.Range(0, customSpellList.Length);
+			castingThisSpell = customSpellList[spellToCast];
+			Debug.Log("Spell number " + spellToCast + " is the spell " + castingThisSpell + " ... or " + customSpellList[spellToCast] + " ...");
+			
+			customCastTime = customCastCountdown * 1.5f;
+		}
+		else if (customCastTime >= 0 & customCastTime < 5)
+		{
+			castingThisSpell = "empty";
+			customCastTime -= Time.deltaTime;
+		}
+		else
+		{
+			customCastTime -= Time.deltaTime;
 		}
 	}
 	void BuffVampire()
@@ -251,7 +317,7 @@ public class EnemySpells : MonoBehaviour {
 	}
 	void BuffHealing()
 	{
-		//Debug.Log("I'm in the healing void");
+		Debug.Log("I'm in the healing void");
 		if (healCount <= 0)
 		{
 			if(castSelf)
@@ -263,8 +329,11 @@ public class EnemySpells : MonoBehaviour {
 			else
 			{
 				TargetEnemy();
+				if (targetEnemy)
+				{
 				targetEnemy.Healing(bonusHealth);
 				//Debug.Log("Oh wow, look at me... I'm healing you!");
+				}
 			}
 			healCount += (countdownHealth * 1.5f);
 			//Debug.Log("Heal count is above 0");
@@ -277,7 +346,7 @@ public class EnemySpells : MonoBehaviour {
 	}
 	void BuffDefences()
 	{
-		//Debug.Log("I'm in the healing void");
+		Debug.Log("I'm in the defences void");
 		if (buffDefCount <= 0)
 		{
 			if(castSelf)
@@ -292,11 +361,14 @@ public class EnemySpells : MonoBehaviour {
 			else
 			{
 				TargetEnemy();
+				if (targetEnemy)
+				{
 				targetEnemy.BuffSlashDef(buffDefSlash, countdownBuffDef);
 				targetEnemy.BuffBluntDef(buffDefBlunt, countdownBuffDef);
 				targetEnemy.BuffPierceDef(buffDefPierce, countdownBuffDef);
 				targetEnemy.BuffMagDef(buffDefMag, countdownBuffDef);
-				//Debug.Log("Oh wow, look at me... I'm healing you!");
+				//Debug.Log("Oh wow, look at me... I'm raising your defences!");
+				}
 			}
 			buffDefCount += (countdownBuffDef * 2.0f);
 			//Debug.Log("Heal count is above 0");
@@ -353,6 +425,7 @@ public class EnemySpells : MonoBehaviour {
 
 	void BuffSpeed()
 	{
+		Debug.Log("I'm in the speed void");
 		if (speedCount < 0)
 		{
 			if(castSelf)
