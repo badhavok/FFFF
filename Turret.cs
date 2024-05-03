@@ -9,7 +9,7 @@ public class Turret : MonoBehaviour {
 	private Transform target;
 	private Enemy targetEnemy;
 
-//Most of the below settings are self explanitory
+	//Most of the below settings are self explanitory
 
 	[Header("Unity Setup Fields")]
 
@@ -21,7 +21,7 @@ public class Turret : MonoBehaviour {
 
 	public Transform firePoint;
 	
-	[Header("Upgrades from scene")]
+	[Header("Upgrades from scene > rng/dmg/mag")]
 	//rangeBonus, damageBonus, magDamageBonus (ready for fireBonus etc);
 	public int[] nodeBonuses = { 0, 0, 0 };
 	public bool isUpgradedByNode = false;
@@ -131,7 +131,7 @@ public class Turret : MonoBehaviour {
 			}
 		}
 	}
-	
+	//Buttons for the UI
 	public void ClosestToEnd()
 	{
 		nearestEnemy = false;
@@ -294,6 +294,7 @@ public class Turret : MonoBehaviour {
 		}
 		enemies = null;
 	}
+	//Target the base to heal it and recover "lives"
 	void HealingBase ()
 	{
 		GameObject[] enemies = GameObject.FindGameObjectsWithTag(baseTag);
@@ -484,7 +485,7 @@ public class Turret : MonoBehaviour {
 			{
 				anim.SetBool("Attack1", true);
 				anim.SetBool("Idle", false);
-				animCooldown = 1f;
+				animCooldown = 0.5f;
 				doShoot = true;
 				//Debug.Log("Bool is true");
 				fireCountdown = 100f / fireRate;

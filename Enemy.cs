@@ -127,24 +127,29 @@ public class Enemy : MonoBehaviour {
 	//Function for healing/vampire?
 	public void Healing (float healSpell)
 	{
+		float healthToHeal = maxHealth * healSpell - maxHealth;
+		Debug.Log("I'm healing " + healthToHeal + " hp");
+		
 		//If Max HP, move on
-		if (updatedHealth == maxHealth + 1)
+		if (updatedHealth == maxHealth)
 		{
 			Debug.Log("Thanks but don't need it, healing was " + healSpell);
 		}
 		else
 		{
-			updatedHealth *= healSpell;
-			Debug.Log("Health is now " + updatedHealth);
+			updatedHealth += healthToHeal;
 			if (updatedHealth > maxHealth)
 			{
 				//If overhealed - adjust HP back to MaxHP
 				updatedHealth = maxHealth;
 			}
+			Debug.Log("Health is now " + updatedHealth);
 			healthBar.fillAmount = updatedHealth / maxHealth;
 			// Debug.Log("I'm being healed by " + healSpell);
 		}
+		healthToHeal = 0;
 	}
+	//Following buff the various def stats
 	public void BuffSlashDef (int buffingSlashDef, float buffingSlashDefCountdown)
 	{
 		buffSlashDef = true;
@@ -227,7 +232,7 @@ public class Enemy : MonoBehaviour {
 	{
 		if (immune)
 		{
-			//Debug.Log("I'm immune!");
+			Debug.Log("I'm immune!");
 			return;
 		}
 		if(bluntDamage > 0)
@@ -351,6 +356,7 @@ public class Enemy : MonoBehaviour {
 		countdownStop = stp;
 		Silence(stp);
 	}
+	//Does things like stop walking when casting spells etc...
 	public void Casting (float cst)
 	{
 		castingEnemy = true;

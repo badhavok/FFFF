@@ -211,6 +211,8 @@ public class EnemySpells : MonoBehaviour {
 						buffDefences = false;
 						buffHealing = false;
 						buffSummoner = false;
+						buffImmune = false;
+						debuffTowerSpeed = false;
 
 						hideCount = countdownHide;
 						countdownHealth =0;
@@ -220,10 +222,13 @@ public class EnemySpells : MonoBehaviour {
 						countdownSummon =0;
 						summonCount = countdownSummon;
 						levitateCount = countdownLevitate;
+						countdownImmune =0;
 						immuneCount = countdownImmune;
 						vampireCount = countdownVampire;
 						countdownBuffDef = 0;
 						buffDefCount = countdownBuffDef;
+						countdownDebuffSpeed = 0;
+						debuffSpeedCount = countdownDebuffSpeed;
 						
 						break;
 
@@ -237,7 +242,7 @@ public class EnemySpells : MonoBehaviour {
 					case "buffHealing" :
 
 						buffHealing = true;
-						countdownHealth =5;
+						countdownHealth = 5;
 
 						break; 
 
@@ -250,7 +255,19 @@ public class EnemySpells : MonoBehaviour {
 					case "buffSummoner" :
 
 						buffSummoner = true;
-						countdownSummon =5;
+						countdownSummon = 5;
+
+						break;
+					case "buffImmune" :
+
+						buffImmune = true;
+						countdownImmune = 5;
+
+						break;
+					case "debuffTowerSpeed" :
+
+						debuffTowerSpeed = true;
+						countdownDebuffSpeed = 5;
 
 						break;
 				}
@@ -258,6 +275,7 @@ public class EnemySpells : MonoBehaviour {
 			}
 		}
 	}
+	//Setting the variable names in the inspector will give the mob a list of spells which are chosen at random
 	void RandomSpell()
 	{
 			spellToCast = Random.Range(0, customSpellList.Length);
@@ -265,6 +283,7 @@ public class EnemySpells : MonoBehaviour {
 			//Debug.Log("Spell number " + spellToCast + " is the spell " + castingThisSpell + " ... or " + customSpellList[spellToCast] + " ...");
 			customCastTime = customCastCountdown;
 	}
+	//Steals HP from nearby enemies and adds it to [own] HP
 	void BuffVampire()
 	{
 		if (vampireCount <= 0)
@@ -315,6 +334,7 @@ public class EnemySpells : MonoBehaviour {
 			vampireCount -= Time.deltaTime;
 		}
 	}
+	//Boosts speed of target(s)
 	void BuffSpeed()
 	{
 		// Debug.Log("I'm in the speed void");
@@ -349,6 +369,7 @@ public class EnemySpells : MonoBehaviour {
 			speedCount -= Time.deltaTime;
 		}
 	}
+	//Heal target(s)
 	void BuffHealing()
 	{
 		// Debug.Log("I'm in the healing void");
@@ -382,6 +403,7 @@ public class EnemySpells : MonoBehaviour {
 			healCount -= Time.deltaTime;
 		}
 	}
+	//Buff target(s)
 	void BuffDefences()
 	{
 		// Debug.Log("I'm in the defences void");
@@ -421,14 +443,19 @@ public class EnemySpells : MonoBehaviour {
 			buffDefCount -= Time.deltaTime;
 		}
 	}
+	//Give target(s) immunity to debuffs and damage
 	void BuffImmune()
 	{
 		if (immuneCount <= 0)
 		{
 			if(castSelf)
 			{
-			enemy.Immune(countdownImmune);
-			casting = true;
+				enemy.Immune(countdownImmune);
+				casting = true;
+			}
+			else if (aoECast)
+			{
+				AoE(3);
 			}
 			else
 			{
@@ -436,13 +463,14 @@ public class EnemySpells : MonoBehaviour {
 			targetEnemy.Immune(countdownImmune);
 			}
 			//Debug.Log("Tis but a scratch!");
-			immuneCount += (countdownImmune * 1.5f);
+			immuneCount += (countdownImmune);
 		}
 		else
 		{
 			immuneCount -= Time.deltaTime;
 		}
 	}
+	//Gives target(s) "levitate" to avoid ground attack (yet to be implemented)
 	void BuffLevitate()
 	{
 		if (levitateCount <= 0)
@@ -467,6 +495,7 @@ public class EnemySpells : MonoBehaviour {
 			levitateCount -= Time.deltaTime;
 		}
 	}
+	//Summons the prefab(s) set in the inspector
 	void BuffSummoner()
 	{
 		if (summonCount <= 0)
@@ -486,8 +515,7 @@ public class EnemySpells : MonoBehaviour {
 			summonCount -= Time.deltaTime;
 		}
 	}
-
-
+	//Makes an enemy invisible
 	void BuffHide()
 	{
 		if (hideCount < 0)
@@ -509,7 +537,6 @@ public class EnemySpells : MonoBehaviour {
 			hideCount -= Time.deltaTime;
 		}
 	}
-
 	void TargetEnemy()
 	{
 		casting = true;
@@ -536,7 +563,6 @@ public class EnemySpells : MonoBehaviour {
 			target = null;
 		}
 	}
-
 	void AoE (int spellNumber)
 	{
 		//Debug.Log("I'm shooting an emeny!");
@@ -552,7 +578,6 @@ public class EnemySpells : MonoBehaviour {
 		//Vector3 dir = firePoint.position - target.position;
 		colliders = null;
 	}
-
 	void AoEDamage (Transform enemy, int castingSpell)
 	{
 		Enemy e = enemy.GetComponent<Enemy>();
@@ -573,11 +598,13 @@ public class EnemySpells : MonoBehaviour {
 				e.BuffPierceDef(buffDefPierce, countdownBuffDef);
 				e.BuffMagDef(buffDefMag, countdownBuffDef);
 				break;
+			case 3:
+				e.Immune(countdownImmune);
+				break;
 		}
 		
 	}
-
-
+	//Debuffs tower(s) attack speed
 	void DebuffTowerSpeed()
 	{
 		if (debuffSpeedCount < 0)
@@ -599,7 +626,6 @@ public class EnemySpells : MonoBehaviour {
 			debuffSpeedCount -= Time.deltaTime;
 		}
 	}
-
 	void TargetTower()
 	{
 		//Debug.Log("Targeting Tower");
@@ -627,7 +653,6 @@ public class EnemySpells : MonoBehaviour {
 			target = null;
 		}
 	}
-
 	void OnDrawGizmosSelected ()
 	{
 		Gizmos.color = Color.red;

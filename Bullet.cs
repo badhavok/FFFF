@@ -8,12 +8,9 @@ public class Bullet : MonoBehaviour {
 
 	//public int damagePhysical = 5;
 	public int damageMagical = 0;
-
 	public int damageBlunt = 0;
 	public int damageSlashing = 0;
 	public int damagePiercing = 0;
-	
-
 	public int damageEarth = 0;
 	public int damageLightening = 0;
 	public int damageWater = 0;
@@ -25,14 +22,34 @@ public class Bullet : MonoBehaviour {
 	[Header ("AoE/Explosion")]
 	public float explosionRadius = 0f;
 	public GameObject impactEffect;
+	[Header ("Use Defence Down")]
+	public float defenceChance = 0f;
+	public float countdownDebuffDef = 0f;
+	public int debuffDefSlash, debuffDefPierce, debuffDefBlunt, debuffDefMag = 0;
 
 	[Header ("Use Poison")]
 	public float poisonChance = 0f;
 	public int poisonStrength = 0;
 	public float poisonTime = 0f;
+	[Header ("Use Slow")]
+	public float slowChance = 0f;
+	public float slowSpeed = 0f;
+	public float slowTime = 0f;
+	[Header ("Use Stop")]
+	public float stopChance = 0f;
+	public float stopTime = 0f;
+	[Header ("Use Silence")]
+	public float silenceChance =0f;
+	public float silenceTime = 0f;
 
 	[Header ("Use Fear")]
-	public float fearChance, fearTime = 0f;
+	public float fearChance = 0f;
+	public float fearTime = 0f;
+	[Header ("Use Virus")]
+	public float virusChance = 0f;
+	public float virusTime = 0f;
+	public float virusRange = 0f;
+	public float virusDamage = 0f;
 
 	[Header ("Use Gravity")]
 	public float gravityChance = 0f;
@@ -41,7 +58,8 @@ public class Bullet : MonoBehaviour {
 	public float chickenChance = 0f;
 
 	[Header ("Use Doom")]
-	public float doomChance, doomTime = 0f;
+	public float doomChance = 0f;
+	public float doomTime = 0f;
 
 	void Start()
 	{
@@ -123,35 +141,114 @@ public class Bullet : MonoBehaviour {
 			// 	return;
 			// }
 			
+			//Defence debuff
+			if(defenceChance > 0 && !e.buffSlashDef)
+			{
+				var rand = Random.Range(1,100);
+				Debug.Log("I'm in the defence chance");
+				if (rand < defenceChance)
+				{
+					e.BuffSlashDef(debuffDefSlash, countdownDebuffDef);
+					e.BuffBluntDef(debuffDefBlunt, countdownDebuffDef);
+					e.BuffPierceDef(debuffDefPierce, countdownDebuffDef);
+					e.BuffMagDef(debuffDefMag, countdownDebuffDef);
+				}
+			}
+
 			e.TakeDamage(damageBlunt, damagePiercing, damageSlashing, damageMagical);
 
+			//Silence debuff
+			if(silenceChance > 0)
+			{
+				if(!e.silence)
+				{
+					var rand = Random.Range(1,100);
+					//Debug.Log("I'm going to silence you!");
+					if (rand < silenceChance)
+					{
+						e.Silence(silenceTime);
+					}
+				}
+			}
+			//Slow debuff
+			if(slowChance > 0)
+			{
+				if(!e.slowEnemy)
+				{
+					var rand = Random.Range(1,100);
+					//Debug.Log("I'm going to slow you!");
+					if (rand < slowChance)
+					{
+						e.Slow(slowSpeed, slowTime);
+					}
+				}
+			}
+			//Stop debuff
+			if(stopChance > 0)
+			{
+				if(!e.stopEnemy)
+				{
+					var rand = Random.Range(1,100);
+					//Debug.Log("I'm going to stop you!");
+					if (rand < stopChance)
+					{
+						e.Stop(stopTime);
+					}
+				}
+			}
+			//Turns them into a chicken
 			if(chickenChance > 0)
 			{
-				var rand = Random.Range(1,100);
-				//Debug.Log("I'm going to turn you into a chicken!");
-				if (rand < chickenChance)
+				if(!e.isChicken)
 				{
-					e.isChicken = true;
+					var rand = Random.Range(1,100);
+					//Debug.Log("I'm going to turn you into a chicken!");
+					if (rand < chickenChance)
+					{
+						e.isChicken = true;
+					}
 				}
 			}
+			//Doom debuff
 			if(doomChance > 0)
 			{
-				var rand = Random.Range(1, 100);
-
-				if (rand < doomChance)
+				if(!e.doom)
 				{
-					e.Doom(doomTime);
+					var rand = Random.Range(1, 100);
+
+					if (rand < doomChance)
+					{
+						e.Doom(doomTime);
+					}
 				}
 			}
+			//Fear debuff
 			if (fearChance > 0)
 			{
-				var rand = Random.Range(1,100);
-
-				if (rand < fearChance)
+				if(!e.fearEnemy)
 				{
-					e.Fear(fearTime);
+					var rand = Random.Range(1,100);
+
+					if (rand < fearChance)
+					{
+						e.Fear(fearTime);
+					}
 				}
 			}
+			//Virus DoT
+			if(virusChance > 0)
+			{
+				if(!e.virus)
+				{
+					var rand = Random.Range(1,100);
+					
+					if (rand < virusChance)
+					{
+						e.Virus(virusTime, virusRange, virusDamage);
+					}
+				}
+			}
+			//Poison DoT
 			if (poisonChance > 0)
 			{
 				if(!e.poisonEnemy)
@@ -160,13 +257,13 @@ public class Bullet : MonoBehaviour {
 
 					if (rand < poisonChance)
 					{
-						Debug.Log("MUAHAHAA... Poison!");
+						//Debug.Log("MUAHAHAA... Poison!");
 						e.Poison(poisonStrength, poisonTime);
 					}
 				}
 				else
 				{
-					Debug.Log("Already poisoned");
+					//Debug.Log("Already poisoned");
 				}
 			}
 		}

@@ -75,7 +75,7 @@ public class EnemyMovement : MonoBehaviour {
 		remainingPathDistance = pathDistance;
 		//starts at max, goes to 0
 	}
-
+	//Generates numbers to make enemies take different paths
 	void NewRandomNumber()
 	{
 		for(int i=0; randomNumber == lastNumber && i < maxAttempts; i++)

@@ -124,6 +124,8 @@ public class WaveSpawner : MonoBehaviour {
 				countdown = timeBetweenWaves;
 				++currentWave;
 				currentWaveText.text = "Mini Boss ";
+				audioSource.clip = audioClipArray[3];
+				audioSource.Play();
 				audioSource.Stop();
 			}
 			else if (waveComplete)
@@ -134,6 +136,8 @@ public class WaveSpawner : MonoBehaviour {
 				countdown = timeBetweenWaves;
 				//++currentWave;
 				currentWaveText.text = "Final boss";
+				audioSource.clip = audioClipArray[4];
+				audioSource.Play();
 				audioSource.Stop();
 			}
 			else
