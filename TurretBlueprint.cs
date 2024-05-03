@@ -7,15 +7,12 @@ public class TurretBlueprint {
 	// Cost to build
 	public GameObject prefab;
 	public int cost;
-
 	// Cost for the first upgrade
 	public GameObject prefabUpgrade;
 	public int upgradeCost;
-
 	// Cost for the second upgrade
 	public GameObject prefabUpgradeTwo;
 	public int upgradeCostTwo;
-
 	/* // Cost to chose DPS
 	public GameObject prefabDps;
 	public int upgradeCostDps;

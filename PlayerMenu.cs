@@ -8,9 +8,7 @@ public class PlayerMenu : MonoBehaviour {
   public GameObject spellUI;
   public GameObject spellList;
   public Button[] spellButtons;
-
   public bool showSpell = false;
-
   //Required to detect if the player has built the spell tower and then enables the UI on the screen
   public void Update()
 	{
@@ -59,6 +57,6 @@ public class PlayerMenu : MonoBehaviour {
   //Not a literal pause; since the "player pause" will introduce the menu allowing a restart/quit
   public void Pause()
   {
-    Time.timeScale = 0.00001f;
+    Time.timeScale = 0.000001f;
   }
 }

@@ -4,16 +4,12 @@ using UnityEngine.UI;
 public class LevelSelector : MonoBehaviour {
 
 	public SceneFader fader;
-
 	public int currency;
 	public int displayCurrency;
 	public int completedLevels;
 	public int i;
-
 	public Text displayCurrencyText;
-
 	public Button[] levelButtons;
-
 	//Used in the menu to detect what levels the player has unlocked and allows them to be clickable in the menu
 	void Update ()
 	{

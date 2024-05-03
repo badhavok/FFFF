@@ -5,18 +5,14 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
 
 	public static bool GameIsOver;
-
 	public bool success;
 	public int diamondWin;
-
 	public GameObject gameOverUI;
 	public GameObject completeLevelUI;
-
 	void Start ()
 	{
 		GameIsOver = false;
 	}
-
 	// Update is called once per frame
 	void Update () {
 		if (GameIsOver)
@@ -27,13 +23,11 @@ public class GameManager : MonoBehaviour {
 			EndGame();
 		}
 	}
-
 	void EndGame ()
 	{
 		GameIsOver = true;
 		gameOverUI.SetActive(true);
 	}
-
 	public void WinLevel ()
 	{
 //		player.diamondCurrency = 50;

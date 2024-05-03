@@ -6,7 +6,6 @@ public class PlayerSpells : MonoBehaviour {
 
 	public PlayerMenu playerMenu;
 	public Transform spawnPoint;
-
 	public bool castEMP, castBarrage /*a laser shower*/, castMeteor, castFear, castChicken, castGravity, castBasicSummonSpell, castAdvancedSummonSpell = false;
 	public float range, counterEMP, stopTime, counterBarrage, counterMeteor, counterFear, counterChicken, counterGravity, counterSummonSpell = 0;
 	[HideInInspector] public int castCount, summonAmount, i;
@@ -16,11 +15,9 @@ public class PlayerSpells : MonoBehaviour {
 	[HideInInspector] private Transform target;
 	[HideInInspector] private Enemy targetEnemy;
 	[HideInInspector] private Vector3 myPos, myPosi;
-
 	public GameObject[] basicSummoningPool;
 	public GameObject[] advancedSummoningPool;
 	public int basicSummonAmount, advancedSummonAmount;
-
 	void Start ()
 	{
 		/*empCount = counterEMP;

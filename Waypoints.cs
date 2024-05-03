@@ -15,6 +15,7 @@ public class Waypoints : MonoBehaviour {
 
 	void Awake ()
 	{
+		//Generate list of points from the inspector to calculate the distances between them
 		if (PathPoints1 != null)
 		{
 			pathPoints1 = new Transform[PathPoints1.transform.childCount];
