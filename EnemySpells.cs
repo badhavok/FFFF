@@ -572,13 +572,13 @@ public class EnemySpells : MonoBehaviour {
 		{
 			if (collider.tag == "Enemy")
 			{
-				AoEDamage(collider.transform, spellNumber);
+				AoECast(collider.transform, spellNumber);
 			}
 		}
 		//Vector3 dir = firePoint.position - target.position;
 		colliders = null;
 	}
-	void AoEDamage (Transform enemy, int castingSpell)
+	void AoECast (Transform enemy, int castingSpell)
 	{
 		Enemy e = enemy.GetComponent<Enemy>();
 		Debug.Log("Enemy targeted - " + e + " .");

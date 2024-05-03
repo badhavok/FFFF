@@ -17,6 +17,9 @@ public class WaveSpawner : MonoBehaviour {
 	public Wave[] waves;
 	//Array to set the bosses used in the level
 	public Boss[] bosses;
+	//Array for Random/bonus encounters
+	public int randomChance;
+	public Wave[] randoms;
 
 	public GameObject enemy;
 	public GameObject boss;
@@ -145,6 +148,16 @@ public class WaveSpawner : MonoBehaviour {
 				//If it's not a boss, it must be a normal wave
 				StartCoroutine(EnemyCount());
 				StartCoroutine(SpawnWave());
+				if(randomChance > 0)
+				{
+					int rand = Random.Range(1, 100);
+
+					if(randomChance >= rand)
+					{
+						Debug.Log("Starting Bonus wave");
+						StartCoroutine(BonusWave());
+					}
+				}
 				countdown = timeBetweenWaves;
 				++currentWave;
 				currentWaveText.text = "Wave: " + currentWaveDisplay.ToString();
@@ -265,7 +278,55 @@ public class WaveSpawner : MonoBehaviour {
 			}
 		}
 	}
+	//This is used for bonus/random encounters, for "farmed" items
+	private IEnumerator BonusWave()
+	{
+		Wave wave = randoms[waveIndex];
 
+		do
+		{
+			foreach (EnemyBlueprint enemy in wave.enemyWave)
+			{
+				if(enemy.enemySpawn == 2)
+				{
+					if(spawnLocationTwo.activeSelf == false)
+					{
+						spawnLocationTwo.SetActive(true);
+					}
+					spawnPoint = spawnPointTwo;
+					path = enemy.enemySpawn;
+				}
+				else
+				{
+					spawnPoint = spawnPointOne;
+					path = enemy.enemySpawn;
+				}
+				++enemy.enemyCount;
+				++counter;
+				Refactor(enemy);
+				
+				yield return new WaitForSeconds(1.0f / enemy.enemyRate);
+			}
+
+			++loops;
+		}
+		while (counter > 0);
+
+		// ++PlayerStats.Rounds;
+		// ++waveIndex;
+		yield return new WaitForSeconds(1.0f / wave.waveRate);
+
+		void Refactor(EnemyBlueprint enemy)
+		{
+			if (enemy.enemyCount > 0)
+			{
+				SpawnEnemy(enemy.enemy);
+				++EnemiesAlive;
+				--enemy.enemyCount;
+				--counter;
+			}
+		}
+	}
 	//The literal spawn-into-the-game function, spawnPoint is set in the inspector
 	public void SpawnEnemy (GameObject enemy)
 	{
