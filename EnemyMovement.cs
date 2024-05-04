@@ -321,7 +321,12 @@ public class EnemyMovement : MonoBehaviour {
 	void EndPath()
 	{
 		endPath = true;
-
+		if(enemy.isRandom)
+		{
+			enemy.Die();
+			enemy.noDrop = true;
+			return;
+		}
 		anim.SetBool("Move", false);
 		
 		if(endPathCounter < 0)

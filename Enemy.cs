@@ -25,7 +25,7 @@ public class Enemy : MonoBehaviour {
 	public bool isWorm = false;
 	public bool isFlying = false;
 	public bool isChicken = false;
-	public bool isBoss, isMiniBoss = false;
+	public bool isBoss, isMiniBoss, isRandom = false;
 
 //Most of the variables are straight forward
 //Public variables are set by the attack/buff
@@ -84,7 +84,7 @@ public class Enemy : MonoBehaviour {
 	public bool goldenEnemy = false;
 	private float goldBonus = 0;
 	private float pointsBonus = 0;
-	public bool notKilled = false;
+	public bool noDrop = false;
 	public bool isDead = false;
 
 	private Camera cam;
@@ -767,13 +767,16 @@ public class Enemy : MonoBehaviour {
 		this.gameObject.tag = "Fallen";
 		speed = 0f;
 
-		float roundedResult = Mathf.Round(goldBonus / 2) * 2;
-		roundedResult += EnemyStats.Worth;
-		PlayerStats.Money += roundedResult;
+		if(!noDrop)
+		{
+			float roundedResult = Mathf.Round(goldBonus / 2) * 2;
+			roundedResult += EnemyStats.Worth;
+			PlayerStats.Money += roundedResult;
 
-		float roundedResult2 = Mathf.Round(pointsBonus / 2) * 2;
-		roundedResult2 += EnemyStats.Points;
-		PlayerStats.Points += roundedResult2;
+			float roundedResult2 = Mathf.Round(pointsBonus / 2) * 2;
+			roundedResult2 += EnemyStats.Points;
+			PlayerStats.Points += roundedResult2;
+		}
 		//Debug.Log("Gold bonus: " + goldBonus + " & Enemy worth: " + roundedResult);
 
 		//GameObject effect = (GameObject)Instantiate(deathEffect, transform.position, Quaternion.identity);

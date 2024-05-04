@@ -204,6 +204,7 @@ public class EnemySpells : MonoBehaviour {
 				else if (customCastTime >= 0 & customCastTime < customCastCountdown -1)
 				{
 					castingThisSpell = "empty";
+					CastingSpell(castingThisSpell);
 					customCastTime -= Time.deltaTime;
 				}
 				else
@@ -358,7 +359,7 @@ public class EnemySpells : MonoBehaviour {
 	//Boosts speed of target(s)
 	void BuffSpeed()
 	{
-		Debug.Log("I'm in the speed void");
+		//Debug.Log("I'm in the speed void");
 		if (speedCount < 0)
 		{
 			if(castSelf)

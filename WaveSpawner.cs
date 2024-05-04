@@ -101,7 +101,7 @@ public class WaveSpawner : MonoBehaviour {
 				bonusWave = false;
 				waveCountdownText.text = " NM on it's way";
 				nMIncoming = true;
-				nMTimer = Random.Range(1, 5); // Maybe half of the start timer is easier to manage
+				nMTimer = Random.Range(19, 31); // Maybe half of the start timer is easier to manage
 			}
 			
 			spawnCountdownTimer -= Time.deltaTime;
