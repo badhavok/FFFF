@@ -19,7 +19,7 @@ public class EnemySpells : MonoBehaviour {
 	//List<EnemySpells> floatList = new List<EnemySpells>();
 	public string[] customSpellList;
 	private string castingThisSpell;
-	public bool customSpell, timeToCastSpell;
+	public bool customSpell, multiSpell;
 	public float customCastCountdown;
 	public float customCastTime;
 	private int spellToCast;
@@ -192,7 +192,14 @@ public class EnemySpells : MonoBehaviour {
 				
 				if(customCastTime < 0)
 				{
-					RandomSpell();
+					if(multiSpell)
+					{
+						MultiSpell();
+					}
+					else
+					{
+						RandomSpell();
+					}
 				}
 				else if (customCastTime >= 0 & customCastTime < customCastCountdown -1)
 				{
@@ -203,8 +210,33 @@ public class EnemySpells : MonoBehaviour {
 				{
 					customCastTime -= Time.deltaTime;
 				}
-				
-				switch(castingThisSpell)
+			}
+		}
+	}
+	//Setting the variable names in the inspector will give the mob a list of spells which are chosen at random
+	void RandomSpell()
+	{
+			spellToCast = Random.Range(0, customSpellList.Length);
+			castingThisSpell = customSpellList[spellToCast];
+			CastingSpell(castingThisSpell);
+			//Debug.Log("Spell number " + spellToCast + " is the spell " + castingThisSpell + " ... or " + customSpellList[spellToCast] + " ...");
+			customCastTime = customCastCountdown;
+	}
+	void MultiSpell()
+	{
+		for(int i = 0; i < customSpellList.Length; i++)
+		
+			{
+				castingThisSpell = customSpellList[i];
+				Debug.Log("Spell number " + i + " is the spell " + castingThisSpell + " ... or " + customSpellList[i] + " ...");
+				CastingSpell(castingThisSpell);
+			}
+		
+		customCastTime = customCastCountdown;
+	}
+	void CastingSpell(string castingThisSpell)
+	{
+		switch(castingThisSpell)
 				{
 					default:
 						buffSpeed = false;
@@ -271,17 +303,6 @@ public class EnemySpells : MonoBehaviour {
 
 						break;
 				}
-				
-			}
-		}
-	}
-	//Setting the variable names in the inspector will give the mob a list of spells which are chosen at random
-	void RandomSpell()
-	{
-			spellToCast = Random.Range(0, customSpellList.Length);
-			castingThisSpell = customSpellList[spellToCast];
-			//Debug.Log("Spell number " + spellToCast + " is the spell " + castingThisSpell + " ... or " + customSpellList[spellToCast] + " ...");
-			customCastTime = customCastCountdown;
 	}
 	//Steals HP from nearby enemies and adds it to [own] HP
 	void BuffVampire()
@@ -337,7 +358,7 @@ public class EnemySpells : MonoBehaviour {
 	//Boosts speed of target(s)
 	void BuffSpeed()
 	{
-		// Debug.Log("I'm in the speed void");
+		Debug.Log("I'm in the speed void");
 		if (speedCount < 0)
 		{
 			if(castSelf)
@@ -581,7 +602,7 @@ public class EnemySpells : MonoBehaviour {
 	void AoECast (Transform enemy, int castingSpell)
 	{
 		Enemy e = enemy.GetComponent<Enemy>();
-		Debug.Log("Enemy targeted - " + e + " .");
+		//Debug.Log("Enemy targeted - " + e + " .");
 		switch(castingSpell)
 		{
 			default :
@@ -615,11 +636,11 @@ public class EnemySpells : MonoBehaviour {
 
 			if(targetTower)
 			{
-				// Debug.Log("Tower targeted - " + targetTower + " .");
+				//Debug.Log("Tower targeted - " + targetTower + " .");
 				targetTower.DebuffSpeed(debuffSpeed, countdownDebuffSpeed);
 			}
-			//Debug.Log("Weeeeee.... don't say bye then!");
-			debuffSpeedCount += (countdownDebuffSpeed * 1.5f);
+			
+			debuffSpeedCount += (countdownDebuffSpeed);
 		}
 		else
 		{
