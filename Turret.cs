@@ -330,12 +330,17 @@ public class Turret : MonoBehaviour {
 		debuffSpeed = dBSpd;
 		countdownDebuffSpeed = dBCountdown;
 	}
-
+	public void AttackTowerHP (int atkDmg)
+	{
+		//Debug.Log("I'm in the speed loop");
+		healthPoints -= atkDmg;
+	}
 	//Update is called once per frame
 	void Update () {
 		//Which function am I going to use for enemy detection
 		if (healthPoints <= 0)
 		{
+			healthText.text = "..My time here is done..";
 			anim.SetBool("Death", true);
 			anim.SetBool("Idle", false);
 			m_CurrentClipInfo = this.anim.GetCurrentAnimatorClipInfo(0);

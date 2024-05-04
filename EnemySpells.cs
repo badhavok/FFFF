@@ -59,7 +59,9 @@ public class EnemySpells : MonoBehaviour {
 	
 	public bool debuffTowerSpeed = false;
 	public float debuffSpeed, countdownDebuffSpeed, debuffSpeedCount = 0;
-
+	public bool attackTowerHP = false;
+	public int attackTowerDmg = 0;
+	public float countdownAttackTower, attackTowerHPCount = 0;
 	//This makes an enemy duplicate itself (weaker than summon as it detects current HP as well)
 	public bool duplicate = false;
 
@@ -105,6 +107,7 @@ public class EnemySpells : MonoBehaviour {
 		vampireCount = countdownVampire;
 		buffDefCount = countdownBuffDef;
 		customCastTime = customCastCountdown;
+		attackTowerHPCount = countdownAttackTower;
 	}
 	void Update()
 	{
@@ -186,6 +189,10 @@ public class EnemySpells : MonoBehaviour {
 			if (debuffTowerSpeed)
 			{
 				DebuffTowerSpeed();
+			}
+			if (attackTowerHP)
+			{
+				AttackTowerHP();
 			}
 			if(customSpell)
 			{
@@ -624,7 +631,6 @@ public class EnemySpells : MonoBehaviour {
 				e.Immune(countdownImmune);
 				break;
 		}
-		
 	}
 	//Debuffs tower(s) attack speed
 	void DebuffTowerSpeed()
@@ -632,20 +638,55 @@ public class EnemySpells : MonoBehaviour {
 		if (debuffSpeedCount < 0)
 		{
 			
-			// Debug.Log("Targeting");
-			TargetTower();
-
-			if(targetTower)
+			if (aoECast)
 			{
-				//Debug.Log("Tower targeted - " + targetTower + " .");
-				targetTower.DebuffSpeed(debuffSpeed, countdownDebuffSpeed);
+				TowerAoE(0);
 			}
-			
+			else
+			{
+				// Debug.Log("Targeting");
+				TargetTower();
+
+				if(targetTower)
+				{
+					//Debug.Log("Tower targeted - " + targetTower + " .");
+					targetTower.DebuffSpeed(debuffSpeed, countdownDebuffSpeed);
+				}
+				
+			}
 			debuffSpeedCount += (countdownDebuffSpeed);
 		}
 		else
 		{
 			debuffSpeedCount -= Time.deltaTime;
+		}
+	}
+	void AttackTowerHP()
+	{
+		if (attackTowerHPCount < 0)
+		{
+			
+			if (aoECast)
+			{
+				TowerAoE(1);
+			}
+			else
+			{
+				// Debug.Log("Targeting");
+				TargetTower();
+
+				if(targetTower)
+				{
+					//Debug.Log("Tower targeted - " + targetTower + " .");
+					targetTower.AttackTowerHP(attackTowerDmg);
+				}
+				
+			}
+			attackTowerHPCount += (countdownAttackTower);
+		}
+		else
+		{
+			attackTowerHPCount -= Time.deltaTime;
 		}
 	}
 	void TargetTower()
@@ -674,6 +715,44 @@ public class EnemySpells : MonoBehaviour {
 		{
 			target = null;
 		}
+	}
+	void TowerAoE (int spellNumber)
+	{
+		//Debug.Log("I'm shooting an emeny!");
+		casting = true;
+		Collider[] colliders = Physics.OverlapSphere(transform.position, range);
+		foreach (Collider collider in colliders)
+		{
+			if (collider.tag == "Tower")
+			{
+				TowerAoECast(collider.transform, spellNumber);
+			}
+		}
+		//Vector3 dir = firePoint.position - target.position;
+		colliders = null;
+	}
+	void TowerAoECast (Transform tower, int castingSpell)
+	{
+		Turret t = tower.GetComponent<Turret>();
+		//Debug.Log("Enemy targeted - " + e + " .");
+		switch(castingSpell)
+		{
+			default :
+				break;
+			case 0:
+				t.DebuffSpeed(debuffSpeed, countdownDebuffSpeed);
+				break;
+			case 1:
+				t.AttackTowerHP(attackTowerDmg);
+				break;
+			case 2:
+				
+				break;
+			case 3:
+				
+				break;
+		}
+		
 	}
 	void OnDrawGizmosSelected ()
 	{
