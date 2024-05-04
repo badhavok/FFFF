@@ -19,6 +19,10 @@ public class WaveSpawner : MonoBehaviour {
 	public Boss[] bosses;
 	//Array for Random/bonus encounters
 	public int randomChance;
+	public float spawnTimer = 0f;
+	private float spawnCountdownTimer, nMTimer;
+	private bool bonusWave, nMIncoming;
+	private int randomIndex = 0;
 	public Wave[] randoms;
 
 	public GameObject enemy;
@@ -73,6 +77,7 @@ public class WaveSpawner : MonoBehaviour {
 		totalWaves = waves.Length + bosses.Length;
 		audioSource.clip = audioClipArray[0];
 		audioSource.Play();
+		spawnCountdownTimer = spawnTimer;
 	}
 
 	void Update ()
@@ -87,6 +92,33 @@ public class WaveSpawner : MonoBehaviour {
 		if (bossIndex == bosses.Length)
 		{
 			bossComplete = true;
+		}
+		if(bonusWave)
+		{	
+			waveCountdownText.text = string.Format("{0:00.00}", spawnCountdownTimer) + " NM incoming";
+			if(spawnCountdownTimer <= 0)
+			{
+				bonusWave = false;
+				waveCountdownText.text = " NM on it's way";
+				nMIncoming = true;
+				nMTimer = Random.Range(19, 31); // Maybe half of the start timer is easier to manage
+			}
+			
+			spawnCountdownTimer -= Time.deltaTime;
+		}
+		if(nMIncoming)
+		{
+			if(nMTimer <0)
+			{
+				nMIncoming = false;
+				waveCountdownText.text = " It's here";
+				// Play different music  - maybe detect when defeated and change music back after
+				StartCoroutine(BonusWave());
+				// Can add feature that if you defeat [x] number of NMs in this level, you will fight a "stronger version of it"
+				// Loop through [randomIndex = 0], then increase it when [x] achieved [++randomIndex;]
+			}
+
+			nMTimer -= Time.deltaTime;
 		}
 
 		//If any enemy is alive, don't proceed to the next code
@@ -154,8 +186,7 @@ public class WaveSpawner : MonoBehaviour {
 
 					if(randomChance >= rand)
 					{
-						Debug.Log("Starting Bonus wave");
-						StartCoroutine(BonusWave());
+						bonusWave = true;
 					}
 				}
 				countdown = timeBetweenWaves;
@@ -281,7 +312,7 @@ public class WaveSpawner : MonoBehaviour {
 	//This is used for bonus/random encounters, for "farmed" items
 	private IEnumerator BonusWave()
 	{
-		Wave wave = randoms[waveIndex];
+		Wave wave = randoms[randomIndex];
 
 		do
 		{
@@ -305,15 +336,13 @@ public class WaveSpawner : MonoBehaviour {
 				++counter;
 				Refactor(enemy);
 				
-				yield return new WaitForSeconds(1.0f / enemy.enemyRate);
+				yield return new WaitForSeconds(enemy.enemyRate);
 			}
 
 			++loops;
 		}
 		while (counter > 0);
 
-		// ++PlayerStats.Rounds;
-		// ++waveIndex;
 		yield return new WaitForSeconds(1.0f / wave.waveRate);
 
 		void Refactor(EnemyBlueprint enemy)
@@ -326,6 +355,7 @@ public class WaveSpawner : MonoBehaviour {
 				--counter;
 			}
 		}
+		
 	}
 	//The literal spawn-into-the-game function, spawnPoint is set in the inspector
 	public void SpawnEnemy (GameObject enemy)
