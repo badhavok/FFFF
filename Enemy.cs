@@ -208,7 +208,7 @@ public class Enemy : MonoBehaviour {
 			//Debug.Log("I'm immune!");
 			return;
 		}
-
+		// Debug.Log("The damage " + this.gameObject + " taking is - " + bluntDamage + " blunt; " + piercingDamage + " pierce; " + slashingDamage + " slashing; " + magDamage + " magic;");
 		float amount = bluntDamage + piercingDamage + slashingDamage + magDamage;
 
 		if(amount <= 0)

@@ -7,7 +7,6 @@ using System.Collections;
 public class Base : MonoBehaviour {
 
     public int health, healthBar;
-
     public GameObject fullHealth;
 	public GameObject ninetyHealth;
     public GameObject eightyHealth;
@@ -22,7 +21,7 @@ public class Base : MonoBehaviour {
 
     void Start ()
     {
-        health = PlayerStats.Lives; 
+        health = PlayerStats.Lives;
         healthBar = health;
     }
     

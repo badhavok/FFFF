@@ -8,6 +8,8 @@ public class Turret : MonoBehaviour {
 	public AudioClip[] audioClipArray;
 	private Transform target;
 	private Enemy targetEnemy;
+	public Turret targetTurret;
+	public Turret targetedTurret;
 
 	//Most of the below settings are self explanitory
 
@@ -15,6 +17,7 @@ public class Turret : MonoBehaviour {
 
 	public string enemyTag = "Enemy";
 	public string baseTag = "Base";
+	public string towerTag = "Tower";
 
 	public Transform partToRotate;
 	public float turnSpeed = 10f;
@@ -54,7 +57,7 @@ public class Turret : MonoBehaviour {
 	public float fireRate; 
 	private float startFireRate;
 	private float fireCountdown = 0f;
-	private bool doShoot = false;
+	private bool doShoot, canFire = false;
 
 	// [Header("Use Laser")]
 	// public bool useLaser = false;
@@ -321,6 +324,39 @@ public class Turret : MonoBehaviour {
 		}
 		enemies = null;
 	}
+	void HealingTurret ()
+	{
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag(towerTag);
+		float shortestDistance = Mathf.Infinity;
+		GameObject nearestEnemy = null;
+		foreach (GameObject enemy in enemies)
+		{
+			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+
+			targetedTurret = enemy.GetComponent<Turret>();
+
+			if (distanceToEnemy < shortestDistance && targetedTurret.healthPoints < targetedTurret.startHealthPoints)
+			{
+				shortestDistance = distanceToEnemy;
+				nearestEnemy = enemy;
+			}
+			targetedTurret = null;
+		}
+
+		if (nearestEnemy != null && shortestDistance <= range)
+		{
+			target = nearestEnemy.transform;
+			targetEnemy = nearestEnemy.GetComponent<Enemy>();
+			targetedTurret = nearestEnemy.GetComponent<Turret>();
+			LockOnTarget();
+		} else
+		{
+			nearestEnemy = null;
+			//turgetedTurret = null;
+			target = null;
+		}
+		enemies = null;
+	}
 	
 	public void DebuffSpeed (float dBSpd, float dBCountdown)
 	{
@@ -340,7 +376,7 @@ public class Turret : MonoBehaviour {
 		//Which function am I going to use for enemy detection
 		if (healthPoints <= 0)
 		{
-			healthText.text = "..My time here is done..";
+			healthText.text = "My time here is done..";
 			anim.SetBool("Death", true);
 			anim.SetBool("Idle", false);
 			m_CurrentClipInfo = this.anim.GetCurrentAnimatorClipInfo(0);
@@ -413,23 +449,51 @@ public class Turret : MonoBehaviour {
 		}
 		if (healBase)
 		{
-			HealingBase();
-			fireCountdown -= Time.deltaTime;
-			if(fireCountdown < 0)
+			if(fireCountdown < 0 & canFire)
 			{
-				Heal();
 				if(PlayerStats.Lives != PlayerStats.StartLives)
-				{
-					PlayerStats.Lives++;	
+				{	
+					HealingBase();
+					
+						if(target)
+							{
+								Heal();
+								PlayerStats.Lives++;	
+							}
+							else
+							{
+								HealingTurret();
+								if(target)
+								{
+									Heal();
+									Debug.Log("Healing Turret Loop - no base nearby");
+									targetedTurret.healthPoints++;
+								}
+							}
+							canFire = false;
+							fireCountdown = 100f / healRate;
+							return;
 				}
-				
-				fireCountdown = 1f / healRate;
+				else
+				{
+					canFire = false;
+					HealingTurret();
+					if(target)
+					{
+						Heal();
+						Debug.Log("Healing Turret Loop - full lives");
+						targetedTurret.healthPoints++;
+					}
+				}
+				canFire = false;
+				fireCountdown = 100f / healRate;
 			}
 			else
 			{
 				fireCountdown -= Time.deltaTime;
+				canFire = true;
+				return;
 			}
-			return;
 		}
 		//allows laser weapons to decrease "overheat"
 		if (target == null)

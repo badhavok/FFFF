@@ -253,6 +253,7 @@ public class EnemySpells : MonoBehaviour {
 						buffSummoner = false;
 						buffImmune = false;
 						debuffTowerSpeed = false;
+						attackTowerHP = false;
 
 						hideCount = countdownHide;
 						countdownHealth =0;
@@ -269,6 +270,8 @@ public class EnemySpells : MonoBehaviour {
 						buffDefCount = countdownBuffDef;
 						countdownDebuffSpeed = 0;
 						debuffSpeedCount = countdownDebuffSpeed;
+						countdownAttackTower = 0;
+						attackTowerHPCount = countdownAttackTower;
 						
 						break;
 
@@ -308,6 +311,12 @@ public class EnemySpells : MonoBehaviour {
 
 						debuffTowerSpeed = true;
 						countdownDebuffSpeed = 5;
+
+						break;
+					case "attackTowerHP" :
+
+						attackTowerHP = true;
+						countdownAttackTower =5;
 
 						break;
 				}
