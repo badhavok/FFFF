@@ -7,6 +7,7 @@ public class Waypoints : MonoBehaviour {
 	public static Transform[] pathPoints2;
 	public static Transform[] pathPoints3;
 	private static Transform[] highlightedPoints, calculatePoints;
+	private int one = 1;
 
 	public GameObject PathPoints1;
 	public GameObject PathPoints2;
@@ -14,10 +15,11 @@ public class Waypoints : MonoBehaviour {
 	private static GameObject highlightedPath, calculatePath;
 
 	// Calculating the length of the path
-	public static float totalLength1, totalLength2, totalLength3 = 0;
-	public int calculatePath1, calculatePath2, calculatePath3 = 0;
+	public float totalLength, totalLength1, totalLength2, totalLength3 = 0;
+	private bool countedOne, countedTwo, countedThree = false;
 
-	public LineRenderer lineRenderer;
+	public GameObject arrowObject;
+	private GameObject arrow;
 
 	void Awake ()
 	{
@@ -50,81 +52,112 @@ public class Waypoints : MonoBehaviour {
 	
 	void Start ()
 	{
-		PathLength(1);
-		if(pathPoints2 != null)
-		{
-			PathLength(2);
-		}
-		if(pathPoints3 != null)
-		{
-			PathLength(3);
-		}
+		Debug.Log("I've started");
+		StartCoroutine(PathLength(1));
 	}
-	public void PathLength(int path)
+	public IEnumerator PathLength(int pathL)
 	{
-		if(path == 1)
+		Debug.Log("Starting path length");
+		if(pathL == 1)
 		{
 			calculatePath = PathPoints1;
 			calculatePoints = pathPoints1;
+			Debug.Log("I'm going to start the coroutine");
+			yield return StartCoroutine(CalculatingPath(calculatePath, calculatePoints));
 		}
-		if(path == 2)
+		if(pathL == 2)
 		{
 			calculatePath = PathPoints2;
 			calculatePoints = pathPoints2;
+			
+			yield return StartCoroutine(CalculatingPath(calculatePath, calculatePoints));
 		}
-		if(path == 3)
+		if(pathL == 3)
 		{
 			calculatePath = PathPoints3;
 			calculatePoints = pathPoints3;
+			
+			yield return StartCoroutine(CalculatingPath(calculatePath, calculatePoints));
 		}
-		for (int i = 0; i < calculatePath.transform.childCount; i++)
+	}
+	public IEnumerator CalculatingPath(GameObject calcThisPath, Transform[] calcThesePoints)
+	{
+		for (int i = 0; i < calcThisPath.transform.childCount; i++)
 		{
-			if (i == calculatePath.transform.childCount - 1)
+			if (i == calcThisPath.transform.childCount - 1)
 			{
-				return;
+				if(!countedOne)
+				{
+					countedOne = true;
+					totalLength1 = totalLength;
+					Debug.Log("My total length is - " + totalLength + " calculated is " + totalLength1);
+					totalLength = 0;
+					
+					yield return StartCoroutine(PathLength(2));
+				}
+				if(PathPoints2 != null && !countedTwo)
+				{
+					countedTwo = true;
+					totalLength2 = totalLength;
+					Debug.Log("My total length is - " + totalLength + " calculated is " + totalLength2);
+					
+					yield return StartCoroutine(PathLength(3));
+				}
+				if(PathPoints3 != null && !countedThree)
+				{
+					countedThree = true;
+					yield return totalLength3;
+				}
 			}
 			else
 			{
 					int j = i + 1;
-					float calculatePath1 = Vector3.Distance(calculatePoints[i].position, calculatePoints[j].position);
-					totalLength1 = calculatePath1 + totalLength1;
+					float calculatedPath = Vector3.Distance(calcThesePoints[i].position, calcThesePoints[j].position);
+					totalLength = calculatedPath + totalLength;
 			}
-			//Debug.Log("This is the path length #1 " + totalLength1 + pathPoints1[i].name);
+			Debug.Log("This is the path length " + totalLength + pathPoints1[i].name);
 		}
 	}
-	public IEnumerator HighlightPath(int path)
+	public IEnumerator HighlightPath(int pathH)
 	{
-		if(path == 1)
+		Debug.Log("Highlighting the path");
+		if(pathH == 1)
 		{
 			highlightedPath = PathPoints1;
 			highlightedPoints = pathPoints1;
+
+			yield return StartCoroutine(HighlightThisPath(highlightedPath, highlightedPoints));
 		}
-		if(path == 2)
+		if(pathH == 2)
 		{
 			highlightedPath = PathPoints2;
 			highlightedPoints = pathPoints2;
+			
+			yield return StartCoroutine(HighlightThisPath(highlightedPath, highlightedPoints));
 		}
-		if(path == 3)
+		if(pathH == 3)
 		{
 			highlightedPath = PathPoints3;
 			highlightedPoints = pathPoints3;
+			
+			yield return StartCoroutine(HighlightThisPath(highlightedPath, highlightedPoints));
 		}
-		for (int i = 0; i < highlightedPath.transform.childCount; i++)
-		{
-			if (i == highlightedPath.transform.childCount - 1)
+	}
+	public IEnumerator HighlightThisPath(GameObject hlThisPath, Transform[] hlThesePoints)
+	{
+		for (int i = 0; i < hlThisPath.transform.childCount; i++)
 			{
-				lineRenderer.enabled = false;
-				// return;
+				if (i != hlThisPath.transform.childCount - 1)
+				{
+					int j = i + 1;
+					GameObject arrow = Instantiate(arrowObject, hlThesePoints[i].position, Quaternion.identity);
+
+					arrow.transform.LookAt(hlThesePoints[j]);
+					Destroy(arrow, 0.75f);
+					// Debug.Log("I should be highlighting pathpoint > " + hlThesePoints[i] + " & pathpoint >" + hlThesePoints[j]);
+				}
+
+				yield return new WaitForSeconds(1f);
 			}
-			else
-			{
-				int j = i + 1;
-				lineRenderer.SetPosition(0, highlightedPoints[i].position);
-				lineRenderer.SetPosition(1, highlightedPoints[j].position);
-				lineRenderer.enabled = true;
-				Debug.Log("I should be highlighting pathpoint > " + highlightedPoints[i] + " & pathpoint >" + highlightedPoints[j] + " & PosCount is " + lineRenderer.positionCount);
-			}
-			yield return new WaitForSeconds(0.5f);
-		}
 	}
 }

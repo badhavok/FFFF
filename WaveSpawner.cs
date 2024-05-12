@@ -141,7 +141,7 @@ public class WaveSpawner : MonoBehaviour {
 		//When the counter is 0 start the wave according to whether it should be a boss or normal enemy wave
 		if (countdown <= 0f)
 		{
-			if(currentWave <= 2)
+			if(currentWave <= 1)
 			{
 				StartCoroutine(waypoints.HighlightPath(1));
 			}

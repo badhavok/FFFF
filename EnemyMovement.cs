@@ -33,6 +33,7 @@ public class EnemyMovement : MonoBehaviour {
 		enemy = GetComponent<Enemy>();
 		anim = gameObject.GetComponentInChildren<Animator>();
 		walkingPath = Enemy.path;
+		Waypoints waypoints = FindObjectOfType<Waypoints>();
 		//Debug.Log("Enemy " + enemy.name + " Path " + walkingPath);
 		//Waypoints waypoints = new Waypoints();
 		if (enemy.fromDropship)
@@ -43,13 +44,15 @@ public class EnemyMovement : MonoBehaviour {
 			}
 			if(walkingPath == 2)
 			{
+				waypoints.PathLength(2);
 				target = Waypoints.pathPoints2[wavepointIndex];
-				pathDistance = Waypoints.totalLength2;
+				pathDistance = waypoints.totalLength2;
 			}
 			else
 			{
+				waypoints.PathLength(1);
 				target = Waypoints.pathPoints1[wavepointIndex];
-				pathDistance = Waypoints.totalLength1;
+				pathDistance = waypoints.totalLength1;
 			}
 			transform.LookAt(target);
 		}
@@ -57,13 +60,15 @@ public class EnemyMovement : MonoBehaviour {
 		{
 			if(walkingPath == 2)
 			{
+				waypoints.PathLength(2);
 				target = Waypoints.pathPoints2[0];
-				pathDistance = Waypoints.totalLength2;
+				pathDistance = waypoints.totalLength2;
 			}
 			else
 			{
+				waypoints.PathLength(1);
 				target = Waypoints.pathPoints1[0];
-				pathDistance = Waypoints.totalLength1;
+				pathDistance = waypoints.totalLength1;
 			}
 			transform.LookAt(target);
 		}

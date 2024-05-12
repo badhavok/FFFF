@@ -267,7 +267,7 @@ public class Enemy : MonoBehaviour {
 		{
 		magDamage = 0;
 		}
-		Debug.Log("The damage " + this.gameObject + " taking is - " + bluntDamage + " blunt; " + piercingDamage + " pierce; " + slashingDamage + " slashing; " + magDamage + " magic;");
+		//Debug.Log("The damage " + this.gameObject + " taking is - " + bluntDamage + " blunt; " + piercingDamage + " pierce; " + slashingDamage + " slashing; " + magDamage + " magic;");
 		float amount = bluntDamage + piercingDamage + slashingDamage + magDamage;
 
 		//Debug.Log("I'm taking damage " + amount);
