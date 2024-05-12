@@ -1,17 +1,23 @@
 using UnityEngine;
+using System.Collections;
 
 public class Waypoints : MonoBehaviour {
 
 	public static Transform[] pathPoints1;
 	public static Transform[] pathPoints2;
+	public static Transform[] pathPoints3;
+	private static Transform[] highlightedPoints, calculatePoints;
 
 	public GameObject PathPoints1;
 	public GameObject PathPoints2;
 	public GameObject PathPoints3;
+	private static GameObject highlightedPath, calculatePath;
 
 	// Calculating the length of the path
-	public static float totalLength1, totalLength2 = 0;
-	public int calculatePath1, calculatePath2 = 0;
+	public static float totalLength1, totalLength2, totalLength3 = 0;
+	public int calculatePath1, calculatePath2, calculatePath3 = 0;
+
+	public LineRenderer lineRenderer;
 
 	void Awake ()
 	{
@@ -32,46 +38,93 @@ public class Waypoints : MonoBehaviour {
 				pathPoints2[j] = PathPoints2.transform.GetChild(j);
 			}
 		}
+		if(PathPoints3 != null)
+		{	
+			pathPoints3 = new Transform[PathPoints3.transform.childCount];
+			for (int j = 0; j < PathPoints3.transform.childCount; j++)
+			{
+				pathPoints3[j] = PathPoints3.transform.GetChild(j);
+			}
+		}
 	}
 	
 	void Start ()
 	{
-		PathLengthOne();
-		PathLengthTwo();
-	}
-
-	public void PathLengthOne()
-	{
-		for (int i = 0; i < PathPoints1.transform.childCount; i++)
+		PathLength(1);
+		if(pathPoints2 != null)
 		{
-			if (i == PathPoints1.transform.childCount - 1)
+			PathLength(2);
+		}
+		if(pathPoints3 != null)
+		{
+			PathLength(3);
+		}
+	}
+	public void PathLength(int path)
+	{
+		if(path == 1)
+		{
+			calculatePath = PathPoints1;
+			calculatePoints = pathPoints1;
+		}
+		if(path == 2)
+		{
+			calculatePath = PathPoints2;
+			calculatePoints = pathPoints2;
+		}
+		if(path == 3)
+		{
+			calculatePath = PathPoints3;
+			calculatePoints = pathPoints3;
+		}
+		for (int i = 0; i < calculatePath.transform.childCount; i++)
+		{
+			if (i == calculatePath.transform.childCount - 1)
 			{
 				return;
 			}
 			else
 			{
 					int j = i + 1;
-					float calculatePath1 = Vector3.Distance(pathPoints1[i].position, pathPoints1[j].position);
+					float calculatePath1 = Vector3.Distance(calculatePoints[i].position, calculatePoints[j].position);
 					totalLength1 = calculatePath1 + totalLength1;
 			}
 			//Debug.Log("This is the path length #1 " + totalLength1 + pathPoints1[i].name);
 		}
 	}
-	public void PathLengthTwo()
+	public IEnumerator HighlightPath(int path)
 	{
-		for (int i = 0; i < PathPoints2.transform.childCount; i++)
+		if(path == 1)
 		{
-			if (i == PathPoints2.transform.childCount - 1)
+			highlightedPath = PathPoints1;
+			highlightedPoints = pathPoints1;
+		}
+		if(path == 2)
+		{
+			highlightedPath = PathPoints2;
+			highlightedPoints = pathPoints2;
+		}
+		if(path == 3)
+		{
+			highlightedPath = PathPoints3;
+			highlightedPoints = pathPoints3;
+		}
+		for (int i = 0; i < highlightedPath.transform.childCount; i++)
+		{
+			if (i == highlightedPath.transform.childCount - 1)
 			{
-				return;
+				lineRenderer.enabled = false;
+				// return;
 			}
 			else
 			{
-					int j = i + 1;
-					float calculatePath2 = Vector3.Distance(pathPoints2[i].position, pathPoints2[j].position);
-					totalLength2 = calculatePath2 + totalLength2;
+				int j = i + 1;
+				lineRenderer.SetPosition(0, highlightedPoints[i].position);
+				lineRenderer.SetPosition(1, highlightedPoints[j].position);
+				lineRenderer.enabled = true;
+				Debug.Log("I should be highlighting pathpoint > " + highlightedPoints[i] + " & pathpoint >" + highlightedPoints[j] + " & PosCount is " + lineRenderer.positionCount);
 			}
-			//Debug.Log("This is the path length #2 " + totalLength2 + pathPoints2[i].name);
+			yield return new WaitForSeconds(0.5f);
 		}
 	}
 }

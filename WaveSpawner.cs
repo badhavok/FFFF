@@ -7,6 +7,7 @@ public class WaveSpawner : MonoBehaviour {
 
 	public AudioSource audioSource;
 	public AudioClip[] audioClipArray;
+	public Waypoints waypoints;
 	public static int EnemiesAlive = 0;
 	public int enemiesAlive;
 	public static int BossAlive = 0;
@@ -140,6 +141,10 @@ public class WaveSpawner : MonoBehaviour {
 		//When the counter is 0 start the wave according to whether it should be a boss or normal enemy wave
 		if (countdown <= 0f)
 		{
+			if(currentWave <= 2)
+			{
+				StartCoroutine(waypoints.HighlightPath(1));
+			}
 			//Debug.Log("starting coroutine " + waveIndex + " waves length " + waves.Length);
 			
 			
@@ -227,6 +232,7 @@ public class WaveSpawner : MonoBehaviour {
 					if(spawnLocationTwo.activeSelf == false)
 					{
 						spawnLocationTwo.SetActive(true);
+						StartCoroutine(waypoints.HighlightPath(2));
 					}
 					spawnPoint = spawnPointTwo;
 					path = enemy.enemySpawn;
@@ -276,6 +282,7 @@ public class WaveSpawner : MonoBehaviour {
 					if(spawnLocationTwo.activeSelf == false)
 					{
 						spawnLocationTwo.SetActive(true);
+						StartCoroutine(waypoints.HighlightPath(2));
 					}
 					spawnPoint = spawnPointTwo;
 					path = enemy.enemySpawn;
