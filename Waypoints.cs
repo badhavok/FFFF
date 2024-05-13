@@ -7,7 +7,7 @@ public class Waypoints : MonoBehaviour {
 	public static Transform[] pathPoints2;
 	public static Transform[] pathPoints3;
 	private static Transform[] highlightedPoints, calculatePoints;
-	private int one = 1;
+	private float one = 2f;
 
 	public GameObject PathPoints1;
 	public GameObject PathPoints2;
@@ -52,17 +52,31 @@ public class Waypoints : MonoBehaviour {
 	
 	void Start ()
 	{
-		Debug.Log("I've started");
 		StartCoroutine(PathLength(1));
+	}
+	void Update()
+	{
+		if(one > 1)
+		{
+			one -= Time.deltaTime;
+		}
+		else if(one < 1 && one > 0.5f)
+		{
+			StartCoroutine(HighlightPath(1));
+			one -= Time.deltaTime;
+		}
+		else
+		{
+
+		}
 	}
 	public IEnumerator PathLength(int pathL)
 	{
-		Debug.Log("Starting path length");
 		if(pathL == 1)
 		{
 			calculatePath = PathPoints1;
 			calculatePoints = pathPoints1;
-			Debug.Log("I'm going to start the coroutine");
+
 			yield return StartCoroutine(CalculatingPath(calculatePath, calculatePoints));
 		}
 		if(pathL == 2)
@@ -90,7 +104,7 @@ public class Waypoints : MonoBehaviour {
 				{
 					countedOne = true;
 					totalLength1 = totalLength;
-					Debug.Log("My total length is - " + totalLength + " calculated is " + totalLength1);
+					
 					totalLength = 0;
 					
 					yield return StartCoroutine(PathLength(2));
@@ -99,9 +113,17 @@ public class Waypoints : MonoBehaviour {
 				{
 					countedTwo = true;
 					totalLength2 = totalLength;
-					Debug.Log("My total length is - " + totalLength + " calculated is " + totalLength2);
 					
-					yield return StartCoroutine(PathLength(3));
+					totalLength = 0;
+					
+					if(PathPoints3 != null)
+					{
+						yield return StartCoroutine(PathLength(3));
+					}
+					else
+					{
+						yield return totalLength2;
+					}
 				}
 				if(PathPoints3 != null && !countedThree)
 				{

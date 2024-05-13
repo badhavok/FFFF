@@ -33,10 +33,12 @@ public class Enemy : MonoBehaviour {
 	public float speed;
 [HideInInspector]	public float maxHealth, baseHealth;
 	public float updatedHealth;
-	public int bluntDef, slashDef, pierceDef, magDef;
+[HideInInspector] public int bluntDef, slashDef, pierceDef, magDef;
 [HideInInspector] public int startBluntDef, startSlashDef, startPierceDef, startMagDef;
 [HideInInspector] public bool buffSlashDef, buffPierceDef, buffBluntDef, buffMagDef = false;
 [HideInInspector] public float countdownSlashBuffDef, countdownPierceBuffDef, countdownBluntBuffDef, countdownMagBuffDef;
+[HideInInspector] public int fireDef, iceDef, waterDef, lighteningDef, earthDef, windDef, lightDef, darkDef;
+[HideInInspector] public int startFireDef, startIceDef, startWaterDef, startLighteningDef, startEarthDef, startWindDef, startLightDef, startDarkDef;
 [HideInInspector] public float imFlying, countdownChicken, chk;
 //This is to set the path of any summons, to where the enemy that spawned them, is (E.G not the very start of the path)
 [HideInInspector] public bool fromDropship = false;
@@ -287,6 +289,191 @@ public class Enemy : MonoBehaviour {
 			Die();
 		}
 		amount = 0;
+	}
+	// Calculate elemental damage
+	public void ElementalDamage (float fireDamage, float iceDamage, float waterDamage, float lighteningDamage, float earthDamage, float windDamage, float lightDamage, float darkDamage)
+	{
+		if(iceDamage > 0)
+		{
+			iceDamage = iceDamage - iceDef;
+			
+			if(enemyStats.fireEnemy)
+			{
+				iceDamage = iceDamage / enemyStats.fireResist;
+			}
+			else if(enemyStats.iceEnemy)
+			{
+				iceDamage = iceDamage / enemyStats.iceResist;
+			}
+			if(enemyStats.windEnemy)
+			{
+				iceDamage = iceDamage * enemyStats.windResist;
+			}
+			Mathf.RoundToInt(iceDamage);
+		}
+		if(fireDamage > 0)
+		{
+			fireDamage = fireDamage - fireDef;
+			
+			if(enemyStats.waterEnemy)
+			{
+				fireDamage = fireDamage / enemyStats.waterResist;
+			}
+			else if(enemyStats.fireEnemy)
+			{
+				fireDamage = fireDamage / enemyStats.fireResist;
+			}
+			if(enemyStats.iceEnemy)
+			{
+				fireDamage = fireDamage * enemyStats.iceResist;
+			}
+			Mathf.RoundToInt(fireDamage);
+		}
+		if(waterDamage > 0)
+		{
+			waterDamage = waterDamage - waterDef;
+			
+			if(enemyStats.lighteningEnemy)
+			{
+				waterDamage = waterDamage / enemyStats.lighteningResist;
+			}
+			else if(enemyStats.waterEnemy)
+			{
+				waterDamage = waterDamage / enemyStats.waterResist;
+			}
+			if(enemyStats.fireEnemy)
+			{
+				waterDamage = waterDamage * enemyStats.fireResist;
+			}
+			Mathf.RoundToInt(waterDamage);
+		}
+		if(lighteningDamage > 0)
+		{
+			lighteningDamage = lighteningDamage - lighteningDef;
+			
+			if(enemyStats.earthEnemy)
+			{
+				lighteningDamage = lighteningDamage / enemyStats.earthResist;
+			}
+			else if(enemyStats.lighteningEnemy)
+			{
+				lighteningDamage = lighteningDamage / enemyStats.lighteningResist;
+			}
+			if(enemyStats.waterEnemy)
+			{
+				lighteningDamage = lighteningDamage * enemyStats.waterResist;
+			}
+			Mathf.RoundToInt(lighteningDamage);
+		}
+		if(earthDamage > 0)
+		{
+			earthDamage = earthDamage - earthDef;
+			
+			if(enemyStats.windEnemy)
+			{
+				earthDamage = earthDamage / enemyStats.windResist;
+			}
+			else if(enemyStats.earthEnemy)
+			{
+				earthDamage = earthDamage / enemyStats.earthResist;
+			}
+			if(enemyStats.lighteningEnemy)
+			{
+				earthDamage = earthDamage * enemyStats.lighteningResist;
+			}
+			Mathf.RoundToInt(earthDamage);
+		}
+		if(windDamage > 0)
+		{
+			windDamage = windDamage - windDef;
+			
+			if(enemyStats.iceEnemy)
+			{
+				windDamage = windDamage / enemyStats.iceResist;
+			}
+			else if(enemyStats.windEnemy)
+			{
+				windDamage = windDamage / enemyStats.windResist;
+			}
+			if(enemyStats.earthEnemy)
+			{
+				windDamage = windDamage * enemyStats.earthResist;
+			}
+			Mathf.RoundToInt(windDamage);
+		}
+		if(lightDamage > 0)
+		{
+			lightDamage = lightDamage - lightDef;
+
+			if(enemyStats.darkEnemy)
+			{
+				lightDamage = lightDamage * enemyStats.darkResist;
+			}
+			if(enemyStats.lightEnemy)
+			{
+				lightDamage = lightDamage / enemyStats.lightResist;
+			}
+			Mathf.RoundToInt(lightDamage);
+		}
+		if(darkDamage > 0)
+		{
+			darkDamage = darkDamage - darkDef;
+
+			if(enemyStats.lightEnemy)
+			{
+				darkDamage = darkDamage * enemyStats.lightResist;
+			}
+			if(enemyStats.darkEnemy)
+			{
+				darkDamage = darkDamage / enemyStats.darkResist;
+			}
+			Mathf.RoundToInt(darkDamage);
+		}
+		if(fireDamage < 0)
+		{
+		fireDamage = 0;
+		}
+		if(iceDamage < 0)
+		{
+		iceDamage = 0;
+		}
+		if(waterDamage < 0)
+		{
+		waterDamage = 0;
+		}
+		if(lighteningDamage < 0)
+		{
+		lighteningDamage = 0;
+		}
+		if(earthDamage < 0)
+		{
+		earthDamage = 0;
+		}
+		if(windDamage < 0)
+		{
+		windDamage = 0;
+		}
+		if(lightDamage < 0)
+		{
+		lightDamage = 0;
+		}
+		if(darkDamage < 0)
+		{
+		darkDamage = 0;
+		}
+		Debug.Log("The damage " + this.gameObject + " is taking is - " + fireDamage + " fire - " + iceDamage + " ice - " + waterDamage + " water - " + lighteningDamage + " lightening - " + earthDamage + " earth -" + windDamage + " wind - " + lightDamage + " light - " + darkDamage + " dark ");
+		float elementalDamage = fireDamage + iceDamage + waterDamage + lighteningDamage + earthDamage + windDamage + lightDamage + darkDamage;
+
+		//Debug.Log("I'm taking damage " + amount);
+		if(elementalDamage <= 0)
+		{
+			return;
+		}
+		else
+		{
+			TakePenDamage(0, 0, 0, elementalDamage);
+			elementalDamage = 0;
+		}
 	}
 	//Function to drain HP from nearby enemies
 	public void Vampire(float damageVam)

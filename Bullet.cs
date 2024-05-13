@@ -17,7 +17,8 @@ public class Bullet : MonoBehaviour {
 	public int damageFire = 0;
 	public int damageIce = 0;
 	public int damageWind = 0;
-
+	public int damageLight = 0;
+	public int damageDark = 0;
 
 	[Header ("AoE/Explosion")]
 	public float explosionRadius = 0f;

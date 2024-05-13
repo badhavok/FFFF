@@ -21,10 +21,23 @@ public class EnemyStats : MonoBehaviour {
 	public int startPierceDef = 0;
 	public int startMagDef = 0;
 
-	public int fireDef = 0; // DoT
-	public int iceDef = 0; // Slow
-	public int lighteningDef = 0; // Stun
-	public int earthDef = 0; // Debuffs
+	public int fireDef = 0; // Weak to Water, strong against Ice
+	public int iceDef = 0; // Weak to Fire, strong against Wind
+	public int waterDef = 0; // Weak to Lightning, strong against Fire
+	public int lighteningDef = 0; // Weak to Earth, strong against Water
+	public int earthDef = 0; // Weak to Wind, strong against Lightning
+	public int windDef = 0 ; // Weak to Ice, strong against Earth
+	public int lightDef = 0; // Opposite of Dark
+	public int darkDef = 0; // Opposite of Light
+	public bool fireEnemy, iceEnemy, waterEnemy, lighteningEnemy, earthEnemy, windEnemy, lightEnemy, darkEnemy;
+	public int fireResist = 0; // Weak to Water, strong against Ice
+	public int iceResist = 0; // Weak to Fire, strong against Wind
+	public int waterResist = 0; // Weak to Lightning, strong against Fire
+	public int lighteningResist = 0; // Weak to Earth, strong against Water
+	public int earthResist = 0; // Weak to Wind, strong against Lightning
+	public int windResist = 0 ; // Weak to Ice, strong against Earth
+	public int lightResist = 0; // Opposite of Dark
+	public int darkResist = 0; // Opposite of Light
 
 	public bool isHovercraft = false;
 	public float hoverTimeBoost = 0;

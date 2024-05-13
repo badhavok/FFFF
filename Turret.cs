@@ -112,9 +112,9 @@ public class Turret : MonoBehaviour {
 	public float animCooldown = 0f;
 	private Camera cam;
 
-	public bool debuffSpeedTower;
-	private bool debuffSpeedTrigger;
-	public float debuffSpeed, countdownDebuffSpeed;
+	public bool debuffSpeedTower, buffSpeedTower;
+	private bool debuffSpeedTrigger, buffSpeedTrigger;
+	public float debuffSpeed, countdownDebuffSpeed, buffSpeed, countdownBuffSpeed;
 	
 	void Start () {
 		
@@ -200,7 +200,6 @@ public class Turret : MonoBehaviour {
 		}
 		enemies = null;
 	}
-	
 	//detects target literally furthest from tower (doesn't matter if enemy is closer to start OR finish)
 	void FurthestTarget ()
 	{
@@ -227,7 +226,6 @@ public class Turret : MonoBehaviour {
 		}
 		enemies = null;
 	}
-
 	//Detects the enemy closes to the Start
 	void ClosestToStartTarget ()
 	{
@@ -256,7 +254,6 @@ public class Turret : MonoBehaviour {
 		}
 		enemies = null;
 	}
-
 	//Detects the enemy closest to the finish
 	void ClosestToEndTarget ()
 	{
@@ -357,7 +354,14 @@ public class Turret : MonoBehaviour {
 		}
 		enemies = null;
 	}
-	
+	public void BuffSpeed (float bSpd, float bCountdown)
+	{
+		//Debug.Log("I'm in the speed loop");
+		buffSpeedTower = true;
+		buffSpeedTrigger = true;
+		buffSpeed = bSpd;
+		countdownBuffSpeed = bCountdown;
+	}
 	public void DebuffSpeed (float dBSpd, float dBCountdown)
 	{
 		//Debug.Log("I'm in the speed loop");
@@ -413,7 +417,23 @@ public class Turret : MonoBehaviour {
 		{
 			buffsUI.transform.LookAt(cam.transform);
 		}
-		if (debuffSpeedTower)
+		if (buffSpeedTower)
+		{
+			//Debug.Log("Tower speed loop + " + debuffSpeed + " .");
+			if(buffSpeedTrigger)
+			{
+				fireRate = fireRate / buffSpeed;
+				buffSpeedTrigger = false;
+			}
+			countdownBuffSpeed -= Time.deltaTime;
+			if (countdownBuffSpeed <= 0)
+			{
+				buffSpeedTower = false;
+				fireRate = startFireRate;
+				//Debug.Log("Weeeee... again please!");
+			}
+		}
+		if (debuffSpeedTower & !buffSpeedTower)
 		{
 			//Debug.Log("Tower speed loop + " + debuffSpeed + " .");
 			if(debuffSpeedTrigger)
