@@ -95,9 +95,11 @@ public class Bullet : MonoBehaviour {
 
 	void HitTarget ()
 	{
-		//GameObject effectIns = (GameObject)Instantiate(impactEffect, transform.position, transform.rotation);
-		//Destroy(effectIns, 5f);
-
+		if(impactEffect)
+		{
+			GameObject effectIns = (GameObject)Instantiate(impactEffect, target.gameObject.transform);//, transform.rotation);
+			Destroy(effectIns, 1.5f);
+		}
 		if (explosionRadius > 0f)
 		{
 			Explode();
@@ -146,7 +148,7 @@ public class Bullet : MonoBehaviour {
 			if(defenceChance > 0 && !e.buffSlashDef)
 			{
 				var rand = Random.Range(1,100);
-				Debug.Log("I'm in the defence chance");
+				//Debug.Log("I'm in the defence chance");
 				if (rand < defenceChance)
 				{
 					e.BuffSlashDef(debuffDefSlash, countdownDebuffDef);

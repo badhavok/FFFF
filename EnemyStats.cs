@@ -21,14 +21,14 @@ public class EnemyStats : MonoBehaviour {
 	public int startPierceDef = 0;
 	public int startMagDef = 0;
 
-	public int fireDef = 0; // Weak to Water, strong against Ice
-	public int iceDef = 0; // Weak to Fire, strong against Wind
-	public int waterDef = 0; // Weak to Lightning, strong against Fire
-	public int lighteningDef = 0; // Weak to Earth, strong against Water
-	public int earthDef = 0; // Weak to Wind, strong against Lightning
-	public int windDef = 0 ; // Weak to Ice, strong against Earth
-	public int lightDef = 0; // Opposite of Dark
-	public int darkDef = 0; // Opposite of Light
+	public int startFireDef = 0; // Weak to Water, strong against Ice
+	public int startIceDef = 0; // Weak to Fire, strong against Wind
+	public int startWaterDef = 0; // Weak to Lightning, strong against Fire
+	public int startLighteningDef = 0; // Weak to Earth, strong against Water
+	public int startEarthDef = 0; // Weak to Wind, strong against Lightning
+	public int startWindDef = 0 ; // Weak to Ice, strong against Earth
+	public int startLightDef = 0; // Opposite of Dark
+	public int startDarkDef = 0; // Opposite of Light
 	public bool fireEnemy, iceEnemy, waterEnemy, lighteningEnemy, earthEnemy, windEnemy, lightEnemy, darkEnemy;
 	public int fireResist = 0; // Weak to Water, strong against Ice
 	public int iceResist = 0; // Weak to Fire, strong against Wind

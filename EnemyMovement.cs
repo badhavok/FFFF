@@ -104,6 +104,7 @@ public class EnemyMovement : MonoBehaviour {
 	{
 		if (enemy.isDead)
 		{
+			enabled = false;
 			return;
 		}
 		if (endPath)

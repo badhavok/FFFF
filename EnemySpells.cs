@@ -62,6 +62,7 @@ public class EnemySpells : MonoBehaviour {
 	public bool attackTowerHP = false;
 	public int attackTowerDmg = 0;
 	public float countdownAttackTower, attackTowerHPCount = 0;
+	public GameObject attackTowerEffect;
 	//This makes an enemy duplicate itself (weaker than summon as it detects current HP as well)
 	public bool duplicate = false;
 
@@ -111,6 +112,10 @@ public class EnemySpells : MonoBehaviour {
 	}
 	void Update()
 	{
+		if(enemy.isDead)
+		{
+			enabled = false;
+		}
 		if(isCasting > 0)
 		{
 			//Debug.Log("I think I'm stuck here");
@@ -674,7 +679,6 @@ public class EnemySpells : MonoBehaviour {
 	{
 		if (attackTowerHPCount < 0)
 		{
-			
 			if (aoECast)
 			{
 				TowerAoE(1);
@@ -688,9 +692,11 @@ public class EnemySpells : MonoBehaviour {
 				{
 					//Debug.Log("Tower targeted - " + targetTower + " .");
 					targetTower.AttackTowerHP(attackTowerDmg);
-				}
-				
+					GameObject effectIns = (GameObject)Instantiate(attackTowerEffect, targetTower.transform.position, transform.rotation);
+					Destroy(effectIns, 1.5f);
+				}	
 			}
+			
 			attackTowerHPCount += (countdownAttackTower);
 		}
 		else
@@ -752,6 +758,8 @@ public class EnemySpells : MonoBehaviour {
 				t.DebuffSpeed(debuffSpeed, countdownDebuffSpeed);
 				break;
 			case 1:
+				GameObject effectIns = (GameObject)Instantiate(attackTowerEffect, tower.transform.position, transform.rotation);
+				Destroy(effectIns, 1.5f);
 				t.AttackTowerHP(attackTowerDmg);
 				break;
 			case 2:

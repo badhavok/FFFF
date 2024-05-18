@@ -100,6 +100,14 @@ public class Enemy : MonoBehaviour {
 		slashDef = enemyStats.startSlashDef;
 		pierceDef = enemyStats.startPierceDef;
 		magDef = enemyStats.startMagDef;
+		fireDef = enemyStats.startFireDef;
+		iceDef = enemyStats.startIceDef;
+		waterDef = enemyStats.startWaterDef;
+		lighteningDef = enemyStats.startLighteningDef;
+		earthDef = enemyStats.startEarthDef;
+		windDef = enemyStats.startWindDef;
+		lightDef = enemyStats.startLightDef;
+		darkDef = enemyStats.startDarkDef;
 
 		if(isBoss || isMiniBoss)
 		{
@@ -124,6 +132,309 @@ public class Enemy : MonoBehaviour {
 			//physDef = enemyStats.startPhysDef;
 			
 			//Debug.Log("I have " + updatedHealth + " HP");
+		}
+	}
+	void Update()
+	{
+		if (isDead)
+		{
+			this.gameObject.tag = "Fallen";
+			enabled = false;
+			return;
+		}
+		remainingPathDist = enemyMovement.remainingPathDistance;
+		//Debug.Log("My path dist is : " + remainingPathDistance);
+
+		if(pointsBonus > 0)
+		{
+			pointsBonus -= speed * Time.deltaTime;
+		}
+		//Code to hide HP bar until the enemy has been attacked for the first time
+		if (updatedHealth == maxHealth)
+		{
+			canvas.SetActive(false);
+		}
+		else
+		{
+			//Debug.Log("I'm not at max HP");
+			canvas.SetActive(true);
+			canvas.transform.LookAt(cam.transform);
+		}
+		
+		//Code to set the effects on the "current" enemy
+		if(virus)
+		{
+			TargetEnemy(virusR);
+			targetEnemy.Virus(spreadTime, spreadRange, damHP);
+			if(targetEnemy != null)
+			{
+				//Debug.Log("I've spread!");
+			}
+			virusT -= Time.deltaTime;
+			if (virusT < 0)
+			{
+				virus = false;
+			}
+		}
+		//Area to detect if the enemy is golden/a boss and take hits when the player is tapping on the screen
+		if (goldenEnemy || isBoss)
+		{
+			//If the enemy is golden, but not a boss, increase the amount of gold it will 'drop' when it is killed
+			if(goldenEnemy)
+			{
+				goldBonus += Time.deltaTime;
+			}
+			if (Input.touchCount > 0)
+			{
+				Touch t = Input.GetTouch(0);
+				{
+					if(t.phase == TouchPhase.Began)
+					{
+						Vector3 pos = t.position;
+						if (GetComponent<Collider>().gameObject.CompareTag("Enemy"))
+						{
+							//Debug.Log("I am golden, I am offended by your touch");
+							//Sets how much damage is done - might update this to be in the inspector
+							updatedHealth -= 5;
+							healthBar.fillAmount = updatedHealth / maxHealth;
+							if (updatedHealth <= 0 && !isDead)
+							{
+								Die();
+							}
+						}
+					}
+				}
+			}
+		}
+		if (poisonEnemy)
+		{
+			if (poisonInterval > 0)
+			{
+				//Debug.Log("In poison loop - interval = " + poisonInterval);
+				if (countdownPoison >= 1.0f)
+				{
+					poisonInterval--;
+					TakeDamage(0f, 0f, 0f, magicalStrengthPoison);
+					//Debug.Log("I'm taking damage: " + magicalStrengthPoison + " for " + poisonInterval + ".");
+					countdownPoison = 0;
+				}
+				countdownPoison += Time.deltaTime;
+			}
+			else
+			{
+					poisonEnemy = false;
+					//Debug.Log("Poison end");
+			}
+		}
+		if (castingEnemy)
+		{
+			speed = 0;
+			countdownCasting -= Time.deltaTime;
+			Debug.Log("Stopped");
+			if (countdownCasting <= 0)
+			{
+				castingEnemy = false;
+				speed = startSpeed;
+				Debug.Log("I'm free");
+			}
+		}
+		if(buffSlashDef)
+		{
+			countdownSlashBuffDef -= Time.deltaTime;
+			if (countdownSlashBuffDef <= 0)
+			{
+				buffSlashDef = false;
+				slashDef = enemyStats.startSlashDef;
+			}
+		}
+		else
+		{
+			slashDef = enemyStats.startSlashDef;
+		}
+		if(buffBluntDef)
+		{
+			countdownBluntBuffDef -= Time.deltaTime;
+			if (countdownBluntBuffDef <= 0)
+			{
+				buffBluntDef = false;
+				bluntDef = enemyStats.startBluntDef;
+			}
+		}
+		else
+		{
+			bluntDef = enemyStats.startBluntDef;
+		}
+		if(buffPierceDef)
+		{
+			countdownPierceBuffDef -= Time.deltaTime;
+			if (countdownPierceBuffDef <= 0)
+			{
+				buffPierceDef = false;
+				pierceDef = enemyStats.startPierceDef;
+			}
+		}
+		else
+		{
+			pierceDef = enemyStats.startPierceDef;
+		}
+		if(buffMagDef)
+		{
+			countdownMagBuffDef -= Time.deltaTime;
+			if (countdownMagBuffDef <= 0)
+			{
+				buffMagDef = false;
+				magDef = enemyStats.startMagDef;
+			}
+		}
+		else
+		{
+			magDef = enemyStats.startMagDef;
+		}
+		//Any code below this will not run if the enemy is a boss; this is to ignore any buffs/debuffs that would make the boss OP and no need to run through the loops
+		if(isBoss)
+		{
+			silence = false;
+			return;
+		}
+		//The code under hear will be buff/debuffs that ONLY affect normal enemies - NOT BOSSES
+		if(isChicken)
+		{
+			Die();
+			GameObject enemy = Instantiate(BuildManager.ChickenEnemy, transform.position, Quaternion.identity);
+			enemy.GetComponent<Enemy>().fromDropship = true;
+			enemy.GetComponent<EnemyMovement>().wavepointIndex = enemyMovement.wavepointIndex;
+			++WaveSpawner.EnemiesAlive;
+		}
+		if (doom)
+		{
+			Debug.Log("I'm dooomeeddddd");
+			countdownDoom -= Time.deltaTime;
+			countdownDoom = Mathf.Clamp(countdownDoom, 0f, Mathf.Infinity);
+			doomCountdownText.text = string.Format("{0:00.00}", countdownDoom);
+			//canvas.SetActive(true);
+			if(countdownDoom <= 0)
+			{
+				Die();
+			}
+		}
+		//Needs to be specified so when "Immune" is cast on an enemy with doom, it will remove the debuff and hide the counter
+		else if (!doom)
+		{
+			countdownDoom = 20000;
+      		//canvas.SetActive(false);
+		}
+		if (immune)
+		{
+			countdownImmune -= Time.deltaTime;
+			if (countdownImmune <= 0)
+			{
+				immune = false;
+			}
+		}
+		if (speedEnemy & !castingEnemy)
+		{
+			//Debug.Log("Speed enemy loop + " + bonusSpeed + " .");
+			speed = startSpeed + bonusSpeed;
+			countdownSpeed -= Time.deltaTime;
+			if (countdownSpeed <= 0)
+			{
+				speedEnemy = false;
+				speed = startSpeed;
+				//Debug.Log("Weeeee... again please!");
+			}
+		}
+		if (slowEnemy)
+		{
+			speed = startSpeed * (1f - slowSpeed);
+			//Debug.Log("I'm slower by... " + speed + "... damn");
+			countdownSlow -= Time.deltaTime;
+			if (countdownSlow <= 0)
+			{
+				slowEnemy = false;
+				speed = startSpeed;
+				//Debug.Log("Yeah, " + speed + " baby.... Weeeeee");
+			}
+		}
+		else if (stopEnemy)
+		{
+			speed = startSpeed * (1f - 1f);
+			countdownStop  -= Time.deltaTime;
+			//Debug.Log("Stopped");
+			if (countdownStop <= 0)
+			{
+				stopEnemy = false;
+				speed = startSpeed;
+				//Debug.Log("I'm free");
+			}
+		}
+		else if (!speedEnemy && !castingEnemy)
+		{
+			speed = startSpeed;
+		}
+		else
+		{
+
+		}
+		if (fearEnemy)
+		{
+			countdownFear -= Time.deltaTime;
+			//Debug.Log("I have been feared");
+			if (countdownFear <= 0)
+			{
+				fearEnemy = false;
+			}
+		}
+		if (silence)
+		{
+			countdownSilence -= Time.deltaTime;
+
+			if (countdownSilence <=0)
+			{
+				silence = false;
+			}
+		}
+		//Hovercraft is used for the temporary flying units
+		if (enemyStats.isHovercraft)
+		{
+			if (enemyStats.hoverCount <= 0)
+			{
+				isFlying = true;
+				enemyStats.hoverCount += 10;
+			}
+			else if (enemyStats.hoverCount < 5 )
+			{
+				enemyStats.hoverCount -= Time.deltaTime;
+				isFlying = false;
+			}
+			else
+			{
+				enemyStats.hoverCount -= Time.deltaTime;
+			}
+			if (imFlying > 0)
+			{
+				isFlying = true;
+				imFlying -= Time.deltaTime;
+			}
+			else if (imFlying <= 0)
+			{
+				isFlying = false;
+				//Debug.Log("Agaaain agaaainnnnn");
+				enemyStats.isHovercraft = false;
+			}
+		}
+		//This allows units to "duplicate" without the need to add the enemy spell code
+		if (enemyStats.isDropship)
+		{
+			if (enemyStats.dropCount <=0)
+			{
+				//Debug.Log("I'm dropping ship... err... yeah");
+				StartCoroutine(Spawn());
+				enemyStats.dropCount += enemyStats.dropTime;
+			}
+			else
+			{
+				enemyStats.dropCount -= Time.deltaTime;
+			}
 		}
 	}
 	//Function for healing/vampire?
@@ -577,308 +888,6 @@ public class Enemy : MonoBehaviour {
 		enemyStats.isHovercraft = true;
 		imFlying = flyT;
 	}
-	void Update()
-	{
-		if (isDead)
-		{
-			this.gameObject.tag = "Fallen";
-			return;
-		}
-		remainingPathDist = enemyMovement.remainingPathDistance;
-		//Debug.Log("My path dist is : " + remainingPathDistance);
-
-		if(pointsBonus > 0)
-		{
-			pointsBonus -= speed * Time.deltaTime;
-		}
-		//Code to hide HP bar until the enemy has been attacked for the first time
-		if (updatedHealth == maxHealth)
-		{
-			canvas.SetActive(false);
-		}
-		else
-		{
-			//Debug.Log("I'm not at max HP");
-			canvas.SetActive(true);
-			canvas.transform.LookAt(cam.transform);
-		}
-		
-		//Code to set the effects on the "current" enemy
-		if(virus)
-		{
-			TargetEnemy(virusR);
-			targetEnemy.Virus(spreadTime, spreadRange, damHP);
-			if(targetEnemy != null)
-			{
-				//Debug.Log("I've spread!");
-			}
-			virusT -= Time.deltaTime;
-			if (virusT < 0)
-			{
-				virus = false;
-			}
-		}
-		//Area to detect if the enemy is golden/a boss and take hits when the player is tapping on the screen
-		if (goldenEnemy || isBoss)
-		{
-			//If the enemy is golden, but not a boss, increase the amount of gold it will 'drop' when it is killed
-			if(goldenEnemy)
-			{
-				goldBonus += Time.deltaTime;
-			}
-			if (Input.touchCount > 0)
-			{
-				Touch t = Input.GetTouch(0);
-				{
-					if(t.phase == TouchPhase.Began)
-					{
-						Vector3 pos = t.position;
-						if (GetComponent<Collider>().gameObject.CompareTag("Enemy"))
-						{
-							//Debug.Log("I am golden, I am offended by your touch");
-							//Sets how much damage is done - might update this to be in the inspector
-							updatedHealth -= 5;
-							healthBar.fillAmount = updatedHealth / maxHealth;
-							if (updatedHealth <= 0 && !isDead)
-							{
-								Die();
-							}
-						}
-					}
-				}
-			}
-		}
-		if (poisonEnemy)
-		{
-			if (poisonInterval > 0)
-			{
-				//Debug.Log("In poison loop - interval = " + poisonInterval);
-				if (countdownPoison >= 1.0f)
-				{
-					poisonInterval--;
-					TakeDamage(0f, 0f, 0f, magicalStrengthPoison);
-					//Debug.Log("I'm taking damage: " + magicalStrengthPoison + " for " + poisonInterval + ".");
-					countdownPoison = 0;
-				}
-				countdownPoison += Time.deltaTime;
-			}
-			else
-			{
-					poisonEnemy = false;
-					//Debug.Log("Poison end");
-			}
-		}
-		if (castingEnemy)
-		{
-			speed = 0;
-			countdownCasting -= Time.deltaTime;
-			Debug.Log("Stopped");
-			if (countdownCasting <= 0)
-			{
-				castingEnemy = false;
-				speed = startSpeed;
-				Debug.Log("I'm free");
-			}
-		}
-		if(buffSlashDef)
-		{
-			countdownSlashBuffDef -= Time.deltaTime;
-			if (countdownSlashBuffDef <= 0)
-			{
-				buffSlashDef = false;
-				slashDef = enemyStats.startSlashDef;
-			}
-		}
-		else
-		{
-			slashDef = enemyStats.startSlashDef;
-		}
-		if(buffBluntDef)
-		{
-			countdownBluntBuffDef -= Time.deltaTime;
-			if (countdownBluntBuffDef <= 0)
-			{
-				buffBluntDef = false;
-				bluntDef = enemyStats.startBluntDef;
-			}
-		}
-		else
-		{
-			bluntDef = enemyStats.startBluntDef;
-		}
-		if(buffPierceDef)
-		{
-			countdownPierceBuffDef -= Time.deltaTime;
-			if (countdownPierceBuffDef <= 0)
-			{
-				buffPierceDef = false;
-				pierceDef = enemyStats.startPierceDef;
-			}
-		}
-		else
-		{
-			pierceDef = enemyStats.startPierceDef;
-		}
-		if(buffMagDef)
-		{
-			countdownMagBuffDef -= Time.deltaTime;
-			if (countdownMagBuffDef <= 0)
-			{
-				buffMagDef = false;
-				magDef = enemyStats.startMagDef;
-			}
-		}
-		else
-		{
-			magDef = enemyStats.startMagDef;
-		}
-		//Any code below this will not run if the enemy is a boss; this is to ignore any buffs/debuffs that would make the boss OP and no need to run through the loops
-		if(isBoss)
-		{
-			silence = false;
-			return;
-		}
-		//The code under hear will be buff/debuffs that ONLY affect normal enemies - NOT BOSSES
-		if(isChicken)
-		{
-			Die();
-			GameObject enemy = Instantiate(BuildManager.ChickenEnemy, transform.position, Quaternion.identity);
-			enemy.GetComponent<Enemy>().fromDropship = true;
-			enemy.GetComponent<EnemyMovement>().wavepointIndex = enemyMovement.wavepointIndex;
-			++WaveSpawner.EnemiesAlive;
-		}
-		if (doom)
-		{
-			Debug.Log("I'm dooomeeddddd");
-			countdownDoom -= Time.deltaTime;
-			countdownDoom = Mathf.Clamp(countdownDoom, 0f, Mathf.Infinity);
-			doomCountdownText.text = string.Format("{0:00.00}", countdownDoom);
-			//canvas.SetActive(true);
-			if(countdownDoom <= 0)
-			{
-				Die();
-			}
-		}
-		//Needs to be specified so when "Immune" is cast on an enemy with doom, it will remove the debuff and hide the counter
-		else if (!doom)
-		{
-			countdownDoom = 20000;
-      		//canvas.SetActive(false);
-		}
-		if (immune)
-		{
-			countdownImmune -= Time.deltaTime;
-			if (countdownImmune <= 0)
-			{
-				immune = false;
-			}
-		}
-		if (speedEnemy & !castingEnemy)
-		{
-			//Debug.Log("Speed enemy loop + " + bonusSpeed + " .");
-			speed = startSpeed + bonusSpeed;
-			countdownSpeed -= Time.deltaTime;
-			if (countdownSpeed <= 0)
-			{
-				speedEnemy = false;
-				speed = startSpeed;
-				//Debug.Log("Weeeee... again please!");
-			}
-		}
-		if (slowEnemy)
-		{
-			speed = startSpeed * (1f - slowSpeed);
-			//Debug.Log("I'm slower by... " + speed + "... damn");
-			countdownSlow -= Time.deltaTime;
-			if (countdownSlow <= 0)
-			{
-				slowEnemy = false;
-				speed = startSpeed;
-				//Debug.Log("Yeah, " + speed + " baby.... Weeeeee");
-			}
-		}
-		else if (stopEnemy)
-		{
-			speed = startSpeed * (1f - 1f);
-			countdownStop  -= Time.deltaTime;
-			//Debug.Log("Stopped");
-			if (countdownStop <= 0)
-			{
-				stopEnemy = false;
-				speed = startSpeed;
-				//Debug.Log("I'm free");
-			}
-		}
-		else if (!speedEnemy && !castingEnemy)
-		{
-			speed = startSpeed;
-		}
-		else
-		{
-
-		}
-		if (fearEnemy)
-		{
-			countdownFear -= Time.deltaTime;
-			//Debug.Log("I have been feared");
-			if (countdownFear <= 0)
-			{
-				fearEnemy = false;
-			}
-		}
-		if (silence)
-		{
-			countdownSilence -= Time.deltaTime;
-
-			if (countdownSilence <=0)
-			{
-				silence = false;
-			}
-		}
-		//Hovercraft is used for the temporary flying units
-		if (enemyStats.isHovercraft)
-		{
-			if (enemyStats.hoverCount <= 0)
-			{
-				isFlying = true;
-				enemyStats.hoverCount += 10;
-			}
-			else if (enemyStats.hoverCount < 5 )
-			{
-				enemyStats.hoverCount -= Time.deltaTime;
-				isFlying = false;
-			}
-			else
-			{
-				enemyStats.hoverCount -= Time.deltaTime;
-			}
-			if (imFlying > 0)
-			{
-				isFlying = true;
-				imFlying -= Time.deltaTime;
-			}
-			else if (imFlying <= 0)
-			{
-				isFlying = false;
-				//Debug.Log("Agaaain agaaainnnnn");
-				enemyStats.isHovercraft = false;
-			}
-		}
-		//This allows units to "duplicate" without the need to add the enemy spell code
-		if (enemyStats.isDropship)
-		{
-			if (enemyStats.dropCount <=0)
-			{
-				//Debug.Log("I'm dropping ship... err... yeah");
-				StartCoroutine(Spawn());
-				enemyStats.dropCount += enemyStats.dropTime;
-			}
-			else
-			{
-				enemyStats.dropCount -= Time.deltaTime;
-			}
-		}
-	}
 	//I "should" split this out to it's own class but this function is used to "duplicate" the unit without the enemyspell class
 	public IEnumerator Spawn()
 	{
@@ -947,8 +956,10 @@ public class Enemy : MonoBehaviour {
 	{
 		if(isDead)
 		{
+			anim.SetBool("Died", true);
 			return;
 		}
+
 		anim.SetBool("Death", true);
 		anim.SetBool("Move", false);
 		this.gameObject.tag = "Fallen";

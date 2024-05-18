@@ -134,6 +134,226 @@ public class Turret : MonoBehaviour {
 			}
 		}
 	}
+	void Update () {
+		//Which function am I going to use for enemy detection
+		if (healthPoints <= 0)
+		{
+			healthText.text = "My time here is done..";
+			anim.SetBool("Death", true);
+			anim.SetBool("Idle", false);
+			m_CurrentClipInfo = this.anim.GetCurrentAnimatorClipInfo(0);
+			m_CurrentClipLength = m_CurrentClipInfo[0].clip.length;
+			//Debug.Log("The clip length is - " + m_CurrentClipLength + " .");
+			//isCasting = m_CurrentClipLength * 3;
+			//enemy.Casting(m_CurrentClipLength * 3);
+			foreach (ParticleSystem casting in castList)
+				{
+				if(!casting.isPlaying)
+						{
+						casting.Play();
+						}
+				}
+
+			Destroy(gameObject, 1.5f);
+			return;
+		}
+		else if (healthPoints > 0 & healthPoints < startHealthPoints)
+		{
+			healthUI.SetActive(true);
+			healthText.text = healthPoints.ToString() + " / " + startHealthPoints + " health";
+			healthUI.transform.LookAt(cam.transform);
+		}
+		if(healthPoints == startHealthPoints)
+		{
+			healthUI.SetActive(false);
+		}
+		if (!isUpgradedByNode)
+		{
+
+		}
+		else
+		{
+			buffsUI.transform.LookAt(cam.transform);
+		}
+		if (buffSpeedTower)
+		{
+			//Debug.Log("Tower speed loop + " + debuffSpeed + " .");
+			if(buffSpeedTrigger)
+			{
+				fireRate = fireRate / buffSpeed;
+				buffSpeedTrigger = false;
+			}
+			countdownBuffSpeed -= Time.deltaTime;
+			if (countdownBuffSpeed <= 0)
+			{
+				buffSpeedTower = false;
+				fireRate = startFireRate;
+				//Debug.Log("Weeeee... again please!");
+			}
+		}
+		if (debuffSpeedTower & !buffSpeedTower)
+		{
+			//Debug.Log("Tower speed loop + " + debuffSpeed + " .");
+			if(debuffSpeedTrigger)
+			{
+				fireRate = fireRate / debuffSpeed;
+				debuffSpeedTrigger = false;
+			}
+			countdownDebuffSpeed -= Time.deltaTime;
+			if (countdownDebuffSpeed <= 0)
+			{
+				debuffSpeedTower = false;
+				fireRate = startFireRate;
+				//Debug.Log("Weeeee... again please!");
+			}
+		}
+		
+		if(nearestEnemy)
+		{
+			//Debug.Log("I'm looking for the target");
+			NearestTarget();
+		}
+		if(furthestEnemy)
+		{
+            FurthestTarget();
+		}
+        if (closestToStart)
+        {
+            ClosestToStartTarget();
+        }
+        if (closestToEnd)
+		{
+			ClosestToEndTarget();
+		}
+		if (healBase)
+		{
+			if(fireCountdown < 0 & canFire)
+			{
+				if(PlayerStats.Lives != PlayerStats.StartLives)
+				{	
+					HealingBase();
+					
+						if(target)
+							{
+								Heal();
+								PlayerStats.Lives++;	
+							}
+							else
+							{
+								HealingTurret();
+								if(target)
+								{
+									Heal();
+									Debug.Log("Healing Turret Loop - no base nearby");
+									targetedTurret.healthPoints++;
+								}
+							}
+							canFire = false;
+							fireCountdown = 100f / healRate;
+							return;
+				}
+				else
+				{
+					canFire = false;
+					HealingTurret();
+					if(target)
+					{
+						Heal();
+						Debug.Log("Healing Turret Loop - full lives");
+						targetedTurret.healthPoints++;
+					}
+				}
+				canFire = false;
+				fireCountdown = 100f / healRate;
+			}
+			else
+			{
+				fireCountdown -= Time.deltaTime;
+				canFire = true;
+				return;
+			}
+		}
+		//allows laser weapons to decrease "overheat"
+		if (target == null)
+		{
+		// 	//Set to force the cooldown for Laser even when it isn't targetting anything
+		// 	if (useLaser)
+		// 	{
+		// 		minHeat -= Time.deltaTime;
+
+		// 		if (minHeat < 0)
+		// 		{
+		// 			minHeat = 0;
+		// 		}
+
+		// 		if (lineRenderer.enabled)
+		// 		{
+		// 			lineRenderer.enabled = false;
+		// 			impactEffect.Stop();
+		// 			impactLight.enabled = false;
+		// 		}
+		// 	}
+
+			return;
+		}
+		//Turns the turret to face the target
+		LockOnTarget();
+
+		// if (useLaser)
+		// 	{
+		// 		countdownAoe -= Time.deltaTime;
+		// 		if (overHeat)
+		// 		{
+		// 			minHeat -= Time.deltaTime;
+		// 			if (minHeat <= 0f)
+		// 				overHeat = false;
+		// 		}
+		// 		else
+		// 			Laser();
+		// 			return;
+		// 	}
+
+		if (useAoe)
+		{
+			if (countdownAoe <= 0f)
+			{
+				AoE();
+				countdownAoe += AoERate;
+			}
+			countdownAoe -= Time.deltaTime;
+			return;
+		}
+		else
+		{
+			//Debug.Log("I'm in the else");
+			fireCountdown -= Time.deltaTime;
+			animCooldown -= Time.deltaTime;
+			if (fireCountdown <= 0f)
+			{
+				anim.SetBool("Attack1", true);
+				anim.SetBool("Idle", false);
+				animCooldown = 0.5f;
+				doShoot = true;
+				//Debug.Log("Bool is true");
+				fireCountdown = 100f / fireRate;
+			}
+
+			if (animCooldown <= 0f)
+			{
+				anim.SetBool("Attack1",false);
+				anim.SetBool("Idle", true);
+				
+				if (doShoot == true)
+				{
+				Shoot();
+				//Debug.Log("Bool is false");
+				doShoot = false;
+				}
+			}
+			fireCountdown -= Time.deltaTime;
+			animCooldown -= Time.deltaTime;
+		}
+	}
 	//Buttons for the UI
 	public void ClosestToEnd()
 	{
@@ -376,227 +596,6 @@ public class Turret : MonoBehaviour {
 		healthPoints -= atkDmg;
 	}
 	//Update is called once per frame
-	void Update () {
-		//Which function am I going to use for enemy detection
-		if (healthPoints <= 0)
-		{
-			healthText.text = "My time here is done..";
-			anim.SetBool("Death", true);
-			anim.SetBool("Idle", false);
-			m_CurrentClipInfo = this.anim.GetCurrentAnimatorClipInfo(0);
-			m_CurrentClipLength = m_CurrentClipInfo[0].clip.length;
-			//Debug.Log("The clip length is - " + m_CurrentClipLength + " .");
-			//isCasting = m_CurrentClipLength * 3;
-			//enemy.Casting(m_CurrentClipLength * 3);
-			foreach (ParticleSystem casting in castList)
-				{
-				if(!casting.isPlaying)
-						{
-						casting.Play();
-						}
-				}
-
-			Destroy(gameObject, 1.5f);
-			return;
-		}
-		else if (healthPoints > 0 & healthPoints < startHealthPoints)
-		{
-			healthUI.SetActive(true);
-			healthText.text = healthPoints.ToString() + " / " + startHealthPoints + " health";
-			healthUI.transform.LookAt(cam.transform);
-		}
-		if(healthPoints == startHealthPoints)
-		{
-			healthUI.SetActive(false);
-		}
-		if (!isUpgradedByNode)
-		{
-
-		}
-		else
-		{
-			buffsUI.transform.LookAt(cam.transform);
-		}
-		if (buffSpeedTower)
-		{
-			//Debug.Log("Tower speed loop + " + debuffSpeed + " .");
-			if(buffSpeedTrigger)
-			{
-				fireRate = fireRate / buffSpeed;
-				buffSpeedTrigger = false;
-			}
-			countdownBuffSpeed -= Time.deltaTime;
-			if (countdownBuffSpeed <= 0)
-			{
-				buffSpeedTower = false;
-				fireRate = startFireRate;
-				//Debug.Log("Weeeee... again please!");
-			}
-		}
-		if (debuffSpeedTower & !buffSpeedTower)
-		{
-			//Debug.Log("Tower speed loop + " + debuffSpeed + " .");
-			if(debuffSpeedTrigger)
-			{
-				fireRate = fireRate / debuffSpeed;
-				debuffSpeedTrigger = false;
-			}
-			countdownDebuffSpeed -= Time.deltaTime;
-			if (countdownDebuffSpeed <= 0)
-			{
-				debuffSpeedTower = false;
-				fireRate = startFireRate;
-				//Debug.Log("Weeeee... again please!");
-			}
-		}
-		
-		if(nearestEnemy)
-		{
-			//Debug.Log("I'm looking for the target");
-			NearestTarget();
-		}
-		if(furthestEnemy)
-		{
-            FurthestTarget();
-		}
-        if (closestToStart)
-        {
-            ClosestToStartTarget();
-        }
-        if (closestToEnd)
-		{
-			ClosestToEndTarget();
-		}
-		if (healBase)
-		{
-			if(fireCountdown < 0 & canFire)
-			{
-				if(PlayerStats.Lives != PlayerStats.StartLives)
-				{	
-					HealingBase();
-					
-						if(target)
-							{
-								Heal();
-								PlayerStats.Lives++;	
-							}
-							else
-							{
-								HealingTurret();
-								if(target)
-								{
-									Heal();
-									Debug.Log("Healing Turret Loop - no base nearby");
-									targetedTurret.healthPoints++;
-								}
-							}
-							canFire = false;
-							fireCountdown = 100f / healRate;
-							return;
-				}
-				else
-				{
-					canFire = false;
-					HealingTurret();
-					if(target)
-					{
-						Heal();
-						Debug.Log("Healing Turret Loop - full lives");
-						targetedTurret.healthPoints++;
-					}
-				}
-				canFire = false;
-				fireCountdown = 100f / healRate;
-			}
-			else
-			{
-				fireCountdown -= Time.deltaTime;
-				canFire = true;
-				return;
-			}
-		}
-		//allows laser weapons to decrease "overheat"
-		if (target == null)
-		{
-		// 	//Set to force the cooldown for Laser even when it isn't targetting anything
-		// 	if (useLaser)
-		// 	{
-		// 		minHeat -= Time.deltaTime;
-
-		// 		if (minHeat < 0)
-		// 		{
-		// 			minHeat = 0;
-		// 		}
-
-		// 		if (lineRenderer.enabled)
-		// 		{
-		// 			lineRenderer.enabled = false;
-		// 			impactEffect.Stop();
-		// 			impactLight.enabled = false;
-		// 		}
-		// 	}
-
-			return;
-		}
-		//Turns the turret to face the target
-		LockOnTarget();
-
-		// if (useLaser)
-		// 	{
-		// 		countdownAoe -= Time.deltaTime;
-		// 		if (overHeat)
-		// 		{
-		// 			minHeat -= Time.deltaTime;
-		// 			if (minHeat <= 0f)
-		// 				overHeat = false;
-		// 		}
-		// 		else
-		// 			Laser();
-		// 			return;
-		// 	}
-
-		if (useAoe)
-		{
-			if (countdownAoe <= 0f)
-			{
-				AoE();
-				countdownAoe += AoERate;
-			}
-			countdownAoe -= Time.deltaTime;
-			return;
-		}
-		else
-		{
-			//Debug.Log("I'm in the else");
-			fireCountdown -= Time.deltaTime;
-			animCooldown -= Time.deltaTime;
-			if (fireCountdown <= 0f)
-			{
-				anim.SetBool("Attack1", true);
-				anim.SetBool("Idle", false);
-				animCooldown = 0.5f;
-				doShoot = true;
-				//Debug.Log("Bool is true");
-				fireCountdown = 100f / fireRate;
-			}
-
-			if (animCooldown <= 0f)
-			{
-				anim.SetBool("Attack1",false);
-				anim.SetBool("Idle", true);
-				
-				if (doShoot == true)
-				{
-				Shoot();
-				//Debug.Log("Bool is false");
-				doShoot = false;
-				}
-			}
-			fireCountdown -= Time.deltaTime;
-			animCooldown -= Time.deltaTime;
-		}
-	}
-
 	void LockOnTarget ()
 	{
 		Vector3 dir = target.position - transform.position;
@@ -639,7 +638,6 @@ public class Turret : MonoBehaviour {
 	// 				}
 	// 		}
 	// }
-
 	void AoE ()
 	{
 		//Debug.Log("I'm shooting an emeny!");
@@ -655,7 +653,6 @@ public class Turret : MonoBehaviour {
 		//Vector3 dir = firePoint.position - target.position;
 		colliders = null;
 	}
-
 	void AoEDamage (Transform enemy)
 	{
 		Enemy e = enemy.GetComponent<Enemy>();
@@ -702,7 +699,6 @@ public class Turret : MonoBehaviour {
 			}
 		}
 	}
-
 	void Shoot ()
 	{
 		//Debug.Log("FireAwayyyy");
@@ -715,7 +711,6 @@ public class Turret : MonoBehaviour {
 			audioSource.clip = audioClipArray[0];
 			audioSource.Play();	
 	}
-	
 	void Heal ()
 	{
 		//Debug.Log("FireAwayyyy");
