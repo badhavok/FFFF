@@ -956,7 +956,6 @@ public class Enemy : MonoBehaviour {
 	{
 		if(isDead)
 		{
-			anim.SetBool("Died", true);
 			return;
 		}
 

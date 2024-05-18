@@ -8,16 +8,16 @@ public class Turret : MonoBehaviour {
 	public AudioClip[] audioClipArray;
 	private Transform target;
 	private Enemy targetEnemy;
-	public Turret targetTurret;
-	public Turret targetedTurret;
+	private Turret targetTurret;
+	private Turret targetedTurret;
 
 	//Most of the below settings are self explanitory
 
 	[Header("Unity Setup Fields")]
 
-	public string enemyTag = "Enemy";
-	public string baseTag = "Base";
-	public string towerTag = "Tower";
+	private string enemyTag = "Enemy";
+	private string baseTag = "Base";
+	private string towerTag = "Tower";
 
 	public Transform partToRotate;
 	public float turnSpeed = 10f;
@@ -96,17 +96,17 @@ public class Turret : MonoBehaviour {
 	public Light aoeImpactLight;
 
 	[Header("Added Effects")]
-	//Note that these are also added on bullets and shouldn't be duplicated
-	public float stunTime = 0f;
-	public float stunChance = 0f;
-	public float silenceTime = 0f;
-	public float silenceChance = 0f;
-	public float virusChance = 0f;
-	public float virusTime = 0f;
-	public float virusDamage = 0f;
-	public float virusRange = 0f;
+	//Note that these are also added on bullets and shouldn't be duplicated - changed to be tower buffs and leaving debuffs to bullet class
+	// public float stunTime = 0f;
+	// public float stunChance = 0f;
+	// public float silenceTime = 0f;
+	// public float silenceChance = 0f;
+	// public float virusChance = 0f;
+	// public float virusTime = 0f;
+	// public float virusDamage = 0f;
+	// public float virusRange = 0f;
 
-	[HideInInspector] float pathCompare, pathRemain = 10000;
+	private float pathCompare, pathRemain = 10000;
 
 	private Animator anim;
 	public float animCooldown = 0f;
@@ -135,7 +135,7 @@ public class Turret : MonoBehaviour {
 		}
 	}
 	void Update () {
-		//Which function am I going to use for enemy detection
+		
 		if (healthPoints <= 0)
 		{
 			healthText.text = "My time here is done..";
@@ -395,6 +395,7 @@ public class Turret : MonoBehaviour {
 		healBase = true;
 		closestToEnd = false;
 	}
+	//Which function am I going to use for enemy detection
 	void NearestTarget ()
 	{
 		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
@@ -647,58 +648,58 @@ public class Turret : MonoBehaviour {
 		{
 			if (collider.tag == "Enemy")
 			{
-				AoEDamage(collider.transform);
+				// AoEDamage(collider.transform);
 			}
 		}
 		//Vector3 dir = firePoint.position - target.position;
 		colliders = null;
 	}
-	void AoEDamage (Transform enemy)
-	{
-		Enemy e = enemy.GetComponent<Enemy>();
-		//EnemyStats stats = enemy.GetComponent<EnemyStats>();
+	// void AoEDamage (Transform enemy)
+	// {
+	// 	Enemy e = enemy.GetComponent<Enemy>();
+	// 	//EnemyStats stats = enemy.GetComponent<EnemyStats>();
 
-		if (e != null)
-		{
-			if (e.isFlying)
-			{
-				//Debug.Log("Woah.. is someone there?");
-				return;
-			}
-			else
-			{
-				e.TakeDamage(bluntDamageAoE, slashingDamageAoE, piercingDamageAoE, magicDamageAoe);
-				if(virusChance > 0)
-				{
-					var rand = Random.Range(1, 100);
+	// 	if (e != null)
+	// 	{
+	// 		if (e.isFlying)
+	// 		{
+	// 			//Debug.Log("Woah.. is someone there?");
+	// 			return;
+	// 		}
+	// 		else
+	// 		{
+	// 			e.TakeDamage(bluntDamageAoE, slashingDamageAoE, piercingDamageAoE, magicDamageAoe);
+	// 			if(virusChance > 0)
+	// 			{
+	// 				var rand = Random.Range(1, 100);
 
-					if (rand < virusChance)
-					{
-						e.Virus(virusTime, virusRange, virusDamage);
-					}
-				}
-				if (silenceChance > 0)
-				{
-					var rand = Random.Range(1, 100);
+	// 				if (rand < virusChance)
+	// 				{
+	// 					e.Virus(virusTime, virusRange, virusDamage);
+	// 				}
+	// 			}
+	// 			if (silenceChance > 0)
+	// 			{
+	// 				var rand = Random.Range(1, 100);
 
-					if (rand < silenceChance)
-					{
-						e.Silence(silenceTime);
-					}
-				}
-				if (stunChance > 0)
-				{
-					var rand = Random.Range(1, 100);
+	// 				if (rand < silenceChance)
+	// 				{
+	// 					e.Silence(silenceTime);
+	// 				}
+	// 			}
+	// 			if (stunChance > 0)
+	// 			{
+	// 				var rand = Random.Range(1, 100);
 
-					if (rand <= stunChance)
-					{
-						e.Stop(stunTime);
-						//Debug.Log("I'm being stunned");
-					}
-				}
-			}
-		}
-	}
+	// 				if (rand <= stunChance)
+	// 				{
+	// 					e.Stop(stunTime);
+	// 					//Debug.Log("I'm being stunned");
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 	void Shoot ()
 	{
 		//Debug.Log("FireAwayyyy");
