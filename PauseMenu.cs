@@ -1,13 +1,16 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour {
 
 	public GameObject ui;
+	public GameObject options;
 
 	public string menuSceneName = "MainMenu";
-
-	public SceneFader sceneFader;
+	
+    public SceneFader sceneFader;
+	public Text currentWave;
 
 	void Update ()
 	{
@@ -15,6 +18,7 @@ public class PauseMenu : MonoBehaviour {
 		{
 			Toggle();
 		}
+		currentWave.text = WaveSpawner.CurrentWave.ToString();;
 	}
 
 	public void Toggle ()
@@ -28,8 +32,16 @@ public class PauseMenu : MonoBehaviour {
 		{
 			Time.timeScale = 1f;
 		}
+		if(options)
+		{
+			options.SetActive(false);
+		}
 	}
-
+	public void OptionsMenu()
+	{
+		ui.SetActive(!ui.activeSelf);
+		options.SetActive(true);
+	}
 	public void Retry ()
 	{
 		Toggle();
@@ -40,6 +52,10 @@ public class PauseMenu : MonoBehaviour {
 	{
 		Toggle();
 		sceneFader.FadeTo(menuSceneName);
+	}
+	public void Quit ()
+	{
+		Application.Quit();
 	}
 
 }

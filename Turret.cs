@@ -30,6 +30,8 @@ public class Turret : MonoBehaviour {
 	public bool isUpgradedByNode = false;
 	public GameObject buffsUI;
 	public GameObject rangeUI;
+	public GameObject buffAtkSpdUI;
+	public GameObject debuffAtkSpdUI;
 
 	[Header("General")]
 	public int startHealthPoints = 4;
@@ -118,6 +120,7 @@ public class Turret : MonoBehaviour {
 	
 	void Start () {
 		
+		this.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 		healthPoints = startHealthPoints;
 
 		cam = CameraController.PlayerCam;
@@ -135,6 +138,8 @@ public class Turret : MonoBehaviour {
 		}
 	}
 	void Update () {
+		
+		buffsUI.transform.LookAt(cam.transform);
 		
 		if (healthPoints <= 0)
 		{
@@ -161,7 +166,6 @@ public class Turret : MonoBehaviour {
 		{
 			healthUI.SetActive(true);
 			healthText.text = healthPoints.ToString() + " / " + startHealthPoints + " health";
-			healthUI.transform.LookAt(cam.transform);
 		}
 		if(healthPoints == startHealthPoints)
 		{
@@ -173,11 +177,12 @@ public class Turret : MonoBehaviour {
 		}
 		else
 		{
-			buffsUI.transform.LookAt(cam.transform);
+
 		}
 		if (buffSpeedTower)
 		{
 			//Debug.Log("Tower speed loop + " + debuffSpeed + " .");
+			buffAtkSpdUI.SetActive(true);
 			if(buffSpeedTrigger)
 			{
 				fireRate = fireRate / buffSpeed;
@@ -188,12 +193,14 @@ public class Turret : MonoBehaviour {
 			{
 				buffSpeedTower = false;
 				fireRate = startFireRate;
+				buffAtkSpdUI.SetActive(false);
 				//Debug.Log("Weeeee... again please!");
 			}
 		}
 		if (debuffSpeedTower & !buffSpeedTower)
 		{
 			//Debug.Log("Tower speed loop + " + debuffSpeed + " .");
+			debuffAtkSpdUI.SetActive(true);
 			if(debuffSpeedTrigger)
 			{
 				fireRate = fireRate / debuffSpeed;
@@ -204,6 +211,7 @@ public class Turret : MonoBehaviour {
 			{
 				debuffSpeedTower = false;
 				fireRate = startFireRate;
+				debuffAtkSpdUI.SetActive(false);
 				//Debug.Log("Weeeee... again please!");
 			}
 		}

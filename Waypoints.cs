@@ -137,12 +137,12 @@ public class Waypoints : MonoBehaviour {
 					float calculatedPath = Vector3.Distance(calcThesePoints[i].position, calcThesePoints[j].position);
 					totalLength = calculatedPath + totalLength;
 			}
-			Debug.Log("This is the path length " + totalLength + pathPoints1[i].name);
+			// Debug.Log("This is the path length " + totalLength + pathPoints1[i].name);
 		}
 	}
 	public IEnumerator HighlightPath(int pathH)
 	{
-		Debug.Log("Highlighting the path");
+		// Debug.Log("Highlighting the path");
 		if(pathH == 1)
 		{
 			highlightedPath = PathPoints1;

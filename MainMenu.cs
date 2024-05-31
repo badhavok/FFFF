@@ -3,6 +3,9 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour {
 
+	public GameObject optionsMenu;
+	public GameObject mainMenu;
+	
 	public string levelToLoad = "SaveSelect";
 
 	public SceneFader sceneFader;
@@ -13,10 +16,15 @@ public class MainMenu : MonoBehaviour {
 //		saveData.LoadGame();
 		sceneFader.FadeTo(levelToLoad);
 	}
+	
+	public void OptionsMenu()
+	{
+		optionsMenu.SetActive(true);
+		mainMenu.SetActive(false);
+	}
 
 	public void Quit ()
 	{
-		Debug.Log("Exciting...");
 		Application.Quit();
 	}
 }
