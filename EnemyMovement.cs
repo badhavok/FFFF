@@ -74,6 +74,7 @@ public class EnemyMovement : MonoBehaviour {
 		}
 		NewRandomNumber();
 		finalCountdown = randomNumber;
+		wormMove = randomNumber;
 		timeToDestination = pathDistance / enemy.speed;
 		// essentially starts a countdown to the target.
 		// if speed * someTime = PathDistance then someTime = pathDistance/ speed

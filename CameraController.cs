@@ -21,6 +21,9 @@ public class CameraController : MonoBehaviour {
 	public static Camera PlayerCam;
 
 	private Vector3 lastPanPosition;
+	private Vector3 rotateValue;
+	private Vector3 currentEulerAngles;
+	private float x, y, z;
 	private int panFingerId; // Touch mode only
 
 	private bool wasZoomingLastFrame; // Touch mode only
@@ -38,7 +41,7 @@ public class CameraController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update ()
-	{
+	{	
 		// if (isMenuOpen)
 		// {
 			// return;
@@ -48,28 +51,47 @@ public class CameraController : MonoBehaviour {
 			this.enabled = false;
 			return;
 		}
-
+		// Move
 		if (Input.GetKey("w") )// || Input.mousePosition.y >= Screen.height - panBorderThickness)
 		{
-            transform.Translate(Vector3.forward * panSpeed * Time.deltaTime, Space.World);
+			transform.Translate(new Vector3(cam.transform.forward.x, 0f, cam.transform.forward.z) * panSpeed * Time.deltaTime, Space.World);
 		}
 		if (Input.GetKey("s") )// || Input.mousePosition.y <= panBorderThickness)
 		{
-			transform.Translate(Vector3.back * panSpeed * Time.deltaTime, Space.World);
+			transform.Translate(new Vector3(cam.transform.forward.x, 0f, cam.transform.forward.z) * -panSpeed * Time.deltaTime, Space.World);
 		}
 		if (Input.GetKey("d") )// || Input.mousePosition.x >= Screen.width - panBorderThickness)
 		{
-			transform.Translate(Vector3.right * panSpeed * Time.deltaTime, Space.World);
+			transform.Translate(cam.transform.right * panSpeed * Time.deltaTime, Space.World);
 		}
 		if (Input.GetKey("a") )// || Input.mousePosition.x <= panBorderThickness)
 		{
-			transform.Translate(Vector3.left * panSpeed * Time.deltaTime, Space.World);
+			transform.Translate(cam.transform.right * -panSpeed * Time.deltaTime, Space.World);
 		}
+		// Rotate
+		if (Input.GetKey("q") )// || Input.mousePosition.x >= Screen.width - panBorderThickness)
+		{
+			transform.Rotate(Vector3.down * panSpeed * Time.deltaTime, Space.World);
+		}
+		if (Input.GetKey("e") )// || Input.mousePosition.x <= panBorderThickness)
+		{
+			transform.Rotate(Vector3.up * panSpeed * Time.deltaTime, Space.World);
+		}
+		// Zoom
+		if (Input.GetKey("z") )
+		{
+			transform.Translate(Vector3.up * panSpeed * Time.deltaTime, Space.World);
+		}
+		if (Input.GetKey("x") )
+		{
+			transform.Translate(Vector3.down * panSpeed * Time.deltaTime, Space.World);
+		}
+		// Reset
 		if (Input.GetKey("r"))
 		{
 			transform.Translate(transform.position = myCamPos);
 		}
-
+		
 		float scroll = Input.GetAxis("Mouse ScrollWheel");
 
 		Vector3 pos = transform.position;
@@ -81,12 +103,14 @@ public class CameraController : MonoBehaviour {
 
 		transform.position = pos;
 
-		if (Input.touchSupported && Application.platform != RuntimePlatform.WebGLPlayer)
-		{
+		// if (Input.touchSupported && Application.platform != RuntimePlatform.WebGLPlayer)
+		// {
 			HandleTouch();
-		} else {
+		// } else {
 			HandleMouse();
-		}
+		// }
+
+		
 	}
 
 	void HandleTouch()
@@ -120,7 +144,7 @@ public class CameraController : MonoBehaviour {
 				float offset = newDistance - oldDistance;
 
 				ZoomCamera(offset, ZoomSpeedTouch);
-
+				
 				lastZoomPositions = newPositions;
 			}
 			break;
@@ -142,6 +166,16 @@ public class CameraController : MonoBehaviour {
 			PanCamera(Input.mousePosition);
 		}
 
+		if(Input.GetMouseButton(1))
+		{
+			Debug.Log("Button 2");
+			y = Input.GetAxis("Mouse X");
+			x = Input.GetAxis("Mouse Y");
+			Debug.Log(x + ":" + y);
+			rotateValue = new Vector3(x, y * -1, 0);
+			transform.eulerAngles = transform.eulerAngles - rotateValue;
+		}
+
 		// Check for scrolling to zoom the camera
 		float scroll = Input.GetAxis("Mouse ScrollWheel");
 		ZoomCamera(scroll, ZoomSpeedMouse);
@@ -149,21 +183,15 @@ public class CameraController : MonoBehaviour {
 	
 	void PanCamera(Vector3 newPanPosition)
 	{
-		// Determine how much to move the camera
-		Vector3 offset = cam.ScreenToViewportPoint(lastPanPosition - newPanPosition);
-		Vector3 move = new Vector3(offset.x * PanSpeed, 0, offset.y * PanSpeed);
-		
-		// Perform the movement
-		transform.Translate(move, Space.World);  
-		
-		// Ensure the camera remains within bounds.
-		Vector3 pos = transform.position;
-		pos.x = Mathf.Clamp(transform.position.x, BoundsX[0], BoundsX[1]);
-		pos.y = Mathf.Clamp(transform.position.y, BoundsY[0], BoundsY[1]);
-		pos.z = Mathf.Clamp(transform.position.z, BoundsZ[0], BoundsZ[1]);
-		transform.position = pos;
+		Vector3 viewDelta = newPanPosition - lastPanPosition;
+		Vector3 forward = Vector3.ProjectOnPlane(cam.transform.forward, Vector3.up).normalized;
+		Vector3 right = Vector3.ProjectOnPlane(cam.transform.right, Vector3.up).normalized;
+		Vector3 moveVec = viewDelta.x * right + viewDelta.y * forward;
+		moveVec = Vector3.ClampMagnitude(moveVec, 1);
+		transform.Translate(moveVec * panSpeed * Time.deltaTime, Space.World);
 
-		// Cache the position
+		// Debug.DrawRay(Camera.main.transform.position, moveVector);
+		// Debug.DrawRay(Camera.main.transform.position, moveVector.normalized, Color.red, 0.5f);
 		lastPanPosition = newPanPosition;
 	}
 
