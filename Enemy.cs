@@ -88,7 +88,7 @@ public class Enemy : MonoBehaviour {
 	private float pointsBonus = 0;
 	public bool noDrop = false;
 	public bool isDead = false;
-
+	private bool touchedScreen;
 	private Camera cam;
 	
 	void Start ()
@@ -177,31 +177,38 @@ public class Enemy : MonoBehaviour {
 			}
 		}
 		//Area to detect if the enemy is golden/a boss and take hits when the player is tapping on the screen
-		if (goldenEnemy || isBoss)
+		if (goldenEnemy || isMiniBoss || isBoss)
 		{
 			//If the enemy is golden, but not a boss, increase the amount of gold it will 'drop' when it is killed
 			if(goldenEnemy)
 			{
 				goldBonus += Time.deltaTime;
 			}
-			if (Input.touchCount > 0)
+			if(Input.touchCount > 0)
 			{
-				Touch t = Input.GetTouch(0);
+				Touch finger = Input.GetTouch(0);
+				
+				if(finger.phase == TouchPhase.Began)
 				{
-					if(t.phase == TouchPhase.Began)
+					touchedScreen = true;
+				}
+				else
+				{
+					touchedScreen = false;
+				}
+			}
+
+			if (touchedScreen || Input.GetMouseButtonDown(0) || Input.GetKey("k"))
+			{				
+				if (GetComponent<Collider>().gameObject.CompareTag("Enemy"))
+				{
+					//Debug.Log("I am golden, I am offended by your touch");
+					//Sets how much damage is done - might update this to be in the inspector
+					updatedHealth -= 2;
+					healthBar.fillAmount = updatedHealth / maxHealth;
+					if (updatedHealth <= 0 && !isDead)
 					{
-						Vector3 pos = t.position;
-						if (GetComponent<Collider>().gameObject.CompareTag("Enemy"))
-						{
-							//Debug.Log("I am golden, I am offended by your touch");
-							//Sets how much damage is done - might update this to be in the inspector
-							updatedHealth -= 5;
-							healthBar.fillAmount = updatedHealth / maxHealth;
-							if (updatedHealth <= 0 && !isDead)
-							{
-								Die();
-							}
-						}
+						Die();
 					}
 				}
 			}

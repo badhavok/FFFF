@@ -14,7 +14,7 @@ public class LevelSelector : MonoBehaviour {
 	void Update ()
 	{
 		int levelReached = PlayerPrefs.GetInt("levelReached", 1);
-//		completedLevels = Player.CompletedLevels;
+		// completedLevels = Player.CompletedLevels;
 
 		if(completedLevels > levelReached)
 		{

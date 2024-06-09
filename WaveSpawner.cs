@@ -20,11 +20,16 @@ public class WaveSpawner : MonoBehaviour {
 	public Boss[] bosses;
 	//Array for Random/bonus encounters
 	public int randomChance;
+	// Spawn NMs
 	public float spawnTimer = 0f;
-	private float spawnCountdownTimer, nMTimer;
-	private bool bonusWave, nMIncoming;
+	public int goldenChance;
+	// Spawn Golden enemies
+	public float goldenSpawnTimer = 0f;
+	private float spawnCountdownTimer, nMTimer, goldenCountdownTimer, goldenTimer;
+	private bool bonusWave, nMIncoming, goldenWave, goldenIncoming;
 	private int randomIndex = 0;
 	public Wave[] randoms;
+	public Wave[] golden;
 
 	public GameObject enemy;
 	public GameObject boss;
@@ -49,9 +54,6 @@ public class WaveSpawner : MonoBehaviour {
 	public bool bossComplete = false;
 	public int bosscounter = 0;
 	public int bcounter = 0;
-
-	//Need to test if this is needed or not - might have been combined
-	//public int enemiesAlive;
 
 	//Set the variables for the wave details + UI
 	public static int CurrentWave;
@@ -79,6 +81,7 @@ public class WaveSpawner : MonoBehaviour {
 		audioSource.clip = audioClipArray[0];
 		audioSource.Play();
 		spawnCountdownTimer = spawnTimer;
+		goldenCountdownTimer = goldenSpawnTimer;
 	}
 
 	void Update ()
@@ -107,6 +110,18 @@ public class WaveSpawner : MonoBehaviour {
 			
 			spawnCountdownTimer -= Time.deltaTime;
 		}
+		if(goldenWave)
+		{
+			// Show "event" on screen that a gold enemy is coming
+			if(goldenCountdownTimer <= 0)
+			{
+				goldenWave = false;
+				goldenIncoming = true;
+				goldenTimer = 5f;
+			}
+
+			goldenCountdownTimer -= Time.deltaTime;
+		}
 		if(nMIncoming)
 		{
 			if(nMTimer <0)
@@ -117,9 +132,23 @@ public class WaveSpawner : MonoBehaviour {
 				StartCoroutine(BonusWave());
 				// Can add feature that if you defeat [x] number of NMs in this level, you will fight a "stronger version of it"
 				// Loop through [randomIndex = 0], then increase it when [x] achieved [++randomIndex;]
+				// normal > king
 			}
 
 			nMTimer -= Time.deltaTime;
+		}
+		if(goldenIncoming)
+		{
+			if(goldenTimer < 0)
+			{
+				goldenIncoming = false;
+				// Play different music  - maybe detect when defeated and change music back after
+				StartCoroutine(GoldenWave());
+				// Can add feature that if you defeat [x] number of NMs in this level, you will fight a "stronger version of it"
+				// Loop through [randomIndex = 0], then increase it when [x] achieved [++randomIndex;]
+				// Fat Chicken!
+			}
+			goldenTimer -= Time.deltaTime;
 		}
 
 		//If any enemy is alive, don't proceed to the next code
@@ -146,7 +175,6 @@ public class WaveSpawner : MonoBehaviour {
 				StartCoroutine(waypoints.HighlightPath(1));
 			}
 			//Debug.Log("starting coroutine " + waveIndex + " waves length " + waves.Length);
-			
 			
 			//This formula allows the level to be configured automatically and put the boss wave in a 'logical' place
 			//E.G  The boss will not be first and should always be last.  If there are 15 waves and 3 bosses; it will spawn the boss after 5 enemy waves
@@ -192,6 +220,15 @@ public class WaveSpawner : MonoBehaviour {
 					if(randomChance >= rand)
 					{
 						bonusWave = true;
+					}
+				}
+				if(goldenChance > 0)
+				{
+					int rand = Random.Range(1, 100);
+
+					if(goldenChance >= rand)
+					{
+						goldenWave = true;
 					}
 				}
 				countdown = timeBetweenWaves;
@@ -320,6 +357,53 @@ public class WaveSpawner : MonoBehaviour {
 	private IEnumerator BonusWave()
 	{
 		Wave wave = randoms[randomIndex];
+
+		do
+		{
+			foreach (EnemyBlueprint enemy in wave.enemyWave)
+			{
+				if(enemy.enemySpawn == 2)
+				{
+					if(spawnLocationTwo.activeSelf == false)
+					{
+						spawnLocationTwo.SetActive(true);
+					}
+					spawnPoint = spawnPointTwo;
+					path = enemy.enemySpawn;
+				}
+				else
+				{
+					spawnPoint = spawnPointOne;
+					path = enemy.enemySpawn;
+				}
+				++enemy.enemyCount;
+				++counter;
+				Refactor(enemy);
+				
+				yield return new WaitForSeconds(enemy.enemyRate);
+			}
+
+			++loops;
+		}
+		while (counter > 0);
+
+		yield return new WaitForSeconds(1.0f / wave.waveRate);
+
+		void Refactor(EnemyBlueprint enemy)
+		{
+			if (enemy.enemyCount > 0)
+			{
+				SpawnEnemy(enemy.enemy);
+				++EnemiesAlive;
+				--enemy.enemyCount;
+				--counter;
+			}
+		}
+		
+	}
+	private IEnumerator GoldenWave()
+	{
+		Wave wave = golden[randomIndex];
 
 		do
 		{
