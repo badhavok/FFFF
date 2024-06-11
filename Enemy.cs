@@ -84,8 +84,9 @@ public class Enemy : MonoBehaviour {
 
 	[Header("Am I golden?")]
 	public bool goldenEnemy = false;
-	private float goldBonus = 0;
+	public float goldBonus = 0;
 	private float pointsBonus = 0;
+	public int touchDamage = 0;
 	public bool noDrop = false;
 	public bool isDead = false;
 	private bool touchedScreen;
@@ -143,24 +144,20 @@ public class Enemy : MonoBehaviour {
 			return;
 		}
 		remainingPathDist = enemyMovement.remainingPathDistance;
-		//Debug.Log("My path dist is : " + remainingPathDistance);
-
 		if(pointsBonus > 0)
 		{
 			pointsBonus -= speed * Time.deltaTime;
 		}
-		//Code to hide HP bar until the enemy has been attacked for the first time
+		//Code to hide HP bar until the enemy has been damaged
 		if (updatedHealth == maxHealth)
 		{
 			canvas.SetActive(false);
 		}
 		else
 		{
-			//Debug.Log("I'm not at max HP");
 			canvas.SetActive(true);
 			canvas.transform.LookAt(cam.transform);
 		}
-		
 		//Code to set the effects on the "current" enemy
 		if(virus)
 		{
@@ -187,7 +184,6 @@ public class Enemy : MonoBehaviour {
 			if(Input.touchCount > 0)
 			{
 				Touch finger = Input.GetTouch(0);
-				
 				if(finger.phase == TouchPhase.Began)
 				{
 					touchedScreen = true;
@@ -197,40 +193,18 @@ public class Enemy : MonoBehaviour {
 					touchedScreen = false;
 				}
 			}
-
 			if (touchedScreen || Input.GetMouseButtonDown(0) || Input.GetKey("k"))
 			{				
 				if (GetComponent<Collider>().gameObject.CompareTag("Enemy"))
 				{
-					//Debug.Log("I am golden, I am offended by your touch");
-					//Sets how much damage is done - might update this to be in the inspector
-					updatedHealth -= 2;
+					//Sets how much damage is done 
+					updatedHealth -= touchDamage;
 					healthBar.fillAmount = updatedHealth / maxHealth;
 					if (updatedHealth <= 0 && !isDead)
 					{
 						Die();
 					}
 				}
-			}
-		}
-		if (poisonEnemy)
-		{
-			if (poisonInterval > 0)
-			{
-				//Debug.Log("In poison loop - interval = " + poisonInterval);
-				if (countdownPoison >= 1.0f)
-				{
-					poisonInterval--;
-					TakeDamage(0f, 0f, 0f, magicalStrengthPoison);
-					//Debug.Log("I'm taking damage: " + magicalStrengthPoison + " for " + poisonInterval + ".");
-					countdownPoison = 0;
-				}
-				countdownPoison += Time.deltaTime;
-			}
-			else
-			{
-					poisonEnemy = false;
-					//Debug.Log("Poison end");
 			}
 		}
 		if (castingEnemy)
@@ -872,14 +846,6 @@ public class Enemy : MonoBehaviour {
 	{
 		fearEnemy = true;
 		countdownFear = fea;
-	}
-	//DoT effect that can't spread
-	public void Poison (float psnS, float psnT)
-	{
-		poisonEnemy = true;
-		magicalStrengthPoison = psnS;
-		countdownPoison = 1;
-		poisonInterval = psnT;
 	}
 	//Buff to speed up enemies
 	public void Speed (float spdB, float spdD)

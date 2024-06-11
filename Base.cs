@@ -44,9 +44,9 @@ public class Base : MonoBehaviour {
             {
                 default:
                 fullHealth.SetActive(true);
-        		// ninetyHealth.SetActive(false);
-                // eightyHealth.SetActive(false);
-        		// seventyHealth.SetActive(false);
+        		ninetyHealth.SetActive(false);
+                eightyHealth.SetActive(false);
+        		seventyHealth.SetActive(false);
                 // sixtytyHealth.SetActive(false);
         		// fiftyHealth.SetActive(false);
                 // fourtyHealth.SetActive(false);
@@ -58,6 +58,7 @@ public class Base : MonoBehaviour {
                 return;
 
                 case var expression when (health < healthBar && health >= healthBar * 90 / 100):
+                fireThree.SetActive(false);
                 fullHealth.SetActive(false);
         		ninetyHealth.SetActive(true);
                 eightyHealth.SetActive(false);

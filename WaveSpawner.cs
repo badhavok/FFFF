@@ -112,6 +112,7 @@ public class WaveSpawner : MonoBehaviour {
 		}
 		if(goldenWave)
 		{
+			waveCountdownText.text = " A Golden wave";
 			// Show "event" on screen that a gold enemy is coming
 			if(goldenCountdownTimer <= 0)
 			{
@@ -144,9 +145,9 @@ public class WaveSpawner : MonoBehaviour {
 				goldenIncoming = false;
 				// Play different music  - maybe detect when defeated and change music back after
 				StartCoroutine(GoldenWave());
-				// Can add feature that if you defeat [x] number of NMs in this level, you will fight a "stronger version of it"
+				// Can add feature that if you defeat [x] number of goldens in this level, you will fight a "stronger version of it"
 				// Loop through [randomIndex = 0], then increase it when [x] achieved [++randomIndex;]
-				// Fat Chicken!
+				// Increase the armour looks after ~3-5 kills within stage[x]
 			}
 			goldenTimer -= Time.deltaTime;
 		}
@@ -225,7 +226,7 @@ public class WaveSpawner : MonoBehaviour {
 				if(goldenChance > 0)
 				{
 					int rand = Random.Range(1, 100);
-
+					
 					if(goldenChance >= rand)
 					{
 						goldenWave = true;
@@ -282,7 +283,7 @@ public class WaveSpawner : MonoBehaviour {
 				
 				Refactor(enemy);
 				
-				yield return new WaitForSeconds(1.0f / enemy.enemyRate);
+				yield return new WaitForSeconds(100f / enemy.enemyRate);
 			}
 
 			++loops;
@@ -291,7 +292,7 @@ public class WaveSpawner : MonoBehaviour {
 
 		++PlayerStats.Rounds;
 		++waveIndex;
-		yield return new WaitForSeconds(1.0f / wave.waveRate);
+		yield return new WaitForSeconds(100f / wave.waveRate);
 
 		void Refactor(EnemyBlueprint enemy)
 		{
@@ -331,7 +332,7 @@ public class WaveSpawner : MonoBehaviour {
 				}
 				Refactor(enemy);
 
-				yield return new WaitForSeconds(1.0f / boss.bossRate);
+				yield return new WaitForSeconds(100f / boss.bossRate);
 			}
 
 			++loops;
@@ -340,7 +341,7 @@ public class WaveSpawner : MonoBehaviour {
 
 		++PlayerStats.Rounds;
 		++bossIndex;
-		yield return new WaitForSeconds(1.0f / boss.bossRate);
+		yield return new WaitForSeconds(100f / boss.bossRate);
 
 		void Refactor(EnemyBlueprint enemy)
 		{
@@ -387,7 +388,7 @@ public class WaveSpawner : MonoBehaviour {
 		}
 		while (counter > 0);
 
-		yield return new WaitForSeconds(1.0f / wave.waveRate);
+		yield return new WaitForSeconds(100f / wave.waveRate);
 
 		void Refactor(EnemyBlueprint enemy)
 		{
@@ -434,7 +435,7 @@ public class WaveSpawner : MonoBehaviour {
 		}
 		while (counter > 0);
 
-		yield return new WaitForSeconds(1.0f / wave.waveRate);
+		yield return new WaitForSeconds(100f / wave.waveRate);
 
 		void Refactor(EnemyBlueprint enemy)
 		{

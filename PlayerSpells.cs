@@ -12,6 +12,7 @@ public class PlayerSpells : MonoBehaviour {
 	[HideInInspector]
 	public float globalCooldown, dmgMulti, empCount, barrageCount, meteorCount, dotDmg, dotTime, fearCount, fearTime, chickenCount, gravityCount, summonSpellCount, gravityActive = 0;
 	[HideInInspector] public string enemyTag = "Enemy";
+	public string poison = "Poison";
 	[HideInInspector] private Transform target;
 	[HideInInspector] private Enemy targetEnemy;
 	[HideInInspector] private Vector3 myPos, myPosi;
@@ -299,10 +300,11 @@ public class PlayerSpells : MonoBehaviour {
 	void AoEDamage (Transform enemy)
 	{
 		Enemy e = enemy.GetComponent<Enemy>();
+		EnemyDots d = enemy.GetComponent<EnemyDots>();
 
 		if(castMeteor)
 		{
-			e.Poison(dotDmg, dotTime);
+			d.DotEffect(poison, dotTime, dotDmg);
 		}
 		//If the enemy is a boss it won't deal status effects
 		if(e.isBoss)

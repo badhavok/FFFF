@@ -29,6 +29,7 @@ public class Bullet : MonoBehaviour {
 	public int debuffDefSlash, debuffDefPierce, debuffDefBlunt, debuffDefMag = 0;
 
 	[Header ("Use Poison")]
+	private string poison = "Poison";
 	public float poisonChance = 0f;
 	public int poisonStrength = 0;
 	public float poisonTime = 0f;
@@ -129,6 +130,7 @@ public class Bullet : MonoBehaviour {
 	void Damage (Transform enemy)
 	{
 		Enemy e = enemy.GetComponent<Enemy>();
+		EnemyDots d = enemy.GetComponent<EnemyDots>();
 
 		if (e != null)
 		{
@@ -260,8 +262,8 @@ public class Bullet : MonoBehaviour {
 
 					if (rand < poisonChance)
 					{
-						//Debug.Log("MUAHAHAA... Poison!");
-						e.Poison(poisonStrength, poisonTime);
+						Debug.Log("MUAHAHAA... Poison!  Cast on > " + e);
+						d.DotEffect(poison, poisonTime, poisonStrength);
 					}
 				}
 				else

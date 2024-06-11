@@ -333,16 +333,12 @@ public class Turret : MonoBehaviour {
 		}
 		else
 		{
-			//Debug.Log("I'm in the else");
-			fireCountdown -= Time.deltaTime;
-			animCooldown -= Time.deltaTime;
 			if (fireCountdown <= 0f)
 			{
 				anim.SetBool("Attack1", true);
 				anim.SetBool("Idle", false);
 				animCooldown = 0.5f;
 				doShoot = true;
-				//Debug.Log("Bool is true");
 				fireCountdown = 100f / fireRate;
 			}
 
@@ -354,7 +350,6 @@ public class Turret : MonoBehaviour {
 				if (doShoot == true)
 				{
 				Shoot();
-				//Debug.Log("Bool is false");
 				doShoot = false;
 				}
 			}
