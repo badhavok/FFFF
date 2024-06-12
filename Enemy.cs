@@ -7,6 +7,7 @@ using System.Collections;
 public class Enemy : MonoBehaviour {
 	[Header("Must be set")]
 	public EnemyStats enemyStats;
+	public EnemyBuffs buffs;
 	public EnemyMovement enemyMovement;
 	[Header("Casting enemy?")]
 	public EnemySpells enemySpells;
@@ -33,7 +34,7 @@ public class Enemy : MonoBehaviour {
 	public float speed;
 [HideInInspector]	public float maxHealth, baseHealth;
 	public float updatedHealth;
-[HideInInspector] public int bluntDef, slashDef, pierceDef, magDef;
+	public int bluntDef, slashDef, pierceDef, magDef;
 [HideInInspector] public int startBluntDef, startSlashDef, startPierceDef, startMagDef;
 [HideInInspector] public bool buffSlashDef, buffPierceDef, buffBluntDef, buffMagDef = false;
 [HideInInspector] public float countdownSlashBuffDef, countdownPierceBuffDef, countdownBluntBuffDef, countdownMagBuffDef;
@@ -95,6 +96,9 @@ public class Enemy : MonoBehaviour {
 	void Start ()
 	{
 		anim = gameObject.GetComponentInChildren<Animator>();
+		enemyStats = gameObject.GetComponent<EnemyStats>();
+		buffs = gameObject.GetComponent<EnemyBuffs>();
+
 		cam = CameraController.PlayerCam;
 		speed = startSpeed;
 		bluntDef = enemyStats.startBluntDef;
@@ -219,58 +223,6 @@ public class Enemy : MonoBehaviour {
 				Debug.Log("I'm free");
 			}
 		}
-		if(buffSlashDef)
-		{
-			countdownSlashBuffDef -= Time.deltaTime;
-			if (countdownSlashBuffDef <= 0)
-			{
-				buffSlashDef = false;
-				slashDef = enemyStats.startSlashDef;
-			}
-		}
-		else
-		{
-			slashDef = enemyStats.startSlashDef;
-		}
-		if(buffBluntDef)
-		{
-			countdownBluntBuffDef -= Time.deltaTime;
-			if (countdownBluntBuffDef <= 0)
-			{
-				buffBluntDef = false;
-				bluntDef = enemyStats.startBluntDef;
-			}
-		}
-		else
-		{
-			bluntDef = enemyStats.startBluntDef;
-		}
-		if(buffPierceDef)
-		{
-			countdownPierceBuffDef -= Time.deltaTime;
-			if (countdownPierceBuffDef <= 0)
-			{
-				buffPierceDef = false;
-				pierceDef = enemyStats.startPierceDef;
-			}
-		}
-		else
-		{
-			pierceDef = enemyStats.startPierceDef;
-		}
-		if(buffMagDef)
-		{
-			countdownMagBuffDef -= Time.deltaTime;
-			if (countdownMagBuffDef <= 0)
-			{
-				buffMagDef = false;
-				magDef = enemyStats.startMagDef;
-			}
-		}
-		else
-		{
-			magDef = enemyStats.startMagDef;
-		}
 		//Any code below this will not run if the enemy is a boss; this is to ignore any buffs/debuffs that would make the boss OP and no need to run through the loops
 		if(isBoss)
 		{
@@ -365,15 +317,15 @@ public class Enemy : MonoBehaviour {
 				fearEnemy = false;
 			}
 		}
-		if (silence)
-		{
-			countdownSilence -= Time.deltaTime;
+		// if (silence)
+		// {
+		// 	countdownSilence -= Time.deltaTime;
 
-			if (countdownSilence <=0)
-			{
-				silence = false;
-			}
-		}
+		// 	if (countdownSilence <=0)
+		// 	{
+		// 		silence = false;
+		// 	}
+		// }
 		//Hovercraft is used for the temporary flying units
 		if (enemyStats.isHovercraft)
 		{
@@ -805,11 +757,11 @@ public class Enemy : MonoBehaviour {
 		immune = false;
 	}
 	//Stops enemies from casting spells
-	public void Silence(float sil)
-	{
-		countdownSilence = sil;
-		silence = true;
-	}
+	// public void Silence(float sil)
+	// {
+	// 	countdownSilence = sil;
+	// 	silence = true;
+	// }
 	//Makes enemies immune and heals them from all debuffs
 	public void Immune (float imm)
 	{
@@ -833,7 +785,7 @@ public class Enemy : MonoBehaviour {
 	{
 		stopEnemy = true;
 		countdownStop = stp;
-		Silence(stp);
+		// Silence(stp);
 	}
 	//Does things like stop walking when casting spells etc...
 	public void Casting (float cst)

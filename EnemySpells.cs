@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class EnemySpells : MonoBehaviour {
 
 	private Enemy enemy;
+	private EnemyBuffs b;
 	private Turret tower;
 
 	private Transform target;
@@ -53,6 +54,11 @@ public class EnemySpells : MonoBehaviour {
 	public bool buffSpeed = false;
 	public float bonusSpeed, countdownSpeed, speedCount = 0;
 	public bool buffDefences = false;
+	private string buffSlash = "BuffSlash";
+	private string buffBlunt = "BuffBlunt";
+	private string buffPierce = "BuffPierce";
+	private string buffMag = "BuffMag";
+
 	public int buffDefSlash, buffDefBlunt, buffDefPierce, buffDefMag;
 [HideInInspector] public float buffDefCount;
 	public float countdownBuffDef = 0;
@@ -96,6 +102,7 @@ public class EnemySpells : MonoBehaviour {
 	void Start()
 	{
 		enemy = GetComponent<Enemy>();
+		b = GetComponent<EnemyBuffs>();
 		anim = gameObject.GetComponentInChildren<Animator>();
 		//casting = gameObject.GetComponentsInChildren<ParticleSystem>();
 		//Sets the variables used by the counters
@@ -167,10 +174,10 @@ public class EnemySpells : MonoBehaviour {
 			{
 				BuffImmune();
 			}
-			if (buffDefences)
-			{
-				BuffDefences();
-			}
+			// if (buffDefences)
+			// {
+			// 	BuffDefences();
+			// }
 			if (buffHealing)
 			{
 				BuffHealing();
@@ -252,39 +259,10 @@ public class EnemySpells : MonoBehaviour {
 		switch(castingThisSpell)
 				{
 					default:
-						buffSpeed = false;
-						buffDefences = false;
-						buffHealing = false;
-						buffSummoner = false;
-						buffImmune = false;
-						debuffTowerSpeed = false;
-						attackTowerHP = false;
-
-						hideCount = countdownHide;
-						countdownHealth =0;
-						healCount = countdownHealth;
-						countdownSpeed = 0;
-						speedCount = countdownSpeed;
-						countdownSummon =0;
-						summonCount = countdownSummon;
-						levitateCount = countdownLevitate;
-						countdownImmune =0;
-						immuneCount = countdownImmune;
-						vampireCount = countdownVampire;
-						countdownBuffDef = 0;
-						buffDefCount = countdownBuffDef;
-						countdownDebuffSpeed = 0;
-						debuffSpeedCount = countdownDebuffSpeed;
-						countdownAttackTower = 0;
-						attackTowerHPCount = countdownAttackTower;
-						
 						break;
 
 					case "buffDefences" : 
-						
-						buffDefences = true;
-						countdownBuffDef = 5;
-
+						BuffDefences();
 						break;
 
 					case "buffHealing" :
@@ -449,42 +427,25 @@ public class EnemySpells : MonoBehaviour {
 	//Buff target(s)
 	void BuffDefences()
 	{
-		// Debug.Log("I'm in the defences void");
-		if (buffDefCount <= 0)
+			// else if (aoECast)
+			// {
+			// 	AoE(2);
+			// }
+		if(castSelf)
 		{
-			if(castSelf)
-			{
-				casting = true;
-				enemy.BuffSlashDef(buffDefSlash, countdownBuffDef);
-				enemy.BuffBluntDef(buffDefBlunt, countdownBuffDef);
-				enemy.BuffPierceDef(buffDefPierce, countdownBuffDef);
-				enemy.BuffMagDef(buffDefMag, countdownBuffDef);
-				// Debug.Log("Oh wow, look at me... I'm raising my defence!");
-			}
-			else if (aoECast)
-			{
-				AoE(2);
-			}
-			else
-			{
-				TargetEnemy();
-				if (targetEnemy)
-				{
-				targetEnemy.BuffSlashDef(buffDefSlash, countdownBuffDef);
-				targetEnemy.BuffBluntDef(buffDefBlunt, countdownBuffDef);
-				targetEnemy.BuffPierceDef(buffDefPierce, countdownBuffDef);
-				targetEnemy.BuffMagDef(buffDefMag, countdownBuffDef);
-				// Debug.Log("Oh wow, look at me... I'm raising your defence!");
-				}
-			}
-			buffDefCount += (countdownBuffDef);
-			//Debug.Log("Heal count is above 0");
+			targetEnemy = enemy;
 		}
 		else
 		{
-			//Debug.Log("I'm counting down");
-			buffDefCount -= Time.deltaTime;
+			TargetEnemy();
 		}
+		Debug.Log("Target is - " + targetEnemy + " - countdown = " + countdownBuffDef + " - def bonus = " + buffDefSlash);
+		targetEnemy.buffs.BuffEffect(buffSlash, countdownBuffDef, buffDefSlash);
+		targetEnemy.buffs.BuffEffect(buffBlunt, countdownBuffDef, buffDefBlunt);
+		targetEnemy.buffs.BuffEffect(buffPierce, countdownBuffDef, buffDefPierce);
+		targetEnemy.buffs.BuffEffect(buffMag, countdownBuffDef, buffDefMag);
+
+		//Debug.Log("Heal count is above 0");
 	}
 	//Give target(s) immunity to debuffs and damage
 	void BuffImmune()
@@ -608,7 +569,6 @@ public class EnemySpells : MonoBehaviour {
 	}
 	void AoE (int spellNumber)
 	{
-		//Debug.Log("I'm shooting an emeny!");
 		casting = true;
 		Collider[] colliders = Physics.OverlapSphere(transform.position, range);
 		foreach (Collider collider in colliders)

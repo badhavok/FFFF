@@ -41,6 +41,7 @@ public class Bullet : MonoBehaviour {
 	public float stopChance = 0f;
 	public float stopTime = 0f;
 	[Header ("Use Silence")]
+	private string silence = "Silence";
 	public float silenceChance =0f;
 	public float silenceTime = 0f;
 
@@ -165,14 +166,11 @@ public class Bullet : MonoBehaviour {
 			//Silence debuff
 			if(silenceChance > 0)
 			{
-				if(!e.silence)
+				var rand = Random.Range(1,100);
+				//Debug.Log("I'm going to silence you!");
+				if (rand < silenceChance)
 				{
-					var rand = Random.Range(1,100);
-					//Debug.Log("I'm going to silence you!");
-					if (rand < silenceChance)
-					{
-						e.Silence(silenceTime);
-					}
+					d.DotEffect(silence, silenceTime, 0f);
 				}
 			}
 			//Slow debuff
@@ -256,8 +254,7 @@ public class Bullet : MonoBehaviour {
 			//Poison DoT
 			if (poisonChance > 0)
 			{
-				if(!e.poisonEnemy)
-				{
+				
 					var rand = Random.Range(1,100);
 
 					if (rand < poisonChance)
@@ -265,11 +262,7 @@ public class Bullet : MonoBehaviour {
 						Debug.Log("MUAHAHAA... Poison!  Cast on > " + e);
 						d.DotEffect(poison, poisonTime, poisonStrength);
 					}
-				}
-				else
-				{
-					//Debug.Log("Already poisoned");
-				}
+			
 			}
 		}
 	}
