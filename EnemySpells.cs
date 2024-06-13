@@ -9,14 +9,16 @@ public class EnemySpells : MonoBehaviour {
 	private Enemy enemy;
 	private EnemyBuffs b;
 	private Targeting targeting;
-	private Turret tower;
+	private Turret turret;
 
 	public Transform target;
 	public Enemy targetEnemy;
-	public Turret targetTower;
+    public List<Enemy> enemyList = new List<Enemy>();
+	public Turret targetTurret;
+	public List<Turret> turretList = new List<Turret>();
 	public float range = 0;
 	public string enemyTag = "Enemy";
-	public string towerTag = "Tower";
+	public string turretTag = "Turret";
 
 	//List<EnemySpells> floatList = new List<EnemySpells>();
 	public string[] customSpellList;
@@ -43,35 +45,29 @@ public class EnemySpells : MonoBehaviour {
 	//This heals an enemy
 	public bool buffHealing = false;
 	public float bonusHealth = 0;
-	public float countdownHealth = 0;
-	private float healCount = 0;
-
 	//This makes an enemy immune to damage/debuffs - but the towers will still shoot at it
 	public bool buffImmune = false;
 	public float countdownImmune = 0;
 [HideInInspector]	public float immuneCount = 0;
 
 	//This makes the enemy move faster
-	public bool buffSpeed = false;
 	public float bonusSpeed = 0;
-	public float countdownSpeed, speedCount = 0;
+	public float bonusSpeedTime = 0;
 	private string speedBuff = "SpeedBuff";
-	public bool buffDefences = false;
 	private string buffSlash = "BuffSlash";
 	private string buffBlunt = "BuffBlunt";
 	private string buffPierce = "BuffPierce";
 	private string buffMag = "BuffMag";
+	private string healingBuff = "HealingBuff";
+	private string debuffTurretSpeed = "DebuffTurretSpeed";
+	private string attackTurretHP = "AttackTurretHP";
 
 	public float buffDefSlash, buffDefBlunt, buffDefPierce, buffDefMag;
-[HideInInspector] public float buffDefCount;
-	public float countdownBuffDef = 0;
+	public float buffDefTime = 0;
 	
-	public bool debuffTowerSpeed = false;
-	public float debuffSpeed, countdownDebuffSpeed, debuffSpeedCount = 0;
-	public bool attackTowerHP = false;
-	public float attackTowerDmg = 0;
-	public float countdownAttackTower, attackTowerHPCount = 0;
-	public GameObject attackTowerEffect;
+	public float debuffTurretSpeedTime, debuffTurretSPD = 0;
+	public float attackTurretHPTime, attackTurretHPDMG = 0;
+	public GameObject attackTurretHPEffect;
 	//This makes an enemy duplicate itself (weaker than summon as it detects current HP as well)
 	public bool duplicate = false;
 
@@ -107,19 +103,10 @@ public class EnemySpells : MonoBehaviour {
 		enemy = GetComponent<Enemy>();
 		b = GetComponent<EnemyBuffs>();
 		targeting = GetComponent<Targeting>();
+
 		anim = gameObject.GetComponentInChildren<Animator>();
 		//casting = gameObject.GetComponentsInChildren<ParticleSystem>();
-		//Sets the variables used by the counters
-		hideCount = countdownHide;
-		healCount = countdownHealth;
-		speedCount = countdownSpeed;
-		summonCount = countdownSummon;
-		levitateCount = countdownLevitate;
-		immuneCount = countdownImmune;
-		vampireCount = countdownVampire;
-		buffDefCount = countdownBuffDef;
 		customCastTime = customCastCountdown;
-		attackTowerHPCount = countdownAttackTower;
 	}
 	void Update()
 	{
@@ -165,50 +152,9 @@ public class EnemySpells : MonoBehaviour {
 						}
 				}
 			}
-			
-			if(vampire)
-			{
-				BuffVampire();
-			}
-			if (buffImmune)
-			{
-				BuffImmune();
-			}
-			// if (buffDefences)
-			// {
-			// 	BuffDefences();
-			// }
-			if (buffHealing)
-			{
-				BuffHealing();
-			}
-			if (buffHide)
-			{
-				BuffHide();
-			}
-			if (buffSpeed)
-			{
-				BuffSpeed();
-			}
-			if (buffSummoner)
-			{
-				BuffSummoner();
-			}
-			if (buffLevitate)
-			{
-				BuffLevitate();
-			}
-			if (debuffTowerSpeed)
-			{
-				DebuffTowerSpeed();
-			}
-			if (attackTowerHP)
-			{
-				AttackTowerHP();
-			}
 			if(customSpell)
 			{
-				
+				targetEnemy = null;
 				if(customCastTime < 0)
 				{
 					casting = true;
@@ -246,7 +192,6 @@ public class EnemySpells : MonoBehaviour {
 	void MultiSpell()
 	{
 		for(int i = 0; i < customSpellList.Length; i++)
-		
 			{
 				castingThisSpell = customSpellList[i];
 				Debug.Log("Spell number " + i + " is the spell " + castingThisSpell + " ... or " + customSpellList[i] + " ...");
@@ -267,9 +212,7 @@ public class EnemySpells : MonoBehaviour {
 						break;
 
 					case "buffHealing" :
-						buffHealing = true;
-						countdownHealth = 5;
-
+						BuffHealing();
 						break; 
 
 					case "buffSpeed" :
@@ -288,17 +231,13 @@ public class EnemySpells : MonoBehaviour {
 						countdownImmune = 5;
 
 						break;
-					case "debuffTowerSpeed" :
-
-						debuffTowerSpeed = true;
-						countdownDebuffSpeed = 5;
-
+					case "debuffTurretSpeed" :
+						DebuffTurretSpeed();
 						break;
-					case "attackTowerHP" :
 
-						attackTowerHP = true;
-						countdownAttackTower =5;
-
+					case "attackTurretHP" :
+						Debug.Log("Attack switch");
+						AttackTurretHP();
 						break;
 				}
 	}
@@ -353,40 +292,35 @@ public class EnemySpells : MonoBehaviour {
 			vampireCount -= Time.deltaTime;
 		}
 	}
-	//Boosts speed of target(s)
 	//Heal target(s)
 	void BuffHealing()
 	{
 		// Debug.Log("I'm in the healing void");
-		if (healCount <= 0)
-		{
-			if(castSelf)
-			{
-				casting = true;
-				enemy.Healing(bonusHealth);
-				// Debug.Log("Oh wow, look at me... I'm healing me!");
-			}
-			else if (aoECast)
-			{
-				AoE(1);
-			}
-			else
-			{
-				targeting.TargetEnemy(range);
-				if (targetEnemy)
-				{
-				targetEnemy.Healing(bonusHealth);
-				// Debug.Log("Oh wow, look at me... I'm healing you!");
-				}
-			}
-			healCount += (countdownHealth);
-			//Debug.Log("Heal count is above 0");
-		}
-		else
-		{
-			//Debug.Log("I'm counting down");
-			healCount -= Time.deltaTime;
-		}
+		// if (aoECast)
+		// {
+		// 	targeting.TargetAoEEnemy(range);
+		// 	foreach (Enemy targetEnemy in enemyList)
+		// 	{
+		// 		targetEnemy.buffs.BuffEffect(healingBuff, countdownSpeed, bonusSpeed);
+		// 		Debug.Log("TargetEnemy = " + targetEnemy + ".  healing = " + bonusHealth + ".  health = " + targetEnemy.updatedHealth);
+		// 	}
+		// 	Debug.Log("Casting AoE Heal");
+		// 	enemyList.Clear();
+		// 	return;
+		// }
+		// else if(castSelf)
+		// {
+		// 	targetEnemy = enemy;
+		// }
+		// else
+		// {
+		// 	targeting.TargetEnemy(range);
+		// }
+		// if(targetEnemy)
+		// {
+		// 	targetEnemy.buffs.BuffEffect(healingBuff, countdownSpeed, bonusSpeed);
+		// 	Debug.Log("TargetEnemy = " + targetEnemy + ".  healing = " + bonusHealth + ".  health = " + targetEnemy.updatedHealth);
+		// }
 	}
 	// Buff enemy speed
 	void BuffSpeed()
@@ -394,7 +328,14 @@ public class EnemySpells : MonoBehaviour {
 		//Debug.Log("I'm in the speed void");
 		if (aoECast)
 		{
-			AoE(0);
+			targeting.TargetAoEEnemy(range);
+			foreach (Enemy targetEnemy in enemyList)
+			{
+				BuffingSpeed(targetEnemy);
+			}
+			Debug.Log("Casting AoE Speed");
+			enemyList.Clear();
+			return;
 		}
 		if(castSelf)
 		{
@@ -403,19 +344,30 @@ public class EnemySpells : MonoBehaviour {
 		else
 		{
 			targeting.TargetEnemy(range);
-			Debug.Log("Targeting = " + targeting + ".  TargetEnemy = " + targetEnemy);
 		}
 		if(targetEnemy)
 		{
-			targetEnemy.buffs.BuffEffect(speedBuff, countdownSpeed, bonusSpeed);
+			BuffingSpeed(targetEnemy);
 		}
+	}
+	void BuffingSpeed(Enemy targetEnemy)
+	{
+		targetEnemy.buffs.BuffEffect(speedBuff, bonusSpeedTime, bonusSpeed);
+		// Debug.Log("TargetEnemy = " + targetEnemy + ".  Speed = " + targetEnemy.speed);
 	}
 	//Buff target(s)
 	void BuffDefences()
 	{
 		if (aoECast)
 		{
-			AoE(2);
+			targeting.TargetAoEEnemy(range);
+			foreach (Enemy targetEnemy in enemyList)
+			{
+				BuffingDefences(targetEnemy);
+			}
+			// Debug.Log("Casting AoE Defence");
+			enemyList.Clear();
+			return;
 		}
 		if(castSelf)
 		{
@@ -425,13 +377,19 @@ public class EnemySpells : MonoBehaviour {
 		{
 			targeting.TargetEnemy(range);
 		}
-		Debug.Log("Target is - " + targetEnemy + " - countdown = " + countdownBuffDef + " - def bonus = " + buffDefSlash);
-		targetEnemy.buffs.BuffEffect(buffSlash, countdownBuffDef, buffDefSlash);
-		targetEnemy.buffs.BuffEffect(buffBlunt, countdownBuffDef, buffDefBlunt);
-		targetEnemy.buffs.BuffEffect(buffPierce, countdownBuffDef, buffDefPierce);
-		targetEnemy.buffs.BuffEffect(buffMag, countdownBuffDef, buffDefMag);
-
+		if(targetEnemy)
+		{
+			BuffingDefences(targetEnemy);
+		}
 		//Debug.Log("Heal count is above 0");
+	}
+	void BuffingDefences(Enemy targetEnemy)
+	{
+		targetEnemy.buffs.BuffEffect(buffSlash, buffDefTime, buffDefSlash);
+		targetEnemy.buffs.BuffEffect(buffBlunt, buffDefTime, buffDefBlunt);
+		targetEnemy.buffs.BuffEffect(buffPierce, buffDefTime, buffDefPierce);
+		targetEnemy.buffs.BuffEffect(buffMag, buffDefTime, buffDefMag);
+		// Debug.Log("Target is - " + targetEnemy + " - countdown = " + buffDefTime + " - def bonus = " + buffDefSlash + ".  New def = " + targetEnemy.slashDef);
 	}
 	//Give target(s) immunity to debuffs and damage
 	void BuffImmune()
@@ -445,7 +403,7 @@ public class EnemySpells : MonoBehaviour {
 			}
 			else if (aoECast)
 			{
-				AoE(3);
+				
 			}
 			else
 			{
@@ -527,195 +485,62 @@ public class EnemySpells : MonoBehaviour {
 			hideCount -= Time.deltaTime;
 		}
 	}
-	// void TargetEnemy()
-	// {
-	// 	casting = true;
-	// 	GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
-	// 	float shortestDistance = Mathf.Infinity;
-	// 	GameObject nearestEnemy = null;
-	// 	foreach (GameObject enemy in enemies)
-	// 	{
-	// 		if (enemy == gameObject) continue;
-
-	// 		float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-	// 		if (distanceToEnemy < shortestDistance)
-	// 		{
-	// 			shortestDistance = distanceToEnemy;
-	// 			nearestEnemy = enemy;
-	// 		}
-	// 	}
-	// 	if (nearestEnemy != null && shortestDistance <= range)
-	// 	{
-	// 		target = nearestEnemy.transform;
-	// 		targetEnemy = nearestEnemy.GetComponent<Enemy>();
-	// 	} else
-	// 	{
-	// 		target = null;
-	// 	}
-	// }
-	void AoE (int spellNumber)
-	{
-		casting = true;
-		Collider[] colliders = Physics.OverlapSphere(transform.position, range);
-		foreach (Collider collider in colliders)
-		{
-			if (collider.tag == "Enemy")
-			{
-				AoECast(collider.transform, spellNumber);
-			}
-		}
-		//Vector3 dir = firePoint.position - target.position;
-		colliders = null;
-	}
-	void AoECast (Transform enemy, int castingSpell)
-	{
-		Enemy e = enemy.GetComponent<Enemy>();
-		//Debug.Log("Enemy targeted - " + e + " .");
-		switch(castingSpell)
-		{
-			default :
-				break;
-			case 0:
-				// e.Speed(bonusSpeed, countdownSpeed);
-				break;
-			case 1:
-				e.Healing(bonusHealth);
-				break;
-			case 2:
-				// e.BuffSlashDef(buffDefSlash, countdownBuffDef);
-				// e.BuffBluntDef(buffDefBlunt, countdownBuffDef);
-				// e.BuffPierceDef(buffDefPierce, countdownBuffDef);
-				// e.BuffMagDef(buffDefMag, countdownBuffDef);
-				break;
-			case 3:
-				e.Immune(countdownImmune);
-				break;
-		}
-	}
 	//Debuffs tower(s) attack speed
-	void DebuffTowerSpeed()
+	void DebuffTurretSpeed()
 	{
-		if (debuffSpeedCount < 0)
+		if (aoECast)
 		{
-			
-			if (aoECast)
+			Debug.Log("Turret AoE Speed");
+			targeting.TargetAoETurret(range);
+			foreach (Turret targetTurret in turretList)
 			{
-				TowerAoE(0);
+				DebuffTurretSPD(targetTurret);
 			}
-			else
-			{
-				// Debug.Log("Targeting");
-				TargetTower();
-
-				if(targetTower)
-				{
-					//Debug.Log("Tower targeted - " + targetTower + " .");
-					targetTower.DebuffSpeed(debuffSpeed, countdownDebuffSpeed);
-				}
-				
-			}
-			debuffSpeedCount += (countdownDebuffSpeed);
+			turretList.Clear();
+			return;
 		}
 		else
 		{
-			debuffSpeedCount -= Time.deltaTime;
+			targeting.TargetTurret(range);
+			if(targetTurret)
+			{
+				DebuffTurretSPD(targetTurret);
+			}	
 		}
 	}
-	void AttackTowerHP()
+	void DebuffTurretSPD(Turret targetTurret)
 	{
-		if (attackTowerHPCount < 0)
+		Debug.Log("Turret debuff speed = " + targetTurret);
+		targetTurret.dots.DotEffect(debuffTurretSpeed, debuffTurretSpeedTime, debuffTurretSPD);
+	}
+	void AttackTurretHP()
+	{
+			Debug.Log("Turret AoE Damage");
+		if (aoECast)
 		{
-			if (aoECast)
+			targeting.TargetAoETurret(range);
+			foreach (Turret targetTurret in turretList)
 			{
-				TowerAoE(1);
+				AttackingTurretHP(targetTurret);
 			}
-			else
-			{
-				// Debug.Log("Targeting");
-				TargetTower();
-
-				if(targetTower)
-				{
-					//Debug.Log("Tower targeted - " + targetTower + " .");
-					targetTower.AttackTowerHP(attackTowerDmg);
-					GameObject effectIns = (GameObject)Instantiate(attackTowerEffect, targetTower.transform.position, transform.rotation);
-					Destroy(effectIns, 1.5f);
-				}	
-			}
-			
-			attackTowerHPCount += (countdownAttackTower);
+			turretList.Clear();
+			return;
 		}
 		else
 		{
-			attackTowerHPCount -= Time.deltaTime;
-		}
-	}
-	void TargetTower()
-	{
-		//Debug.Log("Targeting Tower");
-		casting = true;
-		GameObject[] towers = GameObject.FindGameObjectsWithTag(towerTag);
-		float shortestDistance = Mathf.Infinity;
-		GameObject nearestTower = null;
-		foreach (GameObject tower in towers)
-		{
-			if (tower == gameObject) continue;
-
-			float distanceToTower = Vector3.Distance(transform.position, tower.transform.position);
-			if (distanceToTower < shortestDistance)
+			targeting.TargetTurret(range);
+			if(targetTurret)
 			{
-				shortestDistance = distanceToTower;
-				nearestTower = tower;
-			}
-		}
-		if (nearestTower != null && shortestDistance <= range)
-		{
-			target = nearestTower.transform;
-			targetTower = nearestTower.GetComponent<Turret>();
-		} else
-		{
-			target = null;
+				AttackingTurretHP(targetTurret);
+			}	
 		}
 	}
-	void TowerAoE (int spellNumber)
+	void AttackingTurretHP(Turret targetTurret)
 	{
-		//Debug.Log("I'm shooting an emeny!");
-		casting = true;
-		Collider[] colliders = Physics.OverlapSphere(transform.position, range);
-		foreach (Collider collider in colliders)
-		{
-			if (collider.tag == "Tower")
-			{
-				TowerAoECast(collider.transform, spellNumber);
-			}
-		}
-		//Vector3 dir = firePoint.position - target.position;
-		colliders = null;
-	}
-	void TowerAoECast (Transform tower, int castingSpell)
-	{
-		Turret t = tower.GetComponent<Turret>();
-		//Debug.Log("Enemy targeted - " + e + " .");
-		switch(castingSpell)
-		{
-			default :
-				break;
-			case 0:
-				t.DebuffSpeed(debuffSpeed, countdownDebuffSpeed);
-				break;
-			case 1:
-				GameObject effectIns = (GameObject)Instantiate(attackTowerEffect, tower.transform.position, transform.rotation);
-				Destroy(effectIns, 1.5f);
-				t.AttackTowerHP(attackTowerDmg);
-				break;
-			case 2:
-				
-				break;
-			case 3:
-				
-				break;
-		}
-		
+		targetTurret.dots.DotEffect(attackTurretHP, attackTurretHPTime, attackTurretHPDMG);
+		GameObject effectIns = Instantiate(attackTurretHPEffect, targetTurret.transform.position, transform.rotation);
+		Destroy(effectIns, 1.5f);	
+		// Debug.Log("Turret attacking = " + targetTurret);
 	}
 	void OnDrawGizmosSelected ()
 	{

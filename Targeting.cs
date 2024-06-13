@@ -6,7 +6,7 @@ public class Targeting : MonoBehaviour
 {
     private string enemyTag = "Enemy";
 	private string baseTag = "Base";
-	private string towerTag = "Tower";
+	private string turretTag = "Turret";
 
 	private EnemySpells e;
 	private Bullet b;
@@ -145,7 +145,7 @@ public class Targeting : MonoBehaviour
 		}
 		enemies = null;
 	}
-	void TargetBase(float range)
+	public void TargetBase(float range)
 	{
 		GameObject[] homeBases = GameObject.FindGameObjectsWithTag(baseTag);
 		float shortestDistance = Mathf.Infinity;
@@ -171,9 +171,9 @@ public class Targeting : MonoBehaviour
 		GiveBackBase();
 		homeBases = null;
 	}
-	void TargetTower(float range)
+	public void TargetTurret(float range)
 	{
-		GameObject[] turrets = GameObject.FindGameObjectsWithTag(towerTag);
+		GameObject[] turrets = GameObject.FindGameObjectsWithTag(turretTag);
 		float shortestDistance = Mathf.Infinity;
 		GameObject nearestTurret = null;
 		foreach (GameObject turret in turrets)
@@ -199,6 +199,38 @@ public class Targeting : MonoBehaviour
 		}
 		GiveBackTurret();
 		turrets = null;
+	}
+	public void TargetAoEEnemy(float range)
+	{
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
+		foreach (GameObject enemy in enemies)
+		{
+			if (enemy == gameObject) continue;
+
+			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+			if (distanceToEnemy < range)
+			{
+				Enemy targetEnemy = enemy.GetComponent<Enemy>();
+				e.enemyList.Add(targetEnemy);
+				// Debug.Log("I'm targeting - " + targetEnemy);
+			}
+		}
+	}
+	public void TargetAoETurret(float range)
+	{
+		GameObject[] turrets = GameObject.FindGameObjectsWithTag(turretTag);
+		foreach (GameObject turret in turrets)
+		{
+			if (turret == gameObject) continue;
+
+			float distanceToTurret = Vector3.Distance(transform.position, turret.transform.position);
+			if (distanceToTurret < range)
+			{
+				Turret targetTurret = turret.GetComponent<Turret>();
+				e.turretList.Add(targetTurret);
+				Debug.Log("I'm targeting - " + targetTurret);
+			}
+		}
 	}
 	void GiveBackEnemy(Transform target)
 	{

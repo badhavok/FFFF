@@ -41,9 +41,9 @@ public class EnemyBuffs : MonoBehaviour
         // Debug.Log("sTimer is - " + sTimer);
         while(sTimer > 0)
         {
-            if(timer > 0)
+            if(sTimer > 0)
             {
-                timer--;
+                sTimer--;
             }
             if(enemy.slashDef < (enemy.enemyStats.startSlashDef + sBonus))
             {
@@ -54,16 +54,16 @@ public class EnemyBuffs : MonoBehaviour
             yield return new WaitForSeconds(1f); 
         }
         enemy.slashDef = enemy.enemyStats.startSlashDef;
-        // Debug.Log("Buff Slash over");
+        // Debug.Log("Buff Slash over - " + enemy.slashDef);
     }
     public IEnumerator BuffBlunt(float bTimer, float bBonus)
     {
         // Debug.Log("bTimer is - " + bTimer);
         while(bTimer > 0)
         {
-            if(timer > 0)
+            if(bTimer > 0)
             {
-                timer--;
+                bTimer--;
             }
             if(enemy.bluntDef < (enemy.enemyStats.startBluntDef + bBonus))
             {
@@ -79,9 +79,9 @@ public class EnemyBuffs : MonoBehaviour
         // Debug.Log("pTimer is - " + pTimer);
         while(pTimer > 0)
         {
-            if(timer > 0)
+            if(pTimer > 0)
             {
-                timer--;
+                pTimer--;
             }
             if(enemy.pierceDef < (enemy.enemyStats.startPierceDef + pBonus))
             {
@@ -97,9 +97,9 @@ public class EnemyBuffs : MonoBehaviour
         // Debug.Log("mTimer is - " + mTimer);
         while(mTimer > 0)
         {
-            if(timer > 0)
+            if(mTimer > 0)
             {
-                timer--;
+                mTimer--;
             }
             if(enemy.magDef < (enemy.enemyStats.startMagDef + mBonus))
             {
@@ -117,15 +117,16 @@ public class EnemyBuffs : MonoBehaviour
         {
             if(enemy.stopEnemy || enemy.slowEnemy)
             {
+                Debug.Log("The enemy was slower, now returned to normal");
                 enemy.speed = enemy.startSpeed;
                 enemy.stopEnemy = false;
                 enemy.slowEnemy = false;
                 yield break;
             }
             enemy.speedEnemy = true;
-            if(timer > 0)
+            if(sTimer > 0)
             {
-                timer--;
+                sTimer--;
             }
             enemy.speed = enemy.startSpeed + sBonus;
 
@@ -134,6 +135,6 @@ public class EnemyBuffs : MonoBehaviour
         }
         enemy.speed = enemy.startSpeed;
         enemy.speedEnemy = false;
-        // Debug.Log("Buff Slash over");
+        // Debug.Log("Buff Speed over");
     }
 }

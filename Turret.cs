@@ -8,6 +8,7 @@ public class Turret : MonoBehaviour {
 	public AudioClip[] audioClipArray;
 
 	public Targeting targeting;
+	public TurretDots dots;
 	public Transform target;
 	public Enemy targetEnemy;
 	public Turret targetTurret;
@@ -19,7 +20,7 @@ public class Turret : MonoBehaviour {
 
 	private string enemyTag = "Enemy";
 	private string baseTag = "Base";
-	private string towerTag = "Tower";
+	private string turretTag = "Turret";
 
 	public Transform partToRotate;
 	public float turnSpeed = 10f;
@@ -59,7 +60,7 @@ public class Turret : MonoBehaviour {
 	public bool useBullets = false;
 	public GameObject bulletPrefab;
 	public float fireRate; 
-	private float startFireRate;
+	public float startFireRate;
 	private float fireCountdown = 0f;
 	private bool doShoot, canFire = false;
 
@@ -128,6 +129,8 @@ public class Turret : MonoBehaviour {
 		cam = CameraController.PlayerCam;
 		anim = gameObject.GetComponentInChildren<Animator>();
 		targeting = gameObject.GetComponent<Targeting>();
+		dots = gameObject.GetComponent<TurretDots>();
+
 		startFireRate = fireRate;
 		audioSource.clip = audioClipArray[0];
 		if(isUpgradedByNode)
@@ -200,24 +203,24 @@ public class Turret : MonoBehaviour {
 				//Debug.Log("Weeeee... again please!");
 			}
 		}
-		if (debuffSpeedTower & !buffSpeedTower)
-		{
-			//Debug.Log("Tower speed loop + " + debuffSpeed + " .");
-			debuffAtkSpdUI.SetActive(true);
-			if(debuffSpeedTrigger)
-			{
-				fireRate = fireRate / debuffSpeed;
-				debuffSpeedTrigger = false;
-			}
-			countdownDebuffSpeed -= Time.deltaTime;
-			if (countdownDebuffSpeed <= 0)
-			{
-				debuffSpeedTower = false;
-				fireRate = startFireRate;
-				debuffAtkSpdUI.SetActive(false);
-				//Debug.Log("Weeeee... again please!");
-			}
-		}
+		// if (debuffSpeedTower & !buffSpeedTower)
+		// {
+		// 	//Debug.Log("Tower speed loop + " + debuffSpeed + " .");
+		// 	debuffAtkSpdUI.SetActive(true);
+		// 	if(debuffSpeedTrigger)
+		// 	{
+		// 		fireRate = fireRate / debuffSpeed;
+		// 		debuffSpeedTrigger = false;
+		// 	}
+		// 	countdownDebuffSpeed -= Time.deltaTime;
+		// 	if (countdownDebuffSpeed <= 0)
+		// 	{
+		// 		debuffSpeedTower = false;
+		// 		fireRate = startFireRate;
+		// 		debuffAtkSpdUI.SetActive(false);
+		// 		//Debug.Log("Weeeee... again please!");
+		// 	}
+		// }
 		
 		if(nearestEnemy)
 		{
@@ -234,8 +237,8 @@ public class Turret : MonoBehaviour {
         }
         if (closestToEnd)
 		{
-			// targeting.ClosestToEndTarget(range);
-			ClosestToEndTarget();
+			targeting.ClosestToEndTarget(range);
+			// ClosestToEndTarget();
 		}
 		if (healBase)
 		{
@@ -405,62 +408,9 @@ public class Turret : MonoBehaviour {
 		healBase = true;
 		closestToEnd = false;
 	}
-	//Which function am I going to use for enemy detection
-	// void NearestTarget ()
-	// {
-	// 	GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
-	// 	float shortestDistance = Mathf.Infinity;
-	// 	GameObject nearestEnemy = null;
-	// 	foreach (GameObject enemy in enemies)
-	// 	{
-	// 		float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-	// 		if (distanceToEnemy < shortestDistance)
-	// 		{
-	// 			shortestDistance = distanceToEnemy;
-	// 			nearestEnemy = enemy;
-	// 		}
-	// 	}
 
-	// 	if (nearestEnemy != null && shortestDistance <= range)
-	// 	{
-	// 		target = nearestEnemy.transform;
-	// 		targetEnemy = nearestEnemy.GetComponent<Enemy>();
-	// 	} else
-	// 	{
-	// 		target = null;
-	// 	}
-	// 	enemies = null;
-	// }
-	// //detects target literally furthest from tower (doesn't matter if enemy is closer to start OR finish)
-	// void FurthestTarget ()
 	// {
-	// 	GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
-	// 	float furthestDistance = Mathf.Infinity;
-	// 	GameObject furthestEnemy = null;
-	// 	foreach (GameObject enemy in enemies)
-	// 	{
-	// 		float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-	// 		if (distanceToEnemy <= range)
-	// 		{
-	// 			furthestDistance = distanceToEnemy;
-	// 			furthestEnemy = enemy;
-	// 		}
-	// 	}
-
-	// 	if (furthestEnemy != null && furthestDistance <= range)
-	// 	{
-	// 		target = furthestEnemy.transform;
-	// 		targetEnemy = furthestEnemy.GetComponent<Enemy>();
-	// 	} else
-	// 	{
-	// 		target = null;
-	// 	}
-	// 	enemies = null;
-	// }
-	// //Detects the enemy closes to the Start
-	// void ClosestToStartTarget ()
-	// {
-
+	// 	//Debug.Log("I'm trying to target");
 	// 	GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
 	// 	float closestToEnd = Mathf.Infinity;
 	// 	GameObject closestToEndEnemy = null;
@@ -468,64 +418,36 @@ public class Turret : MonoBehaviour {
 	// 	{
 	// 		float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
 
+	// 		Enemy pathRemaining = enemy.GetComponent<Enemy>();
+	// 		pathRemain = pathRemaining.remainingPathDist;
+
 	// 		if (distanceToEnemy <= range)
 	// 		{
-	// 			closestToEnd = distanceToEnemy;
-	// 			closestToEndEnemy = enemy;
+	// 			if (pathRemain <= pathCompare)
+	// 			{
+	// 				//Debug.Log("I'm in the path loop.  Remain = " + pathRemain + ".  Compare = " + pathCompare);
+	// 				pathCompare = pathRemain;
+	// 				closestToEnd = distanceToEnemy;
+	// 				closestToEndEnemy = enemy;
+	// 			}
 	// 		}
 	// 	}
-
 	// 	if (closestToEndEnemy != null && closestToEnd <= range)
 	// 	{
+	// 		Debug.Log("I'm targetting");
 	// 		target = closestToEndEnemy.transform;
 	// 		targetEnemy = closestToEndEnemy.GetComponent<Enemy>();
-	// 	} else
+	// 	}
+	// 	else
 	// 	{
+	// 		//Debug.Log("Clearing out");
 	// 		target = null;
+	// 		pathCompare = 10000;
+	// 		pathRemain = 10000;
 	// 	}
 	// 	enemies = null;
 	// }
-	// //Detects the enemy closest to the finish
-	void ClosestToEndTarget ()
-	{
-		//Debug.Log("I'm trying to target");
-		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
-		float closestToEnd = Mathf.Infinity;
-		GameObject closestToEndEnemy = null;
-		foreach (GameObject enemy in enemies)
-		{
-			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-
-			Enemy pathRemaining = enemy.GetComponent<Enemy>();
-			pathRemain = pathRemaining.remainingPathDist;
-
-			if (distanceToEnemy <= range)
-			{
-				if (pathRemain <= pathCompare)
-				{
-					//Debug.Log("I'm in the path loop.  Remain = " + pathRemain + ".  Compare = " + pathCompare);
-					pathCompare = pathRemain;
-					closestToEnd = distanceToEnemy;
-					closestToEndEnemy = enemy;
-				}
-			}
-		}
-		if (closestToEndEnemy != null && closestToEnd <= range)
-		{
-			Debug.Log("I'm targetting");
-			target = closestToEndEnemy.transform;
-			targetEnemy = closestToEndEnemy.GetComponent<Enemy>();
-		}
-		else
-		{
-			//Debug.Log("Clearing out");
-			target = null;
-			pathCompare = 10000;
-			pathRemain = 10000;
-		}
-		enemies = null;
-	}
-	//Target the base to heal it and recover "lives"
+	// //Target the base to heal it and recover "lives"
 	void HealingBase ()
 	{
 		GameObject[] enemies = GameObject.FindGameObjectsWithTag(baseTag);
@@ -554,7 +476,7 @@ public class Turret : MonoBehaviour {
 	}
 	void HealingTurret ()
 	{
-		GameObject[] enemies = GameObject.FindGameObjectsWithTag(towerTag);
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag(turretTag);
 		float shortestDistance = Mathf.Infinity;
 		GameObject nearestEnemy = null;
 		foreach (GameObject enemy in enemies)
@@ -593,19 +515,19 @@ public class Turret : MonoBehaviour {
 		buffSpeed = bSpd;
 		countdownBuffSpeed = bCountdown;
 	}
-	public void DebuffSpeed (float dBSpd, float dBCountdown)
-	{
-		//Debug.Log("I'm in the speed loop");
-		debuffSpeedTower = true;
-		debuffSpeedTrigger = true;
-		debuffSpeed = dBSpd;
-		countdownDebuffSpeed = dBCountdown;
-	}
-	public void AttackTowerHP (float atkDmg)
-	{
-		//Debug.Log("I'm in the speed loop");
-		healthPoints -= atkDmg;
-	}
+	// public void DebuffSpeed (float dBSpd, float dBCountdown)
+	// {
+	// 	//Debug.Log("I'm in the speed loop");
+	// 	debuffSpeedTower = true;
+	// 	debuffSpeedTrigger = true;
+	// 	debuffSpeed = dBSpd;
+	// 	countdownDebuffSpeed = dBCountdown;
+	// }
+	// public void AttackTowerHP (float atkDmg)
+	// {
+	// 	//Debug.Log("I'm in the speed loop");
+	// 	healthPoints -= atkDmg;
+	// }
 	//Update is called once per frame
 	void LockOnTarget ()
 	{
