@@ -11,7 +11,7 @@ public class EnemyBuffs : MonoBehaviour
     {
         enemy = GetComponent<Enemy>();
     }
-    public void BuffEffect(string spell, float timer, int bonus)
+    public void BuffEffect(string spell, float timer, float bonus)
     {
         switch (spell)
         {
@@ -27,15 +27,18 @@ public class EnemyBuffs : MonoBehaviour
             case "BuffMag":
                 StartCoroutine(BuffMag(timer, bonus));
             return;
+            case "SpeedBuff":
+                StartCoroutine(SpeedBuff(timer, bonus));
+            return;
 
             default:
 
             return;
         }
     }
-    public IEnumerator BuffSlash(float sTimer, int sBonus)
+    public IEnumerator BuffSlash(float sTimer, float sBonus)
     {
-        Debug.Log("sTimer is - " + sTimer);
+        // Debug.Log("sTimer is - " + sTimer);
         while(sTimer > 0)
         {
             if(timer > 0)
@@ -47,15 +50,15 @@ public class EnemyBuffs : MonoBehaviour
                 enemy.slashDef = enemy.slashDef + sBonus;
 
             }
-            Debug.Log("Slash def = " + enemy.slashDef);
+            // Debug.Log("Slash def = " + enemy.slashDef);
             yield return new WaitForSeconds(1f); 
         }
         enemy.slashDef = enemy.enemyStats.startSlashDef;
-        Debug.Log("Buff Slash over");
+        // Debug.Log("Buff Slash over");
     }
-    public IEnumerator BuffBlunt(float bTimer, int bBonus)
+    public IEnumerator BuffBlunt(float bTimer, float bBonus)
     {
-        Debug.Log("bTimer is - " + bTimer);
+        // Debug.Log("bTimer is - " + bTimer);
         while(bTimer > 0)
         {
             if(timer > 0)
@@ -69,11 +72,11 @@ public class EnemyBuffs : MonoBehaviour
             yield return new WaitForSeconds(1f); 
         }
         enemy.bluntDef = enemy.enemyStats.startBluntDef;
-        Debug.Log("Buff Blunt over");
+        // Debug.Log("Buff Blunt over");
     }
-    public IEnumerator BuffPierce(float pTimer, int pBonus)
+    public IEnumerator BuffPierce(float pTimer, float pBonus)
     {
-        Debug.Log("pTimer is - " + pTimer);
+        // Debug.Log("pTimer is - " + pTimer);
         while(pTimer > 0)
         {
             if(timer > 0)
@@ -87,11 +90,11 @@ public class EnemyBuffs : MonoBehaviour
             yield return new WaitForSeconds(1f); 
         }
         enemy.pierceDef = enemy.enemyStats.startPierceDef;
-        Debug.Log("Buff Pierce over");
+        // Debug.Log("Buff Pierce over");
     }
-    public IEnumerator BuffMag(float mTimer, int mBonus)
+    public IEnumerator BuffMag(float mTimer, float mBonus)
     {
-        Debug.Log("mTimer is - " + mTimer);
+        // Debug.Log("mTimer is - " + mTimer);
         while(mTimer > 0)
         {
             if(timer > 0)
@@ -105,7 +108,32 @@ public class EnemyBuffs : MonoBehaviour
             yield return new WaitForSeconds(1f); 
         }
         enemy.magDef = enemy.enemyStats.startMagDef;
-        Debug.Log("Buff Mag over");
+        // Debug.Log("Buff Mag over");
     }
-    
+    public IEnumerator SpeedBuff(float sTimer, float sBonus)
+    {
+        // Debug.Log("sTimer is - " + sTimer);
+        while(sTimer > 0)
+        {
+            if(enemy.stopEnemy || enemy.slowEnemy)
+            {
+                enemy.speed = enemy.startSpeed;
+                enemy.stopEnemy = false;
+                enemy.slowEnemy = false;
+                yield break;
+            }
+            enemy.speedEnemy = true;
+            if(timer > 0)
+            {
+                timer--;
+            }
+            enemy.speed = enemy.startSpeed + sBonus;
+
+            // Debug.Log("Speed = " + enemy.speed);
+            yield return new WaitForSeconds(1f); 
+        }
+        enemy.speed = enemy.startSpeed;
+        enemy.speedEnemy = false;
+        // Debug.Log("Buff Slash over");
+    }
 }

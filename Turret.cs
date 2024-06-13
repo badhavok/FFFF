@@ -6,10 +6,12 @@ public class Turret : MonoBehaviour {
 
 	public AudioSource audioSource;
 	public AudioClip[] audioClipArray;
-	private Transform target;
-	private Enemy targetEnemy;
-	private Turret targetTurret;
-	private Turret targetedTurret;
+
+	public Targeting targeting;
+	public Transform target;
+	public Enemy targetEnemy;
+	public Turret targetTurret;
+	public Turret targetedTurret;
 
 	//Most of the below settings are self explanitory
 
@@ -34,8 +36,8 @@ public class Turret : MonoBehaviour {
 	public GameObject debuffAtkSpdUI;
 
 	[Header("General")]
-	public int startHealthPoints = 4;
-	public int healthPoints;
+	public float startHealthPoints = 4;
+	public float healthPoints;
 	public GameObject healthUI;
 	public Text healthText;
 
@@ -125,6 +127,7 @@ public class Turret : MonoBehaviour {
 
 		cam = CameraController.PlayerCam;
 		anim = gameObject.GetComponentInChildren<Animator>();
+		targeting = gameObject.GetComponent<Targeting>();
 		startFireRate = fireRate;
 		audioSource.clip = audioClipArray[0];
 		if(isUpgradedByNode)
@@ -219,18 +222,19 @@ public class Turret : MonoBehaviour {
 		if(nearestEnemy)
 		{
 			//Debug.Log("I'm looking for the target");
-			NearestTarget();
+			targeting.TargetEnemy(range);
 		}
 		if(furthestEnemy)
 		{
-            FurthestTarget();
+            targeting.FurthestTarget(range);
 		}
         if (closestToStart)
         {
-            ClosestToStartTarget();
+            targeting.ClosestToStartTarget(range);
         }
         if (closestToEnd)
 		{
+			// targeting.ClosestToEndTarget(range);
 			ClosestToEndTarget();
 		}
 		if (healBase)
@@ -349,10 +353,13 @@ public class Turret : MonoBehaviour {
 				
 				if (doShoot == true)
 				{
-				Shoot();
-				doShoot = false;
+					Shoot();	
+					Debug.Log("I've shot at " + target);
+					doShoot = false;
 				}
+				animCooldown = 0.5f;
 			}
+
 			fireCountdown -= Time.deltaTime;
 			animCooldown -= Time.deltaTime;
 		}
@@ -399,86 +406,86 @@ public class Turret : MonoBehaviour {
 		closestToEnd = false;
 	}
 	//Which function am I going to use for enemy detection
-	void NearestTarget ()
-	{
-		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
-		float shortestDistance = Mathf.Infinity;
-		GameObject nearestEnemy = null;
-		foreach (GameObject enemy in enemies)
-		{
-			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-			if (distanceToEnemy < shortestDistance)
-			{
-				shortestDistance = distanceToEnemy;
-				nearestEnemy = enemy;
-			}
-		}
+	// void NearestTarget ()
+	// {
+	// 	GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
+	// 	float shortestDistance = Mathf.Infinity;
+	// 	GameObject nearestEnemy = null;
+	// 	foreach (GameObject enemy in enemies)
+	// 	{
+	// 		float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+	// 		if (distanceToEnemy < shortestDistance)
+	// 		{
+	// 			shortestDistance = distanceToEnemy;
+	// 			nearestEnemy = enemy;
+	// 		}
+	// 	}
 
-		if (nearestEnemy != null && shortestDistance <= range)
-		{
-			target = nearestEnemy.transform;
-			targetEnemy = nearestEnemy.GetComponent<Enemy>();
-		} else
-		{
-			target = null;
-		}
-		enemies = null;
-	}
-	//detects target literally furthest from tower (doesn't matter if enemy is closer to start OR finish)
-	void FurthestTarget ()
-	{
-		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
-		float furthestDistance = Mathf.Infinity;
-		GameObject furthestEnemy = null;
-		foreach (GameObject enemy in enemies)
-		{
-			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-			if (distanceToEnemy <= range)
-			{
-				furthestDistance = distanceToEnemy;
-				furthestEnemy = enemy;
-			}
-		}
+	// 	if (nearestEnemy != null && shortestDistance <= range)
+	// 	{
+	// 		target = nearestEnemy.transform;
+	// 		targetEnemy = nearestEnemy.GetComponent<Enemy>();
+	// 	} else
+	// 	{
+	// 		target = null;
+	// 	}
+	// 	enemies = null;
+	// }
+	// //detects target literally furthest from tower (doesn't matter if enemy is closer to start OR finish)
+	// void FurthestTarget ()
+	// {
+	// 	GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
+	// 	float furthestDistance = Mathf.Infinity;
+	// 	GameObject furthestEnemy = null;
+	// 	foreach (GameObject enemy in enemies)
+	// 	{
+	// 		float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+	// 		if (distanceToEnemy <= range)
+	// 		{
+	// 			furthestDistance = distanceToEnemy;
+	// 			furthestEnemy = enemy;
+	// 		}
+	// 	}
 
-		if (furthestEnemy != null && furthestDistance <= range)
-		{
-			target = furthestEnemy.transform;
-			targetEnemy = furthestEnemy.GetComponent<Enemy>();
-		} else
-		{
-			target = null;
-		}
-		enemies = null;
-	}
-	//Detects the enemy closes to the Start
-	void ClosestToStartTarget ()
-	{
+	// 	if (furthestEnemy != null && furthestDistance <= range)
+	// 	{
+	// 		target = furthestEnemy.transform;
+	// 		targetEnemy = furthestEnemy.GetComponent<Enemy>();
+	// 	} else
+	// 	{
+	// 		target = null;
+	// 	}
+	// 	enemies = null;
+	// }
+	// //Detects the enemy closes to the Start
+	// void ClosestToStartTarget ()
+	// {
 
-		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
-		float closestToEnd = Mathf.Infinity;
-		GameObject closestToEndEnemy = null;
-		foreach (GameObject enemy in enemies)
-		{
-			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+	// 	GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
+	// 	float closestToEnd = Mathf.Infinity;
+	// 	GameObject closestToEndEnemy = null;
+	// 	foreach (GameObject enemy in enemies)
+	// 	{
+	// 		float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
 
-			if (distanceToEnemy <= range)
-			{
-				closestToEnd = distanceToEnemy;
-				closestToEndEnemy = enemy;
-			}
-		}
+	// 		if (distanceToEnemy <= range)
+	// 		{
+	// 			closestToEnd = distanceToEnemy;
+	// 			closestToEndEnemy = enemy;
+	// 		}
+	// 	}
 
-		if (closestToEndEnemy != null && closestToEnd <= range)
-		{
-			target = closestToEndEnemy.transform;
-			targetEnemy = closestToEndEnemy.GetComponent<Enemy>();
-		} else
-		{
-			target = null;
-		}
-		enemies = null;
-	}
-	//Detects the enemy closest to the finish
+	// 	if (closestToEndEnemy != null && closestToEnd <= range)
+	// 	{
+	// 		target = closestToEndEnemy.transform;
+	// 		targetEnemy = closestToEndEnemy.GetComponent<Enemy>();
+	// 	} else
+	// 	{
+	// 		target = null;
+	// 	}
+	// 	enemies = null;
+	// }
+	// //Detects the enemy closest to the finish
 	void ClosestToEndTarget ()
 	{
 		//Debug.Log("I'm trying to target");
@@ -505,7 +512,7 @@ public class Turret : MonoBehaviour {
 		}
 		if (closestToEndEnemy != null && closestToEnd <= range)
 		{
-			//Debug.Log("I'm targetting");
+			Debug.Log("I'm targetting");
 			target = closestToEndEnemy.transform;
 			targetEnemy = closestToEndEnemy.GetComponent<Enemy>();
 		}
@@ -594,7 +601,7 @@ public class Turret : MonoBehaviour {
 		debuffSpeed = dBSpd;
 		countdownDebuffSpeed = dBCountdown;
 	}
-	public void AttackTowerHP (int atkDmg)
+	public void AttackTowerHP (float atkDmg)
 	{
 		//Debug.Log("I'm in the speed loop");
 		healthPoints -= atkDmg;

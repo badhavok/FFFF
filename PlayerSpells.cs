@@ -327,11 +327,11 @@ public class PlayerSpells : MonoBehaviour {
 		Debug.Log("Yay no bosses... I'm in AoEDamage");
 		if(castEMP)
 		{
-			e.Stop(stopTime);
+			// e.Stop(stopTime);
 		}
 		if(castFear)
 		{
-			e.Fear(fearTime);
+			// e.Fear(fearTime);
 		}
 		if(castChicken)
 		{

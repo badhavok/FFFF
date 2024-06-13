@@ -18,23 +18,33 @@ public class EnemyDots : MonoBehaviour
             case "Silence":
                 StartCoroutine(Silence(timer));
             return;
-            
             case "Slow":
-                StartCoroutine(Slow(timer, damage));
+                StartCoroutine(Slow(timer, damage));    
             return;
-
             case "Stop":
-                StartCoroutine(Stop(timer, damage));
+                StartCoroutine(Stop(timer));
             return;
-
+            case "Fear":
+                StartCoroutine(Fear(timer));
+            return;
+            case "DeBuffSlash":
+                StartCoroutine(DeBuffSlash(timer, damage));
+            return;
+            case "DeBuffBlunt":
+                StartCoroutine(DeBuffBlunt(timer, damage));
+            return;
+            case "DeBuffPierce":
+                StartCoroutine(DeBuffPierce(timer, damage));
+            return;
+            case "DeBuffMag":
+                StartCoroutine(DeBuffMag(timer, damage));
+            return;
             case "Poison":
                 StartCoroutine(Poison(timer, damage));
             return;
-
             case "Burn":
                 StartCoroutine(Burn(timer, damage));
             return;
-
             // case "Shock":
             //     StartCoroutine(Shock(timer, damage));
             // return;
@@ -63,7 +73,7 @@ public class EnemyDots : MonoBehaviour
     }
     public IEnumerator Silence(float sTimer)
     {
-        Debug.Log("sTimer is - " + sTimer);
+        // Debug.Log("sTimer is - " + sTimer);
         while(sTimer > 0)
         {
             for(int i = 0; i < sTimer; i++)
@@ -71,55 +81,171 @@ public class EnemyDots : MonoBehaviour
                 sTimer--;
             }
             enemy.silence = true;
-            Debug.Log("Silenced");
+            // Debug.Log("Silenced");
             yield return new WaitForSeconds(1f); 
         }
         enemy.silence = false;
     }
     public IEnumerator Slow(float sTimer, float sAmount)
     {
-        Debug.Log("sTimer is - " + sTimer);
+        // Debug.Log("sTimer is - " + sTimer);
         while(sTimer > 0)
         {
+            if(enemy.stopEnemy)
+            {
+                yield break;
+            }
+            if(enemy.speedEnemy)
+            {
+                enemy.speed = enemy.startSpeed;
+                enemy.speedEnemy = false;
+                yield break;
+            }
+            enemy.slowEnemy = true;
             for(int i = 0; i < sTimer; i++)
             {
                 sTimer--;
             }
-            enemy.slowEnemy = true;
             if(enemy.speed > (enemy.startSpeed * (1f - sAmount)))
             {
                 enemy.speed = enemy.startSpeed * (1f - sAmount);
             }
-            Debug.Log("Slowed");
+            // Debug.Log("Slowed");
             yield return new WaitForSeconds(1f); 
         }
         enemy.slowEnemy = false;
         enemy.speed = enemy.startSpeed;
     }
-    public IEnumerator Stop(float sTimer, float sAmount)
+    public IEnumerator Stop(float sTimer)
     {
-        Debug.Log("sTimer is - " + sTimer);
+        // Debug.Log("sTimer is - " + sTimer);
         Silence(sTimer);
         while(sTimer > 0)
         {
+            if(enemy.speedEnemy)
+            {
+                enemy.speed = enemy.startSpeed;
+                enemy.speedEnemy = false;
+                yield break;
+            }
+            enemy.stopEnemy = true;
             for(int i = 0; i < sTimer; i++)
             {
                 sTimer--;
             }
-            enemy.stopEnemy = true;
             if(enemy.speed > 0)
             {
                 enemy.speed = 0f    ;
             }
-            Debug.Log("Stopped");
+            // Debug.Log("Stopped");
             yield return new WaitForSeconds(1f); 
         }
         enemy.stopEnemy = false;
         enemy.speed = enemy.startSpeed;
     }
+    public IEnumerator Fear(float fTimer)
+    {
+        // Debug.Log("fTimer is - " + fTimer);
+        Silence(fTimer);
+        while(fTimer > 0)
+        {
+            if(enemy.speedEnemy)
+            {
+                enemy.speed = enemy.startSpeed;
+                enemy.speedEnemy = false;
+                yield break;
+            }
+            enemy.fearEnemy = true;
+            for(int i = 0; i < fTimer; i++)
+            {
+                fTimer--;
+            }
+            if(enemy.speed > 0)
+            {
+                enemy.speed = 0f    ;
+            }
+            // Debug.Log("Feared");
+            yield return new WaitForSeconds(1f); 
+        }
+        enemy.fearEnemy = false;
+    }
+    public IEnumerator DeBuffSlash(float sTimer, float sMinus)
+    {
+        // Debug.Log("sTimer is - " + sTimer);
+        while(sTimer > 0)
+        {
+            if(timer > 0)
+            {
+                timer--;
+            }
+            if(enemy.slashDef > (enemy.enemyStats.startSlashDef + sMinus))
+            {
+                enemy.slashDef = enemy.slashDef + sMinus;
+
+            }
+            // Debug.Log("Slash def = " + enemy.slashDef);
+            yield return new WaitForSeconds(1f); 
+        }
+        enemy.slashDef = enemy.enemyStats.startSlashDef;
+        // Debug.Log("debuff Slash over");
+    }
+    public IEnumerator DeBuffBlunt(float bTimer, float bMinus)
+    {
+        // Debug.Log("bTimer is - " + bTimer);
+        while(bTimer > 0)
+        {
+            if(timer > 0)
+            {
+                timer--;
+            }
+            if(enemy.bluntDef > (enemy.enemyStats.startBluntDef + bMinus))
+            {
+                enemy.bluntDef = enemy.bluntDef + bMinus;
+            }
+            yield return new WaitForSeconds(1f); 
+        }
+        enemy.bluntDef = enemy.enemyStats.startBluntDef;
+        // Debug.Log("debuff Blunt over");
+    }
+    public IEnumerator DeBuffPierce(float pTimer, float pMinus)
+    {
+        // Debug.Log("pTimer is - " + pTimer);
+        while(pTimer > 0)
+        {
+            if(timer > 0)
+            {
+                timer--;
+            }
+            if(enemy.pierceDef > (enemy.enemyStats.startPierceDef + pMinus))
+            {
+                enemy.pierceDef = enemy.pierceDef + pMinus;
+            }
+            yield return new WaitForSeconds(1f); 
+        }
+        enemy.pierceDef = enemy.enemyStats.startPierceDef;
+        // Debug.Log("debuff Pierce over");
+    }
+    public IEnumerator DeBuffMag(float mTimer, float mMinus)
+    {
+        // Debug.Log("mTimer is - " + mTimer);
+        while(mTimer > 0)
+        {
+            if(timer > 0)
+            {
+                timer--;
+            }
+            if(enemy.magDef > (enemy.enemyStats.startMagDef + mMinus))
+            {
+                enemy.magDef = enemy.magDef + mMinus;
+            }
+            yield return new WaitForSeconds(1f); 
+        }
+        enemy.magDef = enemy.enemyStats.startMagDef;
+        // Debug.Log("debuff Mag over");
+    }
     public IEnumerator Poison(float pTimer, float pDamage)
     {
-        Debug.Log("pTimer is - " + pTimer);
+        // Debug.Log("pTimer is - " + pTimer);
         while(pTimer > 0)
         {
             for(int i = 0; i < pTimer; i++)
@@ -133,7 +259,7 @@ public class EnemyDots : MonoBehaviour
     }
     public IEnumerator Burn(float bTimer, float bDamage)
     {
-        Debug.Log("bTimer is - " + bTimer);
+        // Debug.Log("bTimer is - " + bTimer);
         while(bTimer > 0)
         {
             for(int i = 0; i < bTimer; i++)
@@ -147,7 +273,7 @@ public class EnemyDots : MonoBehaviour
     }
     public IEnumerator Freeze(float fTimer, float fDamage)
     {
-        Debug.Log("fTimer is - " + fTimer);
+        // Debug.Log("fTimer is - " + fTimer);
         while(fTimer > 0)
         {
             for(int i = 0; i < fTimer; i++)

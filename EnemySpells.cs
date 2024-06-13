@@ -8,11 +8,12 @@ public class EnemySpells : MonoBehaviour {
 
 	private Enemy enemy;
 	private EnemyBuffs b;
+	private Targeting targeting;
 	private Turret tower;
 
-	private Transform target;
-	private Enemy targetEnemy;
-	private Turret targetTower;
+	public Transform target;
+	public Enemy targetEnemy;
+	public Turret targetTower;
 	public float range = 0;
 	public string enemyTag = "Enemy";
 	public string towerTag = "Tower";
@@ -52,21 +53,23 @@ public class EnemySpells : MonoBehaviour {
 
 	//This makes the enemy move faster
 	public bool buffSpeed = false;
-	public float bonusSpeed, countdownSpeed, speedCount = 0;
+	public float bonusSpeed = 0;
+	public float countdownSpeed, speedCount = 0;
+	private string speedBuff = "SpeedBuff";
 	public bool buffDefences = false;
 	private string buffSlash = "BuffSlash";
 	private string buffBlunt = "BuffBlunt";
 	private string buffPierce = "BuffPierce";
 	private string buffMag = "BuffMag";
 
-	public int buffDefSlash, buffDefBlunt, buffDefPierce, buffDefMag;
+	public float buffDefSlash, buffDefBlunt, buffDefPierce, buffDefMag;
 [HideInInspector] public float buffDefCount;
 	public float countdownBuffDef = 0;
 	
 	public bool debuffTowerSpeed = false;
 	public float debuffSpeed, countdownDebuffSpeed, debuffSpeedCount = 0;
 	public bool attackTowerHP = false;
-	public int attackTowerDmg = 0;
+	public float attackTowerDmg = 0;
 	public float countdownAttackTower, attackTowerHPCount = 0;
 	public GameObject attackTowerEffect;
 	//This makes an enemy duplicate itself (weaker than summon as it detects current HP as well)
@@ -103,6 +106,7 @@ public class EnemySpells : MonoBehaviour {
 	{
 		enemy = GetComponent<Enemy>();
 		b = GetComponent<EnemyBuffs>();
+		targeting = GetComponent<Targeting>();
 		anim = gameObject.GetComponentInChildren<Animator>();
 		//casting = gameObject.GetComponentsInChildren<ParticleSystem>();
 		//Sets the variables used by the counters
@@ -128,16 +132,12 @@ public class EnemySpells : MonoBehaviour {
 			//Debug.Log("I think I'm stuck here");
 			isCasting -= Time.deltaTime;
 		}
-		else if (isCasting == 0)
-		{
-		
-		}
 		else
 		{
 			//Debug.Log("No, I'm actually stuck here");
 			anim.SetBool("Cast", false);
 			anim.SetBool("Move", true);
-			isCasting = 0;
+			// isCasting = 0;
 		}
 		//Detects if the enemy can cast and avoids the loop if it can't
 		if (enemy.silence)
@@ -153,8 +153,8 @@ public class EnemySpells : MonoBehaviour {
 				m_CurrentClipInfo = this.anim.GetCurrentAnimatorClipInfo(0);
 				m_CurrentClipLength = m_CurrentClipInfo[0].clip.length;
 				//Debug.Log("The clip length is - " + m_CurrentClipLength + " .");
-				isCasting = m_CurrentClipLength * 3;
-				enemy.Casting(m_CurrentClipLength * 3);
+				isCasting = m_CurrentClipLength + 1f;
+				enemy.Casting(m_CurrentClipLength + 1f);
 				casting = false;
 				
 				foreach (ParticleSystem casting in castList)
@@ -211,6 +211,7 @@ public class EnemySpells : MonoBehaviour {
 				
 				if(customCastTime < 0)
 				{
+					casting = true;
 					if(multiSpell)
 					{
 						MultiSpell();
@@ -220,7 +221,7 @@ public class EnemySpells : MonoBehaviour {
 						RandomSpell();
 					}
 				}
-				else if (customCastTime >= 0 & customCastTime < customCastCountdown -1)
+				else if (customCastTime >= 0 & customCastTime < customCastCountdown - 0.01f)
 				{
 					castingThisSpell = "empty";
 					CastingSpell(castingThisSpell);
@@ -266,18 +267,15 @@ public class EnemySpells : MonoBehaviour {
 						break;
 
 					case "buffHealing" :
-
 						buffHealing = true;
 						countdownHealth = 5;
 
 						break; 
 
 					case "buffSpeed" :
+						BuffSpeed();
+						break;
 
-						buffSpeed = true;
-						countdownSpeed = 5;
-
-						break; 
 					case "buffSummoner" :
 
 						buffSummoner = true;
@@ -318,7 +316,7 @@ public class EnemySpells : MonoBehaviour {
 		{
 			vampireCount -= Time.deltaTime;
 			Debug.Log("I vant to suck your blood!");
-			TargetEnemy();
+			targeting.TargetEnemy(range);
 			targetEnemy.Vampire(vampireDamage);
 			enemy.Healing(vampireDamage);
 
@@ -356,40 +354,6 @@ public class EnemySpells : MonoBehaviour {
 		}
 	}
 	//Boosts speed of target(s)
-	void BuffSpeed()
-	{
-		//Debug.Log("I'm in the speed void");
-		if (speedCount < 0)
-		{
-			if(castSelf)
-			{
-				casting = true;
-				//Debug.Log("I'm casting now");
-				enemy.Speed(bonusSpeed, countdownSpeed);
-				//casting = true;
-			}
-			else if (aoECast)
-			{
-				AoE(0);
-			}
-			else
-			{
-				//Debug.Log("Targeting");
-				TargetEnemy();
-				if(targetEnemy)
-				{
-					// Debug.Log("Enemy targeted - " + targetEnemy + " .");
-					targetEnemy.Speed(bonusSpeed, countdownSpeed);
-				}
-			}
-			//Debug.Log("Weeeeee.... don't say bye then!");
-			speedCount += (countdownSpeed);
-		}
-		else
-		{
-			speedCount -= Time.deltaTime;
-		}
-	}
 	//Heal target(s)
 	void BuffHealing()
 	{
@@ -408,7 +372,7 @@ public class EnemySpells : MonoBehaviour {
 			}
 			else
 			{
-				TargetEnemy();
+				targeting.TargetEnemy(range);
 				if (targetEnemy)
 				{
 				targetEnemy.Healing(bonusHealth);
@@ -424,20 +388,42 @@ public class EnemySpells : MonoBehaviour {
 			healCount -= Time.deltaTime;
 		}
 	}
-	//Buff target(s)
-	void BuffDefences()
+	// Buff enemy speed
+	void BuffSpeed()
 	{
-			// else if (aoECast)
-			// {
-			// 	AoE(2);
-			// }
+		//Debug.Log("I'm in the speed void");
+		if (aoECast)
+		{
+			AoE(0);
+		}
 		if(castSelf)
 		{
 			targetEnemy = enemy;
 		}
 		else
 		{
-			TargetEnemy();
+			targeting.TargetEnemy(range);
+			Debug.Log("Targeting = " + targeting + ".  TargetEnemy = " + targetEnemy);
+		}
+		if(targetEnemy)
+		{
+			targetEnemy.buffs.BuffEffect(speedBuff, countdownSpeed, bonusSpeed);
+		}
+	}
+	//Buff target(s)
+	void BuffDefences()
+	{
+		if (aoECast)
+		{
+			AoE(2);
+		}
+		if(castSelf)
+		{
+			targetEnemy = enemy;
+		}
+		else
+		{
+			targeting.TargetEnemy(range);
 		}
 		Debug.Log("Target is - " + targetEnemy + " - countdown = " + countdownBuffDef + " - def bonus = " + buffDefSlash);
 		targetEnemy.buffs.BuffEffect(buffSlash, countdownBuffDef, buffDefSlash);
@@ -463,7 +449,7 @@ public class EnemySpells : MonoBehaviour {
 			}
 			else
 			{
-			TargetEnemy();
+			targeting.TargetEnemy(range);
 			targetEnemy.Immune(countdownImmune);
 			}
 			//Debug.Log("Tis but a scratch!");
@@ -487,7 +473,7 @@ public class EnemySpells : MonoBehaviour {
 			}
 			else
 			{
-				TargetEnemy();
+				targeting.TargetEnemy(range);
 				targetEnemy.Flying(countdownLevitate);
 				//Debug.Log("Woah, what's going on?");
 			}
@@ -541,32 +527,32 @@ public class EnemySpells : MonoBehaviour {
 			hideCount -= Time.deltaTime;
 		}
 	}
-	void TargetEnemy()
-	{
-		casting = true;
-		GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
-		float shortestDistance = Mathf.Infinity;
-		GameObject nearestEnemy = null;
-		foreach (GameObject enemy in enemies)
-		{
-			if (enemy == gameObject) continue;
+	// void TargetEnemy()
+	// {
+	// 	casting = true;
+	// 	GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
+	// 	float shortestDistance = Mathf.Infinity;
+	// 	GameObject nearestEnemy = null;
+	// 	foreach (GameObject enemy in enemies)
+	// 	{
+	// 		if (enemy == gameObject) continue;
 
-			float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-			if (distanceToEnemy < shortestDistance)
-			{
-				shortestDistance = distanceToEnemy;
-				nearestEnemy = enemy;
-			}
-		}
-		if (nearestEnemy != null && shortestDistance <= range)
-		{
-			target = nearestEnemy.transform;
-			targetEnemy = nearestEnemy.GetComponent<Enemy>();
-		} else
-		{
-			target = null;
-		}
-	}
+	// 		float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+	// 		if (distanceToEnemy < shortestDistance)
+	// 		{
+	// 			shortestDistance = distanceToEnemy;
+	// 			nearestEnemy = enemy;
+	// 		}
+	// 	}
+	// 	if (nearestEnemy != null && shortestDistance <= range)
+	// 	{
+	// 		target = nearestEnemy.transform;
+	// 		targetEnemy = nearestEnemy.GetComponent<Enemy>();
+	// 	} else
+	// 	{
+	// 		target = null;
+	// 	}
+	// }
 	void AoE (int spellNumber)
 	{
 		casting = true;
@@ -590,16 +576,16 @@ public class EnemySpells : MonoBehaviour {
 			default :
 				break;
 			case 0:
-				e.Speed(bonusSpeed, countdownSpeed);
+				// e.Speed(bonusSpeed, countdownSpeed);
 				break;
 			case 1:
 				e.Healing(bonusHealth);
 				break;
 			case 2:
-				e.BuffSlashDef(buffDefSlash, countdownBuffDef);
-				e.BuffBluntDef(buffDefBlunt, countdownBuffDef);
-				e.BuffPierceDef(buffDefPierce, countdownBuffDef);
-				e.BuffMagDef(buffDefMag, countdownBuffDef);
+				// e.BuffSlashDef(buffDefSlash, countdownBuffDef);
+				// e.BuffBluntDef(buffDefBlunt, countdownBuffDef);
+				// e.BuffPierceDef(buffDefPierce, countdownBuffDef);
+				// e.BuffMagDef(buffDefMag, countdownBuffDef);
 				break;
 			case 3:
 				e.Immune(countdownImmune);

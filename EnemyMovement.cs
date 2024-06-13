@@ -5,6 +5,8 @@ using System.Collections;
 [RequireComponent(typeof(Enemy))]
 public class EnemyMovement : MonoBehaviour {
 
+	private Enemy enemy;
+	private EnemyDots dots;
 	public Transform target;
 	public int wavepointIndex = 0;
 	private bool runBack = false;
@@ -13,10 +15,10 @@ public class EnemyMovement : MonoBehaviour {
 	//private bool aboveGround;
 	public float wormMove;
 	private bool wormStop;
+	private string stop = "Stop";
 	private bool iDle;
 	public bool endPath, attackBase = false;
 
-	private Enemy enemy;
 	private Animator anim;
 
 	public float pathDistance, timeToDestination, remainingPathDistance, endPathCounter, attackCounter;
@@ -31,6 +33,7 @@ public class EnemyMovement : MonoBehaviour {
 	{
 		//This is used when the enemy is "duplicated" (I.E doesn't start at the beginning of the path)
 		enemy = GetComponent<Enemy>();
+		dots = enemy.GetComponent<EnemyDots>();
 		anim = gameObject.GetComponentInChildren<Animator>();
 		walkingPath = Enemy.path;
 		Waypoints waypoints = FindObjectOfType<Waypoints>();
@@ -206,7 +209,7 @@ public class EnemyMovement : MonoBehaviour {
 				NewRandomNumberTwo();
 				//Debug.Log("My Random number is " + randomNumberTwo + " ... wow");
 				wormMove += randomNumberTwo;
-				enemy.Stop(randomNumberTwo / 1.55f);
+				dots.DotEffect(stop, randomNumberTwo / 1.55f, 0);
 			}
 			else if(wormMove < 12 && wormMove > 8 )
 			{

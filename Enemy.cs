@@ -12,14 +12,14 @@ public class Enemy : MonoBehaviour {
 	[Header("Casting enemy?")]
 	public EnemySpells enemySpells;
 
-	private Transform target;
-	private Enemy targetEnemy;
+	public Transform target;
+	public Enemy targetEnemy;
 
 	[Header("Unity Stuff")]
 	public GameObject canvas;
 	public Image healthBar;
 	public string enemyTag = "Enemy";
-	public float startSpeed = 10f;
+	public float startSpeed = 5f;
 
 	[Header("Is it special?")]
 	public bool isSpider = false;
@@ -34,12 +34,12 @@ public class Enemy : MonoBehaviour {
 	public float speed;
 [HideInInspector]	public float maxHealth, baseHealth;
 	public float updatedHealth;
-	public int bluntDef, slashDef, pierceDef, magDef;
-[HideInInspector] public int startBluntDef, startSlashDef, startPierceDef, startMagDef;
+	public float bluntDef, slashDef, pierceDef, magDef;
+[HideInInspector] public float startBluntDef, startSlashDef, startPierceDef, startMagDef;
 [HideInInspector] public bool buffSlashDef, buffPierceDef, buffBluntDef, buffMagDef = false;
 [HideInInspector] public float countdownSlashBuffDef, countdownPierceBuffDef, countdownBluntBuffDef, countdownMagBuffDef;
-[HideInInspector] public int fireDef, iceDef, waterDef, lighteningDef, earthDef, windDef, lightDef, darkDef;
-[HideInInspector] public int startFireDef, startIceDef, startWaterDef, startLighteningDef, startEarthDef, startWindDef, startLightDef, startDarkDef;
+[HideInInspector] public float fireDef, iceDef, waterDef, lighteningDef, earthDef, windDef, lightDef, darkDef;
+[HideInInspector] public float startFireDef, startIceDef, startWaterDef, startLighteningDef, startEarthDef, startWindDef, startLightDef, startDarkDef;
 [HideInInspector] public float imFlying, countdownChicken, chk;
 //This is to set the path of any summons, to where the enemy that spawned them, is (E.G not the very start of the path)
 [HideInInspector] public bool fromDropship = false;
@@ -48,7 +48,7 @@ public class Enemy : MonoBehaviour {
 [HideInInspector] public float countdownSpeed, bonusSpeed;
 
 [HideInInspector] public float countdownSlow, slowSpeed;
-[HideInInspector]	public bool slowEnemy;
+	public bool slowEnemy;
 
 [HideInInspector] public float countdownStop, countdownCasting;
 	public bool stopEnemy, castingEnemy = false;
@@ -264,59 +264,59 @@ public class Enemy : MonoBehaviour {
 				immune = false;
 			}
 		}
-		if (speedEnemy & !castingEnemy)
-		{
-			//Debug.Log("Speed enemy loop + " + bonusSpeed + " .");
-			speed = startSpeed + bonusSpeed;
-			countdownSpeed -= Time.deltaTime;
-			if (countdownSpeed <= 0)
-			{
-				speedEnemy = false;
-				speed = startSpeed;
-				//Debug.Log("Weeeee... again please!");
-			}
-		}
-		if (slowEnemy)
-		{
-			speed = startSpeed * (1f - slowSpeed);
-			//Debug.Log("I'm slower by... " + speed + "... damn");
-			countdownSlow -= Time.deltaTime;
-			if (countdownSlow <= 0)
-			{
-				slowEnemy = false;
-				speed = startSpeed;
-				//Debug.Log("Yeah, " + speed + " baby.... Weeeeee");
-			}
-		}
-		else if (stopEnemy)
-		{
-			speed = startSpeed * (1f - 1f);
-			countdownStop  -= Time.deltaTime;
-			//Debug.Log("Stopped");
-			if (countdownStop <= 0)
-			{
-				stopEnemy = false;
-				speed = startSpeed;
-				//Debug.Log("I'm free");
-			}
-		}
-		else if (!speedEnemy && !castingEnemy)
-		{
-			speed = startSpeed;
-		}
-		else
-		{
+		// if (speedEnemy & !castingEnemy)
+		// {
+		// 	//Debug.Log("Speed enemy loop + " + bonusSpeed + " .");
+		// 	speed = startSpeed + bonusSpeed;
+		// 	countdownSpeed -= Time.deltaTime;
+		// 	if (countdownSpeed <= 0)
+		// 	{
+		// 		speedEnemy = false;
+		// 		speed = startSpeed;
+		// 		//Debug.Log("Weeeee... again please!");
+		// 	}
+		// }
+		// if (slowEnemy)
+		// {
+		// 	speed = startSpeed * (1f - slowSpeed);
+		// 	//Debug.Log("I'm slower by... " + speed + "... damn");
+		// 	countdownSlow -= Time.deltaTime;
+		// 	if (countdownSlow <= 0)
+		// 	{
+		// 		slowEnemy = false;
+		// 		speed = startSpeed;
+		// 		//Debug.Log("Yeah, " + speed + " baby.... Weeeeee");
+		// 	}
+		// }
+		// else if (stopEnemy)
+		// {
+		// 	speed = startSpeed * (1f - 1f);
+		// 	countdownStop  -= Time.deltaTime;
+		// 	//Debug.Log("Stopped");
+		// 	if (countdownStop <= 0)
+		// 	{
+		// 		stopEnemy = false;
+		// 		speed = startSpeed;
+		// 		//Debug.Log("I'm free");
+		// 	}
+		// }
+		// else if (!speedEnemy && !castingEnemy)
+		// {
+		// 	speed = startSpeed;
+		// }
+		// else
+		// {
 
-		}
-		if (fearEnemy)
-		{
-			countdownFear -= Time.deltaTime;
-			//Debug.Log("I have been feared");
-			if (countdownFear <= 0)
-			{
-				fearEnemy = false;
-			}
-		}
+		// }
+		// if (fearEnemy)
+		// {
+		// 	countdownFear -= Time.deltaTime;
+		// 	//Debug.Log("I have been feared");
+		// 	if (countdownFear <= 0)
+		// 	{
+		// 		fearEnemy = false;
+		// 	}
+		// }
 		// if (silence)
 		// {
 		// 	countdownSilence -= Time.deltaTime;
@@ -396,30 +396,30 @@ public class Enemy : MonoBehaviour {
 		healthToHeal = 0;
 	}
 	//Following buff the various def stats
-	public void BuffSlashDef (int buffingSlashDef, float buffingSlashDefCountdown)
-	{
-		buffSlashDef = true;
-		slashDef = slashDef + buffingSlashDef;
-		countdownSlashBuffDef = buffingSlashDefCountdown;
-	}
-	public void BuffBluntDef (int buffingBluntDef, float buffingBluntDefCountdown)
-	{
-		buffBluntDef = true;
-		bluntDef = bluntDef + buffingBluntDef;
-		countdownBluntBuffDef = buffingBluntDefCountdown;
-	}
-	public void BuffPierceDef (int buffingPierceDef, float buffingPierceDefCountdown)
-	{
-		buffPierceDef = true;
-		pierceDef = pierceDef + buffingPierceDef;
-		countdownPierceBuffDef = buffingPierceDefCountdown;
-	}
-	public void BuffMagDef (int buffingMagDef, float buffingMagDefCountdown)
-	{
-		buffMagDef = true;
-		magDef = magDef + buffingMagDef;
-		countdownMagBuffDef = buffingMagDefCountdown;
-	}
+	// public void BuffSlashDef (int buffingSlashDef, float buffingSlashDefCountdown)
+	// {
+	// 	buffSlashDef = true;
+	// 	slashDef = slashDef + buffingSlashDef;
+	// 	countdownSlashBuffDef = buffingSlashDefCountdown;
+	// }
+	// public void BuffBluntDef (int buffingBluntDef, float buffingBluntDefCountdown)
+	// {
+	// 	buffBluntDef = true;
+	// 	bluntDef = bluntDef + buffingBluntDef;
+	// 	countdownBluntBuffDef = buffingBluntDefCountdown;
+	// }
+	// public void BuffPierceDef (int buffingPierceDef, float buffingPierceDefCountdown)
+	// {
+	// 	buffPierceDef = true;
+	// 	pierceDef = pierceDef + buffingPierceDef;
+	// 	countdownPierceBuffDef = buffingPierceDefCountdown;
+	// }
+	// public void BuffMagDef (int buffingMagDef, float buffingMagDefCountdown)
+	// {
+	// 	buffMagDef = true;
+	// 	magDef = magDef + buffingMagDef;
+	// 	countdownMagBuffDef = buffingMagDefCountdown;
+	// }
 	//Calculate "Gravity" attacks differently since they are a ratio of max HP (Might adjust to current HP if too OP)
 	public void GravityDMG (float gravity)
 	{
@@ -513,7 +513,7 @@ public class Enemy : MonoBehaviour {
 		{
 		magDamage = 0;
 		}
-		//Debug.Log("The damage " + this.gameObject + " taking is - " + bluntDamage + " blunt; " + piercingDamage + " pierce; " + slashingDamage + " slashing; " + magDamage + " magic;");
+		Debug.Log("The damage " + this.gameObject + " taking is - " + bluntDamage + " blunt; " + piercingDamage + " pierce; " + slashingDamage + " slashing; " + magDamage + " magic;");
 		float amount = bluntDamage + piercingDamage + slashingDamage + magDamage;
 
 		//Debug.Log("I'm taking damage " + amount);
@@ -774,19 +774,19 @@ public class Enemy : MonoBehaviour {
 		poisonEnemy = false;
 	}
 	//Slows the enemy (default debuff of Laser towers)
-	public void Slow (float slo, float slt)
-	{
-		slowEnemy = true;
-		slowSpeed = slo;
-		countdownSlow = slt;
-	}
-	//Stops enemies from moving
-	public void Stop (float stp)
-	{
-		stopEnemy = true;
-		countdownStop = stp;
-		// Silence(stp);
-	}
+	// public void Slow (float slo, float slt)
+	// {
+	// 	slowEnemy = true;
+	// 	slowSpeed = slo;
+	// 	countdownSlow = slt;
+	// }
+	// //Stops enemies from moving
+	// public void Stop (float stp)
+	// {
+	// 	stopEnemy = true;
+	// 	countdownStop = stp;
+	// 	// Silence(stp);
+	// }
 	//Does things like stop walking when casting spells etc...
 	public void Casting (float cst)
 	{
@@ -794,19 +794,19 @@ public class Enemy : MonoBehaviour {
 		countdownCasting = cst;
 	}
 	//Scares enemies into running backwards (towards the start point)
-	public void Fear (float fea)
-	{
-		fearEnemy = true;
-		countdownFear = fea;
-	}
+	// public void Fear (float fea)
+	// {
+	// 	fearEnemy = true;
+	// 	countdownFear = fea;
+	// }
 	//Buff to speed up enemies
-	public void Speed (float spdB, float spdD)
-	{
-		//Debug.Log("I'm in the speed loop");
-		speedEnemy = true;
-		bonusSpeed = spdB;
-		countdownSpeed = spdD;
-	}
+	// public void Speed (float spdB, float spdD)
+	// {
+	// 	//Debug.Log("I'm in the speed loop");
+	// 	speedEnemy = true;
+	// 	bonusSpeed = spdB;
+	// 	countdownSpeed = spdD;
+	// }
 	//Buff to make enemies fly - to avoid damage from ground towers
 	public void Flying (float flyT)
 	{
@@ -820,7 +820,7 @@ public class Enemy : MonoBehaviour {
 				{
 					//Debug.Log("Spawn now! " + enemyStats.dropEnemy + " is chosen");
 					// Added 0.1 to stop the enemy from moving before it has completed the spawns
-					Stop(enemyStats.dropSpeed + 0.1f);
+					// Stop(enemyStats.dropSpeed + 0.1f);
 					GameObject enemy = Instantiate(enemyStats.dropEnemy, transform.position, Quaternion.identity);
 					enemy.GetComponent<Enemy>().fromDropship = true;
 					enemy.GetComponent<EnemyMovement>().wavepointIndex = enemyMovement.wavepointIndex;
