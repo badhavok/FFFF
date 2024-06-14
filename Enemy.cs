@@ -60,7 +60,7 @@ public class Enemy : MonoBehaviour {
 [HideInInspector]	public bool poisonEnemy;
 
 [HideInInspector] public float countdownImmune, imm;
-[HideInInspector]	public bool immune = false;
+	public bool immune = false;
 
 	public float countdownSilence, sil;
 	public bool silence = false;
@@ -148,7 +148,7 @@ public class Enemy : MonoBehaviour {
 			return;
 		}
 		remainingPathDist = enemyMovement.remainingPathDistance;
-		if(pointsBonus > 0)
+		if(pointsBonus > 1)
 		{
 			pointsBonus -= speed * Time.deltaTime;
 		}
@@ -180,6 +180,7 @@ public class Enemy : MonoBehaviour {
 		//Area to detect if the enemy is golden/a boss and take hits when the player is tapping on the screen
 		if (goldenEnemy || isMiniBoss || isBoss)
 		{
+			Debug.Log("In the gold loop");
 			//If the enemy is golden, but not a boss, increase the amount of gold it will 'drop' when it is killed
 			if(goldenEnemy)
 			{
@@ -198,7 +199,8 @@ public class Enemy : MonoBehaviour {
 				}
 			}
 			if (touchedScreen || Input.GetMouseButtonDown(0) || Input.GetKey("k"))
-			{				
+			{
+				Debug.Log("Detecting input");				
 				if (GetComponent<Collider>().gameObject.CompareTag("Enemy"))
 				{
 					//Sets how much damage is done 
@@ -238,7 +240,7 @@ public class Enemy : MonoBehaviour {
 			enemy.GetComponent<EnemyMovement>().wavepointIndex = enemyMovement.wavepointIndex;
 			++WaveSpawner.EnemiesAlive;
 		}
-		if (doom)
+		if(doom)
 		{
 			Debug.Log("I'm dooomeeddddd");
 			countdownDoom -= Time.deltaTime;
@@ -256,76 +258,6 @@ public class Enemy : MonoBehaviour {
 			countdownDoom = 20000;
       		//canvas.SetActive(false);
 		}
-		if (immune)
-		{
-			countdownImmune -= Time.deltaTime;
-			if (countdownImmune <= 0)
-			{
-				immune = false;
-			}
-		}
-		// if (speedEnemy & !castingEnemy)
-		// {
-		// 	//Debug.Log("Speed enemy loop + " + bonusSpeed + " .");
-		// 	speed = startSpeed + bonusSpeed;
-		// 	countdownSpeed -= Time.deltaTime;
-		// 	if (countdownSpeed <= 0)
-		// 	{
-		// 		speedEnemy = false;
-		// 		speed = startSpeed;
-		// 		//Debug.Log("Weeeee... again please!");
-		// 	}
-		// }
-		// if (slowEnemy)
-		// {
-		// 	speed = startSpeed * (1f - slowSpeed);
-		// 	//Debug.Log("I'm slower by... " + speed + "... damn");
-		// 	countdownSlow -= Time.deltaTime;
-		// 	if (countdownSlow <= 0)
-		// 	{
-		// 		slowEnemy = false;
-		// 		speed = startSpeed;
-		// 		//Debug.Log("Yeah, " + speed + " baby.... Weeeeee");
-		// 	}
-		// }
-		// else if (stopEnemy)
-		// {
-		// 	speed = startSpeed * (1f - 1f);
-		// 	countdownStop  -= Time.deltaTime;
-		// 	//Debug.Log("Stopped");
-		// 	if (countdownStop <= 0)
-		// 	{
-		// 		stopEnemy = false;
-		// 		speed = startSpeed;
-		// 		//Debug.Log("I'm free");
-		// 	}
-		// }
-		// else if (!speedEnemy && !castingEnemy)
-		// {
-		// 	speed = startSpeed;
-		// }
-		// else
-		// {
-
-		// }
-		// if (fearEnemy)
-		// {
-		// 	countdownFear -= Time.deltaTime;
-		// 	//Debug.Log("I have been feared");
-		// 	if (countdownFear <= 0)
-		// 	{
-		// 		fearEnemy = false;
-		// 	}
-		// }
-		// if (silence)
-		// {
-		// 	countdownSilence -= Time.deltaTime;
-
-		// 	if (countdownSilence <=0)
-		// 	{
-		// 		silence = false;
-		// 	}
-		// }
 		//Hovercraft is used for the temporary flying units
 		if (enemyStats.isHovercraft)
 		{
@@ -373,13 +305,22 @@ public class Enemy : MonoBehaviour {
 	//Function for healing/vampire?
 	public void Healing (float healSpell)
 	{
-		float healthToHeal = maxHealth * healSpell - maxHealth;
-		Debug.Log("I'm healing " + healthToHeal + " hp");
+		if(!isBoss && !isMiniBoss)
+		{
+			healSpell = healSpell * 4;
+		}
+		if(isMiniBoss)
+		{
+			healSpell = healSpell * 2;
+		}
+		
+		float healthToHeal = maxHealth * healSpell;
+		// Debug.Log("I'm healing " + healthToHeal + " hp");
 		
 		//If Max HP, move on
 		if (updatedHealth == maxHealth)
 		{
-			Debug.Log("Thanks but don't need it, healing was " + healSpell);
+			// Debug.Log("Thanks but don't need it, healing was " + healSpell);
 		}
 		else
 		{
@@ -389,37 +330,12 @@ public class Enemy : MonoBehaviour {
 				//If overhealed - adjust HP back to MaxHP
 				updatedHealth = maxHealth;
 			}
-			Debug.Log("Health is now " + updatedHealth);
+			// Debug.Log("Health is now " + updatedHealth);
 			healthBar.fillAmount = updatedHealth / maxHealth;
 			// Debug.Log("I'm being healed by " + healSpell);
 		}
 		healthToHeal = 0;
 	}
-	//Following buff the various def stats
-	// public void BuffSlashDef (int buffingSlashDef, float buffingSlashDefCountdown)
-	// {
-	// 	buffSlashDef = true;
-	// 	slashDef = slashDef + buffingSlashDef;
-	// 	countdownSlashBuffDef = buffingSlashDefCountdown;
-	// }
-	// public void BuffBluntDef (int buffingBluntDef, float buffingBluntDefCountdown)
-	// {
-	// 	buffBluntDef = true;
-	// 	bluntDef = bluntDef + buffingBluntDef;
-	// 	countdownBluntBuffDef = buffingBluntDefCountdown;
-	// }
-	// public void BuffPierceDef (int buffingPierceDef, float buffingPierceDefCountdown)
-	// {
-	// 	buffPierceDef = true;
-	// 	pierceDef = pierceDef + buffingPierceDef;
-	// 	countdownPierceBuffDef = buffingPierceDefCountdown;
-	// }
-	// public void BuffMagDef (int buffingMagDef, float buffingMagDefCountdown)
-	// {
-	// 	buffMagDef = true;
-	// 	magDef = magDef + buffingMagDef;
-	// 	countdownMagBuffDef = buffingMagDefCountdown;
-	// }
 	//Calculate "Gravity" attacks differently since they are a ratio of max HP (Might adjust to current HP if too OP)
 	public void GravityDMG (float gravity)
 	{
@@ -756,57 +672,11 @@ public class Enemy : MonoBehaviour {
 		silence = true;
 		immune = false;
 	}
-	//Stops enemies from casting spells
-	// public void Silence(float sil)
-	// {
-	// 	countdownSilence = sil;
-	// 	silence = true;
-	// }
-	//Makes enemies immune and heals them from all debuffs
-	public void Immune (float imm)
-	{
-		countdownImmune = imm;
-		immune = true;
-		doom = false;
-		slowEnemy = false;
-		stopEnemy = false;
-		fearEnemy = false;
-		poisonEnemy = false;
-	}
-	//Slows the enemy (default debuff of Laser towers)
-	// public void Slow (float slo, float slt)
-	// {
-	// 	slowEnemy = true;
-	// 	slowSpeed = slo;
-	// 	countdownSlow = slt;
-	// }
-	// //Stops enemies from moving
-	// public void Stop (float stp)
-	// {
-	// 	stopEnemy = true;
-	// 	countdownStop = stp;
-	// 	// Silence(stp);
-	// }
-	//Does things like stop walking when casting spells etc...
 	public void Casting (float cst)
 	{
 		castingEnemy = true;
 		countdownCasting = cst;
 	}
-	//Scares enemies into running backwards (towards the start point)
-	// public void Fear (float fea)
-	// {
-	// 	fearEnemy = true;
-	// 	countdownFear = fea;
-	// }
-	//Buff to speed up enemies
-	// public void Speed (float spdB, float spdD)
-	// {
-	// 	//Debug.Log("I'm in the speed loop");
-	// 	speedEnemy = true;
-	// 	bonusSpeed = spdB;
-	// 	countdownSpeed = spdD;
-	// }
 	//Buff to make enemies fly - to avoid damage from ground towers
 	public void Flying (float flyT)
 	{

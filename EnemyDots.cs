@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class EnemyDots : MonoBehaviour
 {
+    // Everything that effects HP runs on 'tic' (currently set at 3s)
+
     private float timer, damage;
+    private float tic = 3f;
     private string spell;
     private Enemy enemy;
     void Start()
@@ -254,7 +257,7 @@ public class EnemyDots : MonoBehaviour
             }
             enemy.TakeDamage(0f, 0f, 0f, pDamage);
             Debug.Log("Poison Damage");
-            yield return new WaitForSeconds(1f); 
+            yield return new WaitForSeconds(tic); 
         }
     }
     public IEnumerator Burn(float bTimer, float bDamage)
@@ -268,7 +271,7 @@ public class EnemyDots : MonoBehaviour
             }
             enemy.TakeDamage(0f, 0f, 0f, bDamage);
             Debug.Log("Burn damage");
-            yield return new WaitForSeconds(1f); 
+            yield return new WaitForSeconds(tic); 
         }
     }
     public IEnumerator Freeze(float fTimer, float fDamage)
@@ -282,7 +285,7 @@ public class EnemyDots : MonoBehaviour
             }
             enemy.TakeDamage(0f, 0f, 0f, fDamage);
             Debug.Log("Burn damage");
-            yield return new WaitForSeconds(1f); 
+            yield return new WaitForSeconds(tic); 
         }
     }
 }

@@ -78,7 +78,7 @@ public class Bullet : MonoBehaviour {
 	public void Seek (Transform _target)
 	{
 		target = _target;
-		Debug.Log("Target is " + target);
+		// Debug.Log("Target is " + target);
 	}
 
 	// Update is called once per frame
@@ -96,9 +96,9 @@ public class Bullet : MonoBehaviour {
 		if (dir.magnitude <= distanceThisFrame && target != null)
 		{
 			HitTarget();
-			Debug.Log("Just ran HitTarget");
+			// Debug.Log("Just ran HitTarget");
 			target = null;
-			Debug.Log("I'm nulling target - " + target);
+			// Debug.Log("I'm nulling target - " + target);
 			return;
 		}
 		transform.Translate(dir.normalized * distanceThisFrame, Space.World);
@@ -107,7 +107,7 @@ public class Bullet : MonoBehaviour {
 
 	void HitTarget ()
 	{
-		Debug.Log("Hit Target");
+		// Debug.Log("Hit Target");
 		if (explosionRadius > 0f)
 		{
 			Explode();
@@ -122,12 +122,11 @@ public class Bullet : MonoBehaviour {
 		}
 		target = null;
 		Destroy(gameObject);
-		Debug.Log("Destroy bullet object- " + gameObject);
+		// Debug.Log("Destroy bullet object- " + gameObject);
 	}
 	void ImpactEffect()
 	{
 		GameObject effectIns = Instantiate(impactEffect, target.gameObject.transform);//, transform.rotation);
-		Debug.Log("Destroy impact effect");
 		Destroy(effectIns, 1f);
 			
 	}

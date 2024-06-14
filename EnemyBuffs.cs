@@ -4,17 +4,33 @@ using UnityEngine;
 
 public class EnemyBuffs : MonoBehaviour
 {
+    // Everything that effects HP runs on 'tic' (currently set at 3s)
+
     private float timer, bonus, sBonus, bBonus, pBonus;
+    private float tic = 3f;
     private string spell;
     private Enemy enemy;
     void Start()
     {
         enemy = GetComponent<Enemy>();
+        MeshHandler.GetMeshes(enemy);
     }
     public void BuffEffect(string spell, float timer, float bonus)
     {
         switch (spell)
         {
+            case "buffImmune":
+                StartCoroutine(Immune(timer));
+            return;
+            case "Healing":
+                StartCoroutine(Healing(timer, bonus));
+            return;
+            case "BuffHide":
+                StartCoroutine(BuffHide(timer));
+            return;
+            case "SpeedBuff":
+                StartCoroutine(SpeedBuff(timer, bonus));
+            return;
             case "BuffSlash":
                 StartCoroutine(BuffSlash(timer, bonus));
             return;
@@ -27,14 +43,85 @@ public class EnemyBuffs : MonoBehaviour
             case "BuffMag":
                 StartCoroutine(BuffMag(timer, bonus));
             return;
-            case "SpeedBuff":
-                StartCoroutine(SpeedBuff(timer, bonus));
-            return;
 
             default:
 
             return;
         }
+    }
+    public IEnumerator Immune(float iTimer)
+    {
+		enemy.doom = false;
+		enemy.slowEnemy = false;
+		enemy.stopEnemy = false;
+		enemy.fearEnemy = false;
+
+        while (iTimer > 0)
+        {
+            if(iTimer > 0)
+            {
+                iTimer--;
+            }
+            enemy.immune = true;
+            Debug.Log("Enemy is immune");
+            yield return new WaitForSeconds(1f);
+        }
+        enemy.immune = false;
+    }
+    public IEnumerator Healing(float hTimer, float hBonus)
+    {
+        // Debug.Log("hTimer is - " + hTimer);
+        while(hTimer > 0)
+        {
+            if(hTimer > 0)
+            {
+                hTimer--;
+            }
+            enemy.Healing(hBonus);
+            yield return new WaitForSeconds(tic); 
+        }
+    }
+    public IEnumerator SpeedBuff(float sTimer, float sBonus)
+    {
+        // Debug.Log("sTimer is - " + sTimer);
+        while(sTimer > 0)
+        {
+            if(enemy.stopEnemy || enemy.slowEnemy)
+            {
+                // Debug.Log("The enemy was slower, now returned to normal");
+                enemy.speed = enemy.startSpeed;
+                enemy.stopEnemy = false;
+                enemy.slowEnemy = false;
+                yield break;
+            }
+            enemy.speedEnemy = true;
+            if(sTimer > 0)
+            {
+                sTimer--;
+            }
+            enemy.speed = enemy.startSpeed + sBonus;
+
+            // Debug.Log("Speed = " + enemy.speed);
+            yield return new WaitForSeconds(1f); 
+        }
+        enemy.speed = enemy.startSpeed;
+        enemy.speedEnemy = false;
+        // Debug.Log("Buff Speed over");
+    }
+    public IEnumerator BuffHide(float hTimer)
+    {
+        MeshHandler.SetMeshes(enemy);
+        
+        while(hTimer > 0)
+        {
+            if(hTimer > 0)
+            {
+                hTimer--;
+            }
+        yield return new WaitForSeconds(1f); 
+        }
+        MeshHandler.UnSetMeshes(enemy);
+        
     }
     public IEnumerator BuffSlash(float sTimer, float sBonus)
     {
@@ -110,31 +197,13 @@ public class EnemyBuffs : MonoBehaviour
         enemy.magDef = enemy.enemyStats.startMagDef;
         // Debug.Log("Buff Mag over");
     }
-    public IEnumerator SpeedBuff(float sTimer, float sBonus)
-    {
-        // Debug.Log("sTimer is - " + sTimer);
-        while(sTimer > 0)
-        {
-            if(enemy.stopEnemy || enemy.slowEnemy)
-            {
-                Debug.Log("The enemy was slower, now returned to normal");
-                enemy.speed = enemy.startSpeed;
-                enemy.stopEnemy = false;
-                enemy.slowEnemy = false;
-                yield break;
-            }
-            enemy.speedEnemy = true;
-            if(sTimer > 0)
-            {
-                sTimer--;
-            }
-            enemy.speed = enemy.startSpeed + sBonus;
-
-            // Debug.Log("Speed = " + enemy.speed);
-            yield return new WaitForSeconds(1f); 
-        }
-        enemy.speed = enemy.startSpeed;
-        enemy.speedEnemy = false;
-        // Debug.Log("Buff Speed over");
-    }
+    
 }
+
+
+                // origPropertyBlock = new MaterialPropertyBlock();
+//                 enemyMesh.GetPropertyBlock(origPropertyBlock);
+                
+//                 propertyBlock = new MaterialPropertyBlock();
+//                 propertyBlock.SetColor("_Color", newColor);
+//                 enemyMesh.material.SetFloat("_Mode", 0);

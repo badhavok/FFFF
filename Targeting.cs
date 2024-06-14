@@ -228,7 +228,7 @@ public class Targeting : MonoBehaviour
 			{
 				Turret targetTurret = turret.GetComponent<Turret>();
 				e.turretList.Add(targetTurret);
-				Debug.Log("I'm targeting - " + targetTurret);
+				// Debug.Log("I'm targeting - " + targetTurret);
 			}
 		}
 	}

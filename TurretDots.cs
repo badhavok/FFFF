@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class TurretDots : MonoBehaviour
 {
+    // Everything that effects HP runs on 'tic' (currently set at 3s)
+    
     private float timer, damage;
+    private float tic = 3f;
     private string spell;
     private Turret turret;
     void Start()
@@ -17,11 +20,13 @@ public class TurretDots : MonoBehaviour
         switch (spell)
         {
             case "AttackTurretHP":
-                Debug.Log("Attacking turret spell");
                 StartCoroutine(AttackTurretHP(timer, damage));
             return;
             case "DebuffTurretSpeed":
                 StartCoroutine(DebuffTurretSpeed(timer, damage));
+            return;
+            case "DebuffTurretHealSpeed":
+                StartCoroutine(DebuffTurretHealSpeed(timer, damage));
             return;
             // case "Silence":
             //     StartCoroutine(Silence(timer));
@@ -43,26 +48,42 @@ public class TurretDots : MonoBehaviour
             {
                 aTimer--;
             }
+            yield return new WaitForSeconds(tic); 
             turret.healthPoints -= damage;
-            Debug.Log("Damaged");
-            yield return new WaitForSeconds(1f); 
+            // Debug.Log("Damaged");
         }
     }
     public IEnumerator DebuffTurretSpeed(float dTimer, float dAmount)
     {
         while(dTimer > 0)
         {
-            turret.debuffAtkSpdUI.SetActive(true);
+            // turret.debuffAtkSpdUI.SetActive(true);
             for(int i = 0; i < dTimer; i++)
             {
                 dTimer--;
             }
             turret.fireRate = turret.fireRate / dAmount;
-            Debug.Log("I'm slowed - " + turret);
+            // Debug.Log("I'm slowed - " + turret);
             yield return new WaitForSeconds(1f); 
         }
 		turret.fireRate = turret.startFireRate;
-		turret.debuffAtkSpdUI.SetActive(false);
+		// turret.debuffAtkSpdUI.SetActive(false);
+    }
+    public IEnumerator DebuffTurretHealSpeed(float dTimer, float dAmount)
+    {
+        while(dTimer > 0)
+        {
+            // turret.debuffAtkSpdUI.SetActive(true);
+            for(int i = 0; i < dTimer; i++)
+            {
+                dTimer--;
+            }
+            turret.healRate = turret.healRate / dAmount;
+            // Debug.Log("My heal is slowed - " + turret);
+            yield return new WaitForSeconds(1f); 
+        }
+		turret.healRate = turret.startHealRate;
+		// turret.debuffAtkSpdUI.SetActive(false);
     }
     // public IEnumerator Silence(float sTimer)
     // {
