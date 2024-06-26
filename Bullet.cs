@@ -5,6 +5,8 @@ public class Bullet : MonoBehaviour {
 	public Transform target;
 
 	public float speed = 70f;
+	[Header ("Healing")]
+	public float healAmount = 0;
 
 	//public int damagePhysical = 5;
 	public int damageMagical = 0;
@@ -135,20 +137,45 @@ public class Bullet : MonoBehaviour {
 		Collider[] colliders = Physics.OverlapSphere(target.position, explosionRadius);
 		foreach (Collider collider in colliders)
 		{
+			Debug.Log("Detecting > " + collider.tag);
 			if (collider.tag == "Enemy")
 			{
 				Damage(collider.transform);
 				// Debug.Log($"{gameObject.name} is dealing explosion damage to {GetComponent<Collider>().gameObject.name}, which is {Vector3.Distance(GetComponent<Collider>().transform.position, target.position)} units from target position {target.position}, explosion Radius is {explosionRadius}");
 			}
+			if (collider.tag == "Lives")
+			{
+				HealBase(collider.transform);
+				Debug.Log("Healing the base");
+			}
+			if (collider.tag == "Turret")
+			{
+				HealTurret(collider.transform);
+				Debug.Log("Healing a turret");
+			}
 		}
 		colliders = null;
+	}
+
+	void HealBase(Transform basePoint)
+	{
+		// Base b = basePoint.GetComponent<Base>();
+
+		PlayerStats.Lives++;
+	}
+
+	void HealTurret(Transform turret)
+	{
+		Turret t = turret.GetComponent<Turret>();
+
+		t.Healing(healAmount);
 	}
 
 	void Damage (Transform enemy)
 	{
 		Enemy e = enemy.GetComponent<Enemy>();
 		EnemyDots d = enemy.GetComponent<EnemyDots>();
-		Debug.Log("Damage target - " + e);
+		// Debug.Log("Damage target - " + e);
 		if (e != null)
 		{
 			// if(gravityChance > 0)

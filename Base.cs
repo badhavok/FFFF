@@ -43,18 +43,19 @@ public class Base : MonoBehaviour {
         switch (healthBar)
             {
                 default:
+                fireThree.SetActive(false);
                 fullHealth.SetActive(true);
-        		ninetyHealth.SetActive(false);
+        		// ninetyHealth.SetActive(false);
                 eightyHealth.SetActive(false);
         		seventyHealth.SetActive(false);
-                // sixtytyHealth.SetActive(false);
-        		// fiftyHealth.SetActive(false);
-                // fourtyHealth.SetActive(false);
-        		// thirtyHealth.SetActive(false);
-                // twentyHealth.SetActive(false);
-        		// tenHealth.SetActive(false);
-                // lastHealth.SetActive(false);
-                // Debug.Log("Full");
+                sixtytyHealth.SetActive(false);
+        		fiftyHealth.SetActive(false);
+                fourtyHealth.SetActive(false);
+        		thirtyHealth.SetActive(false);
+                twentyHealth.SetActive(false);
+        		tenHealth.SetActive(false);
+                lastHealth.SetActive(false);
+                Debug.Log("Full");
                 return;
 
                 case var expression when (health < healthBar && health >= healthBar * 90 / 100):

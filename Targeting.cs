@@ -5,7 +5,7 @@ using UnityEngine;
 public class Targeting : MonoBehaviour
 {
     private string enemyTag = "Enemy";
-	private string baseTag = "Base";
+	private string baseTag = "Lives";
 	private string turretTag = "Turret";
 
 	private EnemySpells e;
@@ -145,6 +145,25 @@ public class Targeting : MonoBehaviour
 		}
 		enemies = null;
 	}
+	public void TargetFriendly(float range)
+	{
+		Debug.Log("Who to target?");
+		if(PlayerStats.Lives < PlayerStats.StartLives)
+		{
+			Debug.Log("Playerstats > " + PlayerStats.Lives + " : max = " + PlayerStats.StartLives );
+			TargetBase(range);
+			if(!target)
+			{
+				TargetTurret(range);
+				Debug.Log("No base in range");
+			}
+		}
+		else
+		{
+			Debug.Log("Base at full health");
+			TargetTurret(range);
+		}
+	}
 	public void TargetBase(float range)
 	{
 		GameObject[] homeBases = GameObject.FindGameObjectsWithTag(baseTag);
@@ -166,9 +185,10 @@ public class Targeting : MonoBehaviour
 		}
 		else
 		{
-			target = null;
+			// Debug.Log("Base not detected");
+			TargetTurret(range);
 		}
-		GiveBackBase();
+		GiveBackBase(target);
 		homeBases = null;
 	}
 	public void TargetTurret(float range)
@@ -197,7 +217,8 @@ public class Targeting : MonoBehaviour
 		{
 			target = null;
 		}
-		GiveBackTurret();
+		GiveBackTurret(target);
+		// Debug.Log("I'm targeting - " + target);
 		turrets = null;
 	}
 	public void TargetAoEEnemy(float range)
@@ -243,7 +264,7 @@ public class Targeting : MonoBehaviour
 			}
 			if(b)
 			{
-				b.target = target;
+				// b.target = target;
 				// b.targetEnemy = target.GetComponent<Enemy>();
 			}
 			if(t)
@@ -252,41 +273,61 @@ public class Targeting : MonoBehaviour
 				t.targetEnemy = target.GetComponent<Enemy>();
 			}
 		}
-	}
-	void GiveBackBase()
-	{
-		if(e)
+		else
 		{
-			e.target = target;
-			e.targetEnemy = target.GetComponent<Enemy>();
-		}
-		if(b)
-		{
-			b.target = target;
-			// b.targetEnemy = target.GetComponent<Enemy>();
-		}
-		if(t)
-		{
-			t.target = target;
-			t.targetEnemy = target.GetComponent<Enemy>();
+			
 		}
 	}
-	void GiveBackTurret()
+	void GiveBackBase(Transform target)
 	{
-		if(e)
+		Debug.Log("Giving back the base");
+		if(target != null)
 		{
-			e.target = target;
-			e.targetEnemy = target.GetComponent<Enemy>();
+			if(e)
+			{
+				e.target = target;
+				// e.targetBase = target.GetComponent<Base>();
+			}
+			if(b)
+			{
+				// b.target = target;
+				// b.targetBase = target.GetComponent<Base>();
+			}
+			if(t)
+			{
+				t.target = target;	
+				t.targetBase = target.GetComponent<Base>();
+				Debug.Log("Target is > " + target + " & Sending > " + t.targetBase );
+			}
 		}
-		if(b)
+		else
 		{
-			b.target = target;
-			// b.targetEnemy = target.GetComponent<Enemy>();
+			
 		}
-		if(t)
+	}
+	void GiveBackTurret(Transform target)
+	{
+		if(target != null)
 		{
-			t.target = target;
-			t.targetEnemy = target.GetComponent<Enemy>();
+			if(e)
+			{
+				e.target = target;
+				e.targetTurret = target.GetComponent<Turret>();
+			}
+			if(b)
+			{
+				// b.target = target;
+				// b.targetTurret = target.GetComponent<Turret>();
+			}
+			if(t)
+			{
+				t.target = target;
+				t.targetTurret = target.GetComponent<Turret>();
+			}
+		}
+		else
+		{
+
 		}
 	}
 }

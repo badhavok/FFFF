@@ -28,9 +28,9 @@ public class TurretDots : MonoBehaviour
             case "DebuffTurretHealSpeed":
                 StartCoroutine(DebuffTurretHealSpeed(timer, damage));
             return;
-            // case "Silence":
-            //     StartCoroutine(Silence(timer));
-            // return;
+            case "DebuffSilence":
+                StartCoroutine(DebuffSilence(timer, damage));
+            return;
             // case "Slow":
             //     StartCoroutine(Slow(timer, damage));    
             // return;
@@ -55,51 +55,25 @@ public class TurretDots : MonoBehaviour
     }
     public IEnumerator DebuffTurretSpeed(float dTimer, float dAmount)
     {
-        while(dTimer > 0)
-        {
-            // turret.debuffAtkSpdUI.SetActive(true);
-            for(int i = 0; i < dTimer; i++)
-            {
-                dTimer--;
-            }
-            turret.fireRate = turret.fireRate / dAmount;
-            // Debug.Log("I'm slowed - " + turret);
-            yield return new WaitForSeconds(1f); 
-        }
+        turret.fireRate = turret.fireRate / dAmount;
+        // Debug.Log("I'm slowed - " + turret);
+        yield return new WaitForSeconds(dTimer); 
 		turret.fireRate = turret.startFireRate;
-		// turret.debuffAtkSpdUI.SetActive(false);
+        turret.fireCountdown = 100f / turret.fireRate;
     }
     public IEnumerator DebuffTurretHealSpeed(float dTimer, float dAmount)
     {
-        while(dTimer > 0)
-        {
-            // turret.debuffAtkSpdUI.SetActive(true);
-            for(int i = 0; i < dTimer; i++)
-            {
-                dTimer--;
-            }
-            turret.healRate = turret.healRate / dAmount;
-            // Debug.Log("My heal is slowed - " + turret);
-            yield return new WaitForSeconds(1f); 
-        }
+        turret.healRate = turret.healRate / dAmount;
+        // Debug.Log("My heal is slowed - " + turret);
+        yield return new WaitForSeconds(dTimer);
 		turret.healRate = turret.startHealRate;
-		// turret.debuffAtkSpdUI.SetActive(false);
     }
-    // public IEnumerator Silence(float sTimer)
-    // {
-    //     // Debug.Log("sTimer is - " + sTimer);
-    //     while(sTimer > 0)
-    //     {
-    //         for(int i = 0; i < sTimer; i++)
-    //         {
-    //             sTimer--;
-    //         }
-    //         turret.silence = true;
-    //         // Debug.Log("Silenced");
-    //         yield return new WaitForSeconds(1f); 
-    //     }
-    //     turret.silence = false;
-    // }
+    public IEnumerator DebuffSilence(float sTimer, float sAmount)
+    {
+        StartCoroutine(DebuffTurretSpeed(sTimer, sAmount));
+        StartCoroutine(DebuffTurretHealSpeed(sTimer, sAmount));
+        yield return new WaitForSeconds(0f);
+    }
     // public IEnumerator Slow(float sTimer, float sAmount)
     // {
     //     // Debug.Log("sTimer is - " + sTimer);

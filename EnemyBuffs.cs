@@ -13,7 +13,9 @@ public class EnemyBuffs : MonoBehaviour
     void Start()
     {
         enemy = GetComponent<Enemy>();
-        MeshHandler.GetMeshes(enemy);
+        MeshHandler.GetEnemyMeshes(enemy);
+        MeshHandler.SetEnemyMeshes(enemy);
+        MeshHandler.UnSetEnemyMeshes(enemy);
     }
     public void BuffEffect(string spell, float timer, float bonus)
     {
@@ -110,7 +112,7 @@ public class EnemyBuffs : MonoBehaviour
     }
     public IEnumerator BuffHide(float hTimer)
     {
-        MeshHandler.SetMeshes(enemy);
+        MeshHandler.SetEnemyMeshes(enemy);
         
         while(hTimer > 0)
         {
@@ -120,7 +122,7 @@ public class EnemyBuffs : MonoBehaviour
             }
         yield return new WaitForSeconds(1f); 
         }
-        MeshHandler.UnSetMeshes(enemy);
+        MeshHandler.UnSetEnemyMeshes(enemy);
         
     }
     public IEnumerator BuffSlash(float sTimer, float sBonus)
@@ -200,10 +202,3 @@ public class EnemyBuffs : MonoBehaviour
     
 }
 
-
-                // origPropertyBlock = new MaterialPropertyBlock();
-//                 enemyMesh.GetPropertyBlock(origPropertyBlock);
-                
-//                 propertyBlock = new MaterialPropertyBlock();
-//                 propertyBlock.SetColor("_Color", newColor);
-//                 enemyMesh.material.SetFloat("_Mode", 0);

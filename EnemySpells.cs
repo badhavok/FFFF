@@ -50,6 +50,7 @@ public class EnemySpells : MonoBehaviour {
 	private string buffMag = "BuffMag";
 	private string debuffTurretSpeed = "DebuffTurretSpeed";
 	private string debuffTurretHealSpeed = "DebuffTurretHealSpeed";
+	private string debuffSilence = "DebuffSilence";
 	private string attackTurretHP = "AttackTurretHP";
 
 	public float immuneTime = 0;
@@ -58,8 +59,9 @@ public class EnemySpells : MonoBehaviour {
 	public float buffDefSlash, buffDefBlunt, buffDefPierce, buffDefMag;
 	public float buffDefTime = 0;
 	
-	public float debuffTurretSpeedTime, debuffTurretSPD = 0;
-	public float debuffTurretHealSpeedTime, debuffTurretHealSPD = 0;
+	public float debuffTurretSpeedTime, debuffTurretSPD = 0f;
+	public float debuffTurretHealSpeedTime, debuffTurretHealSPD = 0f;
+	public float debuffSilenceTime, debuffSilenceSPD = 0f;
 	public float attackTurretHPTics, attackTurretHPDMG = 0;
 	public GameObject attackTurretHPEffect;
 	//This makes an enemy duplicate itself (weaker than summon as it detects current HP as well)
@@ -225,6 +227,10 @@ public class EnemySpells : MonoBehaviour {
 					case "debuffTurretHealSpeed" :
 						DebuffTurretHealSpeed();
 						break;
+					case "debuffSilence" :
+						Debug.Log("Enemy spells silence");
+						DebuffSilence();
+						break;
 					case "attackTurretHP" :
 						AttackTurretHP();
 						break;
@@ -290,7 +296,7 @@ public class EnemySpells : MonoBehaviour {
 			{
 				CastImmune(targetEnemy);
 			}
-			Debug.Log("Casting AoE Immunity");
+			// Debug.Log("Casting AoE Immunity");
 			enemyList.Clear();
 			return;
 		}
@@ -352,7 +358,7 @@ public class EnemySpells : MonoBehaviour {
 			{
 				CastHide(targetEnemy);
 			}
-			Debug.Log("Casting AoE Hide");
+			// Debug.Log("Casting AoE Hide");
 			enemyList.Clear();
 			return;
 		}
@@ -541,6 +547,32 @@ public class EnemySpells : MonoBehaviour {
 	{
 		// Debug.Log("Turret debuff speed = " + targetTurret);
 		targetTurret.dots.DotEffect(debuffTurretHealSpeed, debuffTurretHealSpeedTime, debuffTurretHealSPD);
+	}
+	void DebuffSilence()
+	{
+		if (aoECast)
+		{
+			// Debug.Log("Turret AoE Heal Speed");
+			targeting.TargetAoETurret(range);
+			foreach (Turret targetTurret in turretList)
+			{
+				CastDebuffSilence(targetTurret);
+			}
+			turretList.Clear();
+			return;
+		}
+		else
+		{
+			targeting.TargetTurret(range);
+			if(targetTurret)
+			{
+				CastDebuffSilence(targetTurret);
+			}	
+		}
+	}
+	void CastDebuffSilence(Turret targetTurret)
+	{
+		targetTurret.dots.DotEffect(debuffSilence, debuffSilenceTime, debuffSilenceSPD);
 	}
 	void AttackTurretHP()
 	{

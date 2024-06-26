@@ -180,7 +180,7 @@ public class Enemy : MonoBehaviour {
 		//Area to detect if the enemy is golden/a boss and take hits when the player is tapping on the screen
 		if (goldenEnemy || isMiniBoss || isBoss)
 		{
-			Debug.Log("In the gold loop");
+			// Debug.Log("In the gold loop");
 			//If the enemy is golden, but not a boss, increase the amount of gold it will 'drop' when it is killed
 			if(goldenEnemy)
 			{
@@ -200,7 +200,7 @@ public class Enemy : MonoBehaviour {
 			}
 			if (touchedScreen || Input.GetMouseButtonDown(0) || Input.GetKey("k"))
 			{
-				Debug.Log("Detecting input");				
+				// Debug.Log("Detecting input");				
 				if (GetComponent<Collider>().gameObject.CompareTag("Enemy"))
 				{
 					//Sets how much damage is done 
@@ -429,7 +429,7 @@ public class Enemy : MonoBehaviour {
 		{
 		magDamage = 0;
 		}
-		Debug.Log("The damage " + this.gameObject + " taking is - " + bluntDamage + " blunt; " + piercingDamage + " pierce; " + slashingDamage + " slashing; " + magDamage + " magic;");
+		// Debug.Log("The damage " + this.gameObject + " taking is - " + bluntDamage + " blunt; " + piercingDamage + " pierce; " + slashingDamage + " slashing; " + magDamage + " magic;");
 		float amount = bluntDamage + piercingDamage + slashingDamage + magDamage;
 
 		//Debug.Log("I'm taking damage " + amount);
